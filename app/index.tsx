@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   View, 
   Text, 
@@ -14,13 +14,22 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
-
+import { useAuth } from '@clerk/clerk-expo';
+import { Link, Redirect, router } from 'expo-router';
+import { useNavigation } from '@react-navigation/native';
 export default function AnimeConverter() {
   const [selectedStyle, setSelectedStyle] = useState<number | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  
+  const {isLoaded, isSignedIn } = useAuth()
+  const navigation = useNavigation();
+
+
+  if (!isSignedIn) {
+    return <Redirect href="/sign-in" />;
+  }
+
   const handleImagePicker = async () => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -103,6 +112,10 @@ export default function AnimeConverter() {
   
   const placeholderUrl = 'https://via.placeholder.com/60';
   
+  const navigateToProfile = () => {
+    router.push('/profile');
+  };
+
   const styles = [
     { id: 1, name: 'anime', src: placeholderUrl },
     { id: 2, name: 'ghibli', src: placeholderUrl },
@@ -112,6 +125,7 @@ export default function AnimeConverter() {
     { id: 6, name: 'pixelart', src: placeholderUrl },
     { id: 7, name: 'cartoon', src: placeholderUrl },
     { id: 8, name: 'anime', src: placeholderUrl },
+    { id: 9, name: 'threeD', src: placeholderUrl },
   ];
 
   return (
@@ -123,11 +137,11 @@ export default function AnimeConverter() {
           <Text style={screenStyles.titleIcon}>✨</Text>
           <Text style={screenStyles.title}>Turn Photo to Anime</Text>
         </View>
-        <TouchableOpacity style={screenStyles.settingsButton}>
-          <Ionicons name="settings" size={24} color="#3B82F6" />
+
+        <TouchableOpacity  onPress={navigateToProfile}   style={screenStyles.settingsButton}>
+        <Ionicons name="settings" size={24} color="#3B82F6" />   
         </TouchableOpacity>
       </View>
-      
       <View style={screenStyles.uploadContainer}>
         {resultImage ? (
           <View style={screenStyles.imagePreviewContainer}>
@@ -162,7 +176,7 @@ export default function AnimeConverter() {
           </>
         )}
       </View>
-      
+      <Link href='/sign-in'>go linkf        </Link>
       <View style={screenStyles.styleSection}>
         <Text style={screenStyles.styleTitle}>Choose a Style:</Text>
         <View style={screenStyles.styleGrid}>
