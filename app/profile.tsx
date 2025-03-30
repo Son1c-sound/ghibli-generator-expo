@@ -26,7 +26,7 @@ export default function Profile() {
   const handleSignOut = async () => {
     try {
       await signOut();
-      router.replace('/sign-in');
+     
     } catch (error) {
       console.error('Error signing out:', error);
       Alert.alert('Error', 'Failed to sign out');

@@ -17,17 +17,31 @@ import * as FileSystem from 'expo-file-system';
 import { useAuth } from '@clerk/clerk-expo';
 import { Link, Redirect, router } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
+import useOnboarding from '@/hooks/useOnboarding';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function AnimeConverter() {
   const [selectedStyle, setSelectedStyle] = useState<number | null>(null);
   const [image, setImage] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const {isLoaded, isSignedIn } = useAuth()
-  const navigation = useNavigation();
+  
+  const { isOnboarded, isLoading } = useOnboarding();
 
+  useEffect(() => {
+    if (isLoading) return;
+    
+    if (!isOnboarded) {
+      router.replace('/onboarding');
+    }
+  }, [isOnboarded, isLoading]);
 
-  if (!isSignedIn) {
-    return <Redirect href="/sign-in" />;
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[screenStyles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color="#3B82F6" />
+      </SafeAreaView>
+    );
   }
 
   const handleImagePicker = async () => {
@@ -116,6 +130,11 @@ export default function AnimeConverter() {
     router.push('/profile');
   };
 
+  const resetOnboardingTest = async () => {
+    await AsyncStorage.removeItem('@onboarding_completed');
+    router.replace('/onboarding');
+  };
+
   const styles = [
     { id: 1, name: 'anime', src: placeholderUrl },
     { id: 2, name: 'ghibli', src: placeholderUrl },
@@ -138,10 +157,11 @@ export default function AnimeConverter() {
           <Text style={screenStyles.title}>Turn Photo to Anime</Text>
         </View>
 
-        <TouchableOpacity  onPress={navigateToProfile}   style={screenStyles.settingsButton}>
-        <Ionicons name="settings" size={24} color="#3B82F6" />   
+        <TouchableOpacity onPress={navigateToProfile} style={screenStyles.settingsButton}>
+          <Ionicons name="settings" size={24} color="#3B82F6" />   
         </TouchableOpacity>
       </View>
+
       <View style={screenStyles.uploadContainer}>
         {resultImage ? (
           <View style={screenStyles.imagePreviewContainer}>
@@ -176,7 +196,16 @@ export default function AnimeConverter() {
           </>
         )}
       </View>
-      <Link href='/sign-in'>go linkf        </Link>
+
+      <View style={screenStyles.testButtonContainer}>
+        <TouchableOpacity 
+          style={screenStyles.testButton}
+          onPress={resetOnboardingTest}
+        >
+          <Text style={screenStyles.testButtonText}>Test Onboarding</Text>
+        </TouchableOpacity>
+      </View>
+      
       <View style={screenStyles.styleSection}>
         <Text style={screenStyles.styleTitle}>Choose a Style:</Text>
         <View style={screenStyles.styleGrid}>
@@ -378,5 +407,22 @@ const screenStyles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 'auto',
     marginBottom: 8,
+  },
+  testButtonContainer: {
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  testButton: {
+    backgroundColor: '#333',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#555',
+  },
+  testButtonText: {
+    color: 'red',
+    fontSize: 13,
+    fontWeight: 'bold',
   },
 });
