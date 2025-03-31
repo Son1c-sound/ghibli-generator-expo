@@ -8,6 +8,8 @@ import 'react-native-reanimated';
 
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { superwallService } from './services/superwall';
+import { Platform } from 'react-native';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -18,6 +20,14 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
+
+  useEffect(() => {
+    if (Platform.OS !== 'web') {
+      superwallService.initialize();
+    }
+  }, []);
+
+  
 
   useEffect(() => {
     if (loaded) {

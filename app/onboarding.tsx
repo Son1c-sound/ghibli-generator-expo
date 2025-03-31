@@ -12,6 +12,8 @@ import {
 import MasonryList from '@react-native-seoul/masonry-list';
 import useOnboarding from '@/hooks/useOnboarding';
 import { useRouter } from 'expo-router';
+import { useSuperwall } from '@/hooks/useSuperwall';
+import { SUPERWALL_TRIGGERS } from './config/superwall';
 
 
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -24,6 +26,8 @@ const MasonryGridWithBottomSheet = () => {
     height: number;
     index: number;
   }
+
+  const { showPaywall } = useSuperwall() 
 
   const [leftColumnData, setLeftColumnData] = useState<ImageData[]>([]);
   const [rightColumnData, setRightColumnData] = useState<ImageData[]>([]);
@@ -42,11 +46,20 @@ const MasonryGridWithBottomSheet = () => {
     fetchData();
   }, []);
 
-  useEffect(() => {
-    if (isOnboarded && !onboardingLoading) {
+  const handleContinue = async () => {
+    // First, complete onboarding
+    await completeOnboarding();
+    
+    try {
+      isOnboarded == true
+      router.push('/');
+      const paywallResult = await showPaywall(SUPERWALL_TRIGGERS.ONBOARDING);
+    } catch (error) {
+      console.error('Error showing paywall:', error);
+      // Navigate anyway as fallback
       router.push('/');
     }
-  }, [isOnboarded, onboardingLoading, router]);
+  };
 
   useEffect(() => {
     if ((leftColumnData.length > 0 && rightColumnData.length > 0) && !loading) {
@@ -135,19 +148,7 @@ const MasonryGridWithBottomSheet = () => {
     });
   };
 
-  const handleContinue = async () => {
-    await completeOnboarding();
-    router.push('/');
-  };
-
-  if (loading || onboardingLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#ffffff" />
-      </View>
-    );
-  }
-
+ 
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
