@@ -1,6 +1,9 @@
 import * as FileSystem from 'expo-file-system';
 import { Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import * as MediaLibrary from 'expo-media-library';
+import ToastManager, { Toast } from "toastify-react-native";
+
 
 export interface StyleItem {
   id: number;
@@ -169,40 +172,47 @@ export const generateImage = async (
 };
 
 
+
 export const handleDownload = async (
-  resultImage: string | null,
-  handleShare: () => Promise<void>
-): Promise<void> => {
-  try {
-    if (!resultImage) return;
-    
-    const base64Data = resultImage.split('base64,')[1];
-    
-    const fileName = `anime_convert_${Date.now()}.jpg`;
-    const fileUri = FileSystem.documentDirectory + fileName;
-    
-    await FileSystem.writeAsStringAsync(fileUri, base64Data, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-    
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (status === 'granted') {
-      await FileSystem.copyAsync({
-        from: fileUri,
-        to: FileSystem.cacheDirectory + fileName
+    resultImage: string | null,
+    handleShare: () => Promise<void>
+  ): Promise<void> => {
+    try {
+      if (!resultImage) {
+        Alert.alert('Error', 'No image available to save');
+        return;
+      }
+      
+      // Extract base64 data
+      const base64Data = resultImage.includes('base64,') 
+        ? resultImage.split('base64,')[1] 
+        : resultImage;
+      
+      // Create a file in the cache directory
+      const fileName = `anime_convert_${Date.now()}.jpg`;
+      const fileUri = FileSystem.cacheDirectory + fileName;
+      
+      // Write the image data to a file
+      await FileSystem.writeAsStringAsync(fileUri, base64Data, {
+        encoding: FileSystem.EncodingType.Base64,
       });
       
-      Alert.alert('Success', 'Image saved to your photos');
-    } else {
-      handleShare();
+      // Request permission to save to photo library
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      
+      if (status === 'granted') {
+        // Save the file to media library
+        const asset = await MediaLibrary.createAssetAsync(fileUri);
+        
+        Toast.success("Image Saved");
+      } else {
+        Toast.success('Permission needed');
+      }
+    } catch (error) {
+      console.error('Error saving image:', error);
+      Toast.success('Failed to save the image');
     }
-  } catch (error) {
-    console.error('Error saving image:', error);
-    Alert.alert('Error', 'Failed to save the image');
-  }
-};
-
+  };
 
 export const handleShare = async (
   resultImage: string | null,

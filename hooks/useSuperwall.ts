@@ -3,7 +3,6 @@ import { Platform } from 'react-native';
 import { SubscriptionStatus } from '@superwall/react-native-superwall';
 import { superwallService } from '@/app/services/superwall';
 
-
 export function useSuperwall() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,9 +20,22 @@ export function useSuperwall() {
   const checkSubscription = async () => {
     try {
       const status = await superwallService.getSubscriptionStatus();
-      setIsSubscribed(status === SubscriptionStatus.ACTIVE );
+      console.log('Subscription status:', status);
+      console.log('SubscriptionStatus enum:', SubscriptionStatus);
+      
+      if (typeof status === 'string') {
+        setIsSubscribed(status === 'active');
+      } else if (typeof status === 'object' && status !== null) {
+        setIsSubscribed(
+          status.status.toLowerCase() === 'active' || 
+          Object.hasOwnProperty.call(status, 'active')
+        );
+      } else {
+        setIsSubscribed(false);
+      }
     } catch (error) {
       console.error('[Superwall] Hook subscription check failed:', error);
+      setIsSubscribed(false);
     } finally {
       setIsLoading(false);
     }
@@ -34,7 +46,6 @@ export function useSuperwall() {
     
     try {
       await superwallService.presentPaywall(triggerId);
-      // Refresh subscription status after paywall interaction
       await checkSubscription();
     } catch (error) {
       console.error('[Superwall] Hook failed to show paywall:', error);
@@ -47,4 +58,4 @@ export function useSuperwall() {
     showPaywall,
     checkSubscription,
   };
-} 
+}

@@ -16,7 +16,7 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
 import useOnboarding from "@/hooks/useOnboarding";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -187,7 +187,8 @@ export default function AnimeConverter() {
   };
 
   const navigateToProfile = () => {
-    router.push("/profile");
+    router.replace("/profile");
+
   };
 
   const resetOnboardingTest = async () => {
@@ -221,9 +222,12 @@ export default function AnimeConverter() {
         <View style={screenStyles.header}>
           <View style={screenStyles.titleContainer}>
             <Text style={screenStyles.titleIcon}>✨</Text>
-            <Text style={screenStyles.title}>Turn Photo to Anime</Text>
+            <Text style={screenStyles.title}>goToon</Text>
           </View>
 
+          {!loading && (
+                <Text style={screenStyles.testButtonText} onPress={resetOnboardingTest}>Test Onboarding</Text>
+          )}
           <TouchableOpacity
             onPress={navigateToProfile}
             style={screenStyles.settingsButton}
@@ -236,35 +240,44 @@ export default function AnimeConverter() {
           <View style={screenStyles.imageContainer}>
             {image ? (
               <View style={screenStyles.imagePreviewContainer}>
-                <Image
-                  source={{ uri: image }}
-                  style={screenStyles.imagePreview}
-                />
-                {loading ? (
-                  <View style={screenStyles.loadingOverlay}>
-                    <ActivityIndicator size="large" color="white" />
-                    <Text style={screenStyles.loadingText}>
-                      Processing... {Math.round(loadingProgress)}%
-                    </Text>
-                    <View style={screenStyles.progressBar}>
-                      <View 
-                        style={[
-                          screenStyles.progressFill, 
-                          { width: `${loadingProgress}%` }
-                        ]} 
-                      />
-                    </View>
+              <Image
+                source={{ uri: image }}
+                style={screenStyles.imagePreview}
+              />
+              {loading ? (
+                <View style={screenStyles.loadingOverlay}>
+                  <ActivityIndicator size="large" color="white" />
+                  <Text style={screenStyles.loadingText}>
+                    Processing... {Math.round(loadingProgress)}%
+                  </Text>
+                  <View style={screenStyles.progressBar}>
+                    <View 
+                      style={[
+                        screenStyles.progressFill, 
+                        { width: `${loadingProgress}%` }
+                      ]} 
+                    />
                   </View>
-                ) : (
+                </View>
+              ) : (
+                <View style={screenStyles.changeImageButtonsContainer}>
                   <TouchableOpacity
                     style={screenStyles.changeImageButton}
                     onPress={handleImagePicker}
                   >
-                    <Ionicons name="camera-reverse" size={18} color="white" />
-                    <Text style={screenStyles.changeImageText}>Change photo</Text>
+                    <Text style={screenStyles.changeImageText}>Gallery</Text>
                   </TouchableOpacity>
-                )}
-              </View>
+                  
+                  <TouchableOpacity
+                    style={screenStyles.changeImageButton}
+                    onPress={handleCameraCapture}
+                  >
+                    <Ionicons name="camera-outline" size={18} color="white" />
+                    <Text style={screenStyles.changeImageText}>Selfie</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
             ) : (
               <View style={screenStyles.uploadOptionsContainer}>
                 <TouchableOpacity
@@ -280,15 +293,12 @@ export default function AnimeConverter() {
                   onPress={handleCameraCapture}
                 >
                   <Ionicons name="camera-outline" size={24} color="black" />
-                  <Text style={screenStyles.uploadText}>Take Image</Text>
+                  <Text style={screenStyles.uploadText}>Take a Selfie</Text>
                 </TouchableOpacity>
               </View>
             )}
           </View>
 
-          {!loading && (
-                <Text style={screenStyles.testButtonText} onPress={resetOnboardingTest}>Test Onboarding</Text>
-          )}
         </View>
 
         {!loading && (
@@ -377,6 +387,36 @@ const screenStyles = StyleSheet.create({
   titleIcon: {
     fontSize: 20,
     marginRight: 8,
+  },
+  changeImageButtonsContainer: {
+    flexDirection: "row",
+
+    width: "100%",
+    marginTop: 16,
+    paddingHorizontal: 10,
+  },
+  changeImageButton: {
+    backgroundColor: '#2563EB',
+    marginRight: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    width: "32%",
+    marginLeft: 10,
+  },
+  changeImageText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "600",
+    marginLeft: 6,
   },
   title: {
     fontSize: 18,
@@ -491,27 +531,6 @@ const screenStyles = StyleSheet.create({
     height: width * 0.7,
     borderRadius: 10,
     resizeMode: "contain",
-  },
-  changeImageButton: {
-    marginTop: 16,
-    backgroundColor: '#2563EB',
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  changeImageText: {
-    color: "white",
-    fontSize: 14,
-    fontWeight: "600",
-    marginLeft: 6,
   },
   testButtonContainer: {
     alignItems: "center",

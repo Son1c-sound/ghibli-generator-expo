@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import * as FileSystem from 'expo-file-system';
 import { Alert } from 'react-native';
+import ToastManager from 'toastify-react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -44,7 +45,10 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
   // Add state for progress simulation
   const [progress, setProgress] = useState(0);
   
-  // Simulate progress when loading
+  // Add state for save button
+  const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  
   useEffect(() => {
     let interval: NodeJS.Timeout;
     
@@ -52,7 +56,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
       setProgress(0);
       interval = setInterval(() => {
         setProgress(prev => {
-          // Slow down progress as it approaches 90%
           const increment = prev < 50 ? 5 : prev < 80 ? 2 : 0.5;
           const newValue = prev + increment;
           return newValue > 90 ? 90 : newValue;
@@ -67,10 +70,25 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
     };
   }, [loading]);
 
+  // Handle download with state updates
+  const handleSaveImage = async () => {
+    if (isSaving || isSaved) return;
+    
+    setIsSaving(true);
+    try {
+      await handleDownload();
+      setIsSaved(true);
+    } catch (error) {
+      console.error("Error saving image:", error);
+      Alert.alert("Error", "Failed to save image to gallery.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <SafeAreaView style={screenStyles.container}>
       <StatusBar barStyle="light-content" />
-      
       <View style={screenStyles.resultHeader}>
         <TouchableOpacity onPress={handleRetry} style={screenStyles.backButton}>
           <Ionicons name="arrow-back" size={24} color="white" />
@@ -82,6 +100,12 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
       <View style={screenStyles.resultContent}>
         {loading ? (
           <View style={screenStyles.loadingContainer}>
+               <View style={screenStyles.aiWarningContainer}>
+              <Ionicons name="information-circle-outline" size={16} color="#999" />
+              <Text style={screenStyles.aiWarningText}>
+                If the result doesn't match expectations, the AI may have hallucinated. Feel free to try again.
+              </Text>
+            </View>
             <View style={screenStyles.blurredImageContainer}>
               <Image 
                 source={{ uri: image || '' }} 
@@ -118,12 +142,11 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
               style={screenStyles.fullResultImage}
               resizeMode="contain"
             />
-            
-            {/* AI Warning Message */}
+       
             <View style={screenStyles.aiWarningContainer}>
               <Ionicons name="information-circle-outline" size={16} color="#999" />
               <Text style={screenStyles.aiWarningText}>
-                If the result doesn't match expectations, the AI may have created a random image. Feel free to try again.
+                If the result doesn't match expectations, the AI may have hallucinated. Feel free to try again.
               </Text>
             </View>
             
@@ -132,11 +155,26 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
             ) : null}
             
             <TouchableOpacity 
-                style={screenStyles.saveButton}
-                onPress={handleDownload}
+                style={[
+                  screenStyles.saveButton,
+                  (isSaving || isSaved) && screenStyles.saveButtonDisabled
+                ]}
+                onPress={handleSaveImage}
+                disabled={isSaving || isSaved}
               >
-                <Ionicons name="download-outline" size={20} color="black" />
-                <Text style={screenStyles.saveButtonText}>Save Image</Text>
+                {isSaving ? (
+                  <ActivityIndicator size="small" color="black" />
+                ) : isSaved ? (
+                  <>
+                    <Ionicons name="checkmark-circle" size={20} color="black" />
+                    <Text style={screenStyles.saveButtonText}>Saved to Gallery</Text>
+                  </>
+                ) : (
+                  <>
+                    <Ionicons name="download-outline" size={20} color="black" />
+                    <Text style={screenStyles.saveButtonText}>Save Image</Text>
+                  </>
+                )}
               </TouchableOpacity>
               
               <View style={screenStyles.secondaryButtonsContainer}>
@@ -170,6 +208,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
           </View>
         )}
       </View>
+
     </SafeAreaView>
   );
 };
@@ -185,7 +224,7 @@ const screenStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 40,
-    marginBottom: 20,
+  
   },
   backButton: {
     padding: 8,
@@ -206,13 +245,14 @@ const screenStyles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     height: '100%',
+  
   },
   loadingText: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
-    marginTop: 24,
     textAlign: 'center',
+
   },
   loadingSubtext: {
     color: 'rgba(255, 255, 255, 0.7)',
@@ -278,6 +318,7 @@ const screenStyles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: 8,
     maxWidth: width * 0.9,
+    marginBottom: 22,
   },
   aiWarningText: {
     color: '#999',
@@ -304,6 +345,9 @@ const screenStyles = StyleSheet.create({
     borderRadius: 100,
     width: '90%',
     marginTop: 24,
+  },
+  saveButtonDisabled: {
+    opacity: 0.8,
   },
   saveButtonText: {
     color: 'black',

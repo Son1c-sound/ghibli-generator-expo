@@ -6,10 +6,12 @@ import {
   TouchableOpacity, 
   SafeAreaView,
   StatusBar,
-  Linking
+  Linking,
+  ScrollView
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+
 
 export default function Settings() {
   // Example subscription data
@@ -17,7 +19,7 @@ export default function Settings() {
   const expiryDate = "April 30, 2025";
   
   const navigateBack = () => {
-    router.back();
+     router.replace("/");
   };
   
   const handleTerms = () => {
@@ -49,6 +51,7 @@ export default function Settings() {
   };
 
   return (
+    <ScrollView>
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" />
       
@@ -127,6 +130,7 @@ export default function Settings() {
       
       <Text style={styles.version}>Version 1.0.0</Text>
     </SafeAreaView>
+    </ScrollView>
   );
 }
 
