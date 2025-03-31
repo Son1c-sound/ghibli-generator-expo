@@ -21,6 +21,9 @@ import useOnboarding from "@/hooks/useOnboarding";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import ResultScreen from "./mainComps/resultScreen";
+import { Share } from "react-native";
+import { useSuperwall } from "@/hooks/useSuperwall";
+import { SUPERWALL_TRIGGERS } from "./config/superwall";
 import {
   processSelectedImage,
   generateImage as generateStyledImage,
@@ -31,7 +34,7 @@ import {
 import { stylesList } from "./utils/stylesData";
 
 const { width } = Dimensions.get("window");
-const ACCENT_COLOR = "#3B82F6"; 
+const ACCENT_COLOR = "#3B82F6";
 
 export default function AnimeConverter() {
   const [selectedStyle, setSelectedStyle] = useState<number | null>(null);
@@ -42,6 +45,7 @@ export default function AnimeConverter() {
   const [imageSize, setImageSize] = useState(0);
   const [showResultScreen, setShowResultScreen] = useState(false);
   const [verificationNote, setVerificationNote] = useState("");
+  const { isSubscribed, showPaywall } = useSuperwall();
 
   const { isOnboarded, isLoading } = useOnboarding();
 
@@ -54,12 +58,11 @@ export default function AnimeConverter() {
   }, [isOnboarded, isLoading]);
 
   useEffect(() => {
-    // Simulate progress updates when loading
     if (loading) {
       const interval = setInterval(() => {
         setLoadingProgress((prevProgress) => {
           const newProgress = prevProgress + Math.random() * 10;
-          return newProgress > 95 ? 95 : newProgress; // Cap at 95% until complete
+          return newProgress > 95 ? 95 : newProgress;
         });
       }, 500);
 
@@ -153,9 +156,7 @@ export default function AnimeConverter() {
 
   const handleGenerateImage = async () => {
     setLoading(true);
-    // Customize the generateStyledImage function to use our progress state
     try {
-      // This will be handled by the useEffect progress simulation
       await generateStyledImage(
         image,
         selectedStyle,
@@ -164,7 +165,7 @@ export default function AnimeConverter() {
         setShowResultScreen,
         setResultImage
       );
-      setLoadingProgress(100); // Complete progress
+      setLoadingProgress(100);
     } catch (error) {
       console.log("Error generating image:", error);
       Alert.alert("Error", "Something went wrong while generating your image");
@@ -188,7 +189,6 @@ export default function AnimeConverter() {
 
   const navigateToProfile = () => {
     router.replace("/profile");
-
   };
 
   const resetOnboardingTest = async () => {
@@ -226,7 +226,12 @@ export default function AnimeConverter() {
           </View>
 
           {!loading && (
-                <Text style={screenStyles.testButtonText} onPress={resetOnboardingTest}>Test Onboarding</Text>
+            <Text
+              style={screenStyles.testButtonText}
+              onPress={resetOnboardingTest}
+            >
+              Test Onboarding
+            </Text>
           )}
           <TouchableOpacity
             onPress={navigateToProfile}
@@ -240,44 +245,44 @@ export default function AnimeConverter() {
           <View style={screenStyles.imageContainer}>
             {image ? (
               <View style={screenStyles.imagePreviewContainer}>
-              <Image
-                source={{ uri: image }}
-                style={screenStyles.imagePreview}
-              />
-              {loading ? (
-                <View style={screenStyles.loadingOverlay}>
-                  <ActivityIndicator size="large" color="white" />
-                  <Text style={screenStyles.loadingText}>
-                    Processing... {Math.round(loadingProgress)}%
-                  </Text>
-                  <View style={screenStyles.progressBar}>
-                    <View 
-                      style={[
-                        screenStyles.progressFill, 
-                        { width: `${loadingProgress}%` }
-                      ]} 
-                    />
+                <Image
+                  source={{ uri: image }}
+                  style={screenStyles.imagePreview}
+                />
+                {loading ? (
+                  <View style={screenStyles.loadingOverlay}>
+                    <ActivityIndicator size="large" color="white" />
+                    <Text style={screenStyles.loadingText}>
+                      Processing... {Math.round(loadingProgress)}%
+                    </Text>
+                    <View style={screenStyles.progressBar}>
+                      <View
+                        style={[
+                          screenStyles.progressFill,
+                          { width: `${loadingProgress}%` },
+                        ]}
+                      />
+                    </View>
                   </View>
-                </View>
-              ) : (
-                <View style={screenStyles.changeImageButtonsContainer}>
-                  <TouchableOpacity
-                    style={screenStyles.changeImageButton}
-                    onPress={handleImagePicker}
-                  >
-                    <Text style={screenStyles.changeImageText}>Gallery</Text>
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity
-                    style={screenStyles.changeImageButton}
-                    onPress={handleCameraCapture}
-                  >
-                    <Ionicons name="camera-outline" size={18} color="white" />
-                    <Text style={screenStyles.changeImageText}>Selfie</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
+                ) : (
+                  <View style={screenStyles.changeImageButtonsContainer}>
+                    <TouchableOpacity
+                      style={screenStyles.changeImageButton}
+                      onPress={handleImagePicker}
+                    >
+                      <Text style={screenStyles.changeImageText}>Gallery</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={screenStyles.changeImageButton}
+                      onPress={handleCameraCapture}
+                    >
+                      <Ionicons name="camera-outline" size={18} color="white" />
+                      <Text style={screenStyles.changeImageText}>Selfie</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
             ) : (
               <View style={screenStyles.uploadOptionsContainer}>
                 <TouchableOpacity
@@ -298,7 +303,6 @@ export default function AnimeConverter() {
               </View>
             )}
           </View>
-
         </View>
 
         {!loading && (
@@ -306,7 +310,7 @@ export default function AnimeConverter() {
             <View style={screenStyles.styleTitleContainer}>
               <Text style={screenStyles.styleTitle}>Choose a Style</Text>
             </View>
-            
+
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -322,12 +326,37 @@ export default function AnimeConverter() {
                     screenStyles.styleItem,
                     selectedStyle === style.id && screenStyles.selectedStyle,
                   ]}
-                  onPress={() => setSelectedStyle(style.id)}
+                  onPress={() => {
+                    if (!isSubscribed && style.name !== 'Retro') {
+                      showPaywall("campaign_trigger");
+                      return;
+                    }
+                    setSelectedStyle(style.id);
+                  }}
                 >
-                  <Image
-                    style={screenStyles.styleImage}
-                    source={{ uri: style.src }}
-                  />
+                  <View style={{ position: "relative" }}>
+                    <Image
+                      style={screenStyles.styleImage}
+                      source={{ uri: style.src }}
+                    />
+                    {!isSubscribed && style.name !== 'Retro' && (
+                      <View
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          backgroundColor: "rgba(0, 0, 0, 0.5)",
+                          borderRadius: 8,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Ionicons name="lock-closed" size={20} color="white" />
+                      </View>
+                    )}
+                  </View>
                   <Text style={screenStyles.styleName}>{style.name}</Text>
                 </TouchableOpacity>
               ))}
@@ -377,9 +406,10 @@ const screenStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: Platform.OS === 'android' ? 40 : 40,
+    paddingTop: Platform.OS === "android" ? 40 : 40,
     marginBottom: 20,
   },
+
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -396,7 +426,7 @@ const screenStyles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   changeImageButton: {
-    backgroundColor: '#2563EB',
+    backgroundColor: "#2563EB",
     marginRight: 10,
     paddingVertical: 10,
     paddingHorizontal: 18,
@@ -511,8 +541,8 @@ const screenStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 16,
-    backgroundColor: '#2563EB',
-    borderRadius: 200
+    backgroundColor: "#2563EB",
+    borderRadius: 200,
   },
   generateText: {
     color: "white",
@@ -580,4 +610,4 @@ const screenStyles = StyleSheet.create({
   },
 });
 
-import { Share } from "react-native";
+

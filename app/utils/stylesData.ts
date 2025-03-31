@@ -25,7 +25,7 @@ export const stylesList: StyleItem[] = [
 
   { 
     id: 5, 
-    name: 'Seinen', 
+    name: 'Retro', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743302988/download_2_ilkhu1.png' 
   },
   { 

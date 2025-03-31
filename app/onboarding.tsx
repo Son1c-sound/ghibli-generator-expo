@@ -87,6 +87,7 @@ const MasonryGridWithBottomSheet = () => {
       'https://res.cloudinary.com/dzvttwdye/image/upload/v1743308123/download_6_mwv31t.png',
       'https://res.cloudinary.com/dzvttwdye/image/upload/v1743307006/o2rxody4sugd6aydrgtl.png',
       'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295995/Screenshot_2025-03-29_191414_cwkvsf.png',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743431302/mxitbbcahp86ijdpxt2q.jpg',
     ];
     
     const leftData: { id: string; src: string; height: number; index: number }[] = imageUrls.filter((_, i) => i % 2 === 0).map((src, i) => ({
