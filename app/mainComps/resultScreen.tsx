@@ -11,14 +11,12 @@ import {
   Dimensions,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import * as FileSystem from 'expo-file-system';
 import { Alert } from 'react-native';
-import ToastManager from 'toastify-react-native';
+
 
 const { width } = Dimensions.get('window');
 
-// Define interface for component props
+
 interface ResultScreenProps {
   image: string | null;
   resultImage: string | null;
@@ -42,10 +40,8 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
   handleDownload,
   handleShare,
 }) => {
-  // Add state for progress simulation
+
   const [progress, setProgress] = useState(0);
-  
-  // Add state for save button
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   
@@ -70,7 +66,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
     };
   }, [loading]);
 
-  // Handle download with state updates
+
   const handleSaveImage = async () => {
     if (isSaving || isSaved) return;
     
@@ -119,8 +115,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
                   <Text style={screenStyles.loadingText}>
                     Applying {styles.find(style => style.id === selectedStyle)?.name} style...
                   </Text>
-                  
-                  {/* Progress bar */}
+         
                   <View style={screenStyles.progressBarContainer}>
                     <View 
                       style={[
@@ -237,14 +232,16 @@ const screenStyles = StyleSheet.create({
   },
   resultContent: {
     flex: 1,
+  
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingContainer: {
     alignItems: 'center',
+    marginTop: -90,
     justifyContent: 'center',
     width: '100%',
-    height: '100%',
+    height: '100%'
   
   },
   loadingText: {

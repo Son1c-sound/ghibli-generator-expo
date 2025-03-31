@@ -1,4 +1,4 @@
-import { StyleItem } from './imageUtils';
+import { StyleItem } from '../utils/imageUtils';
 
 
 export const stylesList: StyleItem[] = [
@@ -22,7 +22,6 @@ export const stylesList: StyleItem[] = [
     name: 'Cartoon', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743384050/download_25_ujn2wd.png' 
   },
-
   { 
     id: 5, 
     name: 'Retro', 

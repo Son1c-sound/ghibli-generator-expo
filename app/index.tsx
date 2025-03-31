@@ -31,7 +31,7 @@ import {
   handleShare as shareImage,
   StyleItem,
 } from "./utils/imageUtils";
-import { stylesList } from "./utils/stylesData";
+import { stylesList } from "./mainComps/stylesData";
 
 const { width } = Dimensions.get("window");
 const ACCENT_COLOR = "#3B82F6";
@@ -50,6 +50,7 @@ export default function AnimeConverter() {
   const { isOnboarded, isLoading } = useOnboarding();
 
   useEffect(() => {
+ 
     if (isLoading) return;
 
     if (!isOnboarded) {
@@ -327,7 +328,7 @@ export default function AnimeConverter() {
                     selectedStyle === style.id && screenStyles.selectedStyle,
                   ]}
                   onPress={() => {
-                    if (!isSubscribed && style.name !== 'Retro') {
+                    if (!isSubscribed && style.name !== 'Ghibli') {
                       showPaywall("campaign_trigger");
                       return;
                     }
@@ -339,7 +340,7 @@ export default function AnimeConverter() {
                       style={screenStyles.styleImage}
                       source={{ uri: style.src }}
                     />
-                    {!isSubscribed && style.name !== 'Retro' && (
+                    {!isSubscribed && style.name !== 'Ghibli' && (
                       <View
                         style={{
                           position: "absolute",
