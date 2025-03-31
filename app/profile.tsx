@@ -6,66 +6,46 @@ import {
   TouchableOpacity, 
   SafeAreaView,
   StatusBar,
-  Alert,
-  Image
+  Linking
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useAuth, useUser } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
 
-export default function Profile() {
-  const { isLoaded: authLoaded, isSignedIn, signOut } = useAuth();
-  const { isLoaded: userLoaded, user } = useUser();
-  
-  if (!authLoaded || !userLoaded || !isSignedIn) {
-    return <SafeAreaView style={styles.loadingContainer}>
-      <Text style={styles.loadingText}>Loading...</Text>
-    </SafeAreaView>;
-  }
-  
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-     
-    } catch (error) {
-      console.error('Error signing out:', error);
-      Alert.alert('Error', 'Failed to sign out');
-    }
-  };
-  
-  const handleDeleteAccount = () => {
-    Alert.alert(
-      'Delete Account',
-      'Are you sure you want to delete your account? This action cannot be undone.',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: () => {
-            // Add your delete account logic here
-            Alert.alert('Account Deletion', 'Your account deletion request has been submitted.');
-          },
-        },
-      ]
-    );
-  };
+export default function Settings() {
+  // Example subscription data
+  const subscriptionTier = "Premium";
+  const expiryDate = "April 30, 2025";
   
   const navigateBack = () => {
     router.back();
   };
   
   const handleTerms = () => {
-    // Navigate to terms page or open web link
-    Alert.alert('Terms of Service', 'Navigate to Terms of Service page');
+    router.push("/terms");
   };
   
   const handlePrivacyPolicy = () => {
-    // Navigate to privacy policy page or open web link
-    Alert.alert('Privacy Policy', 'Navigate to Privacy Policy page');
+    router.push("/privacy");
+  };
+  
+  const handleManageSubscription = () => {
+    router.push("/subscription");
+  };
+  
+  const handleSupport = () => {
+    Linking.openURL('mailto:support@yourapp.com');
+  };
+  
+  const handleContactDeveloper = () => {
+    Linking.openURL('mailto:developer@yourapp.com');
+  };
+  
+  const openTwitter = () => {
+    Linking.openURL('https://twitter.com/yourapphandle');
+  };
+  
+  const openInstagram = () => {
+    Linking.openURL('https://instagram.com/yourapphandle');
   };
 
   return (
@@ -76,20 +56,62 @@ export default function Profile() {
         <TouchableOpacity onPress={navigateBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color="#3B82F6" />
         </TouchableOpacity>
-        <Text style={styles.title}>Profile</Text>
+        <Text style={styles.title}>Settings</Text>
         <View style={styles.spacer} />
       </View>
       
       <View style={styles.content}>
-        <View style={styles.userInfoContainer}>
-        <Image  src='https://i.ibb.co/s9cW0DVP/Screenshot-2025-03-29-181136.png'    />
-          <Text style={styles.userEmail}>{user?.primaryEmailAddress?.emailAddress}</Text>
-        </View>
-        <View style={styles.optionsContainer}>
-          <TouchableOpacity style={styles.optionCard} onPress={handleSignOut}>
-            <Ionicons name="log-out-outline" size={22} color="#3B82F6" />
-            <Text style={styles.optionText}>Sign Out</Text>
+        {/* Subscription Card */}
+        <TouchableOpacity style={styles.subscriptionCard} onPress={handleManageSubscription}>
+          <View style={styles.subscriptionHeader}>
+            <Ionicons name="star" size={24} color="#FFD700" />
+            <Text style={styles.subscriptionTitle}>Current Subscription</Text>
+          </View>
+          <View style={styles.subscriptionDetails}>
+            <Text style={styles.subscriptionTier}>{subscriptionTier}</Text>
+            <Text style={styles.subscriptionExpiry}>Expires: {expiryDate}</Text>
+          </View>
+          <View style={styles.subscriptionAction}>
+            <Text style={styles.manageText}>Manage Subscription</Text>
+            <Ionicons name="chevron-forward" size={20} color="#3B82F6" />
+          </View>
+        </TouchableOpacity>
+        
+        {/* Help & Support */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Help & Support</Text>
+          
+          <TouchableOpacity style={styles.optionCard} onPress={handleSupport}>
+            <Ionicons name="help-circle-outline" size={22} color="#3B82F6" />
+            <Text style={styles.optionText}>Customer Support</Text>
           </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.optionCard} onPress={handleContactDeveloper}>
+            <Ionicons name="code-slash-outline" size={22} color="#3B82F6" />
+            <Text style={styles.optionText}>Contact Developer</Text>
+          </TouchableOpacity>
+        </View>
+        
+        {/* Social Media */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Connect With Us</Text>
+          
+          <View style={styles.socialContainer}>
+            <TouchableOpacity style={styles.socialButton} onPress={openTwitter}>
+              <Ionicons name="logo-twitter" size={28} color="#1DA1F2" />
+              <Text style={styles.socialText}>Twitter</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.socialButton} onPress={openInstagram}>
+              <Ionicons name="logo-instagram" size={28} color="#C13584" />
+              <Text style={styles.socialText}>Instagram</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
+        {/* Legal */}
+        <View style={styles.sectionContainer}>
+          <Text style={styles.sectionTitle}>Legal</Text>
           
           <TouchableOpacity style={styles.optionCard} onPress={handleTerms}>
             <Ionicons name="document-text-outline" size={22} color="#3B82F6" />
@@ -101,13 +123,6 @@ export default function Profile() {
             <Text style={styles.optionText}>Privacy Policy</Text>
           </TouchableOpacity>
         </View>
-        
-        <TouchableOpacity 
-          style={styles.deleteAccountButton} 
-          onPress={handleDeleteAccount}
-        >
-          <Text style={styles.deleteAccountText}>Delete Account</Text>
-        </TouchableOpacity>
       </View>
       
       <Text style={styles.version}>Version 1.0.0</Text>
@@ -119,16 +134,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'black',
-  },
-  loadingText: {
-    color: 'white',
-    fontSize: 16,
   },
   header: {
     flexDirection: 'row',
@@ -147,32 +152,66 @@ const styles = StyleSheet.create({
     color: 'white',
   },
   spacer: {
-    width: 34, // match the width of the back button for balanced layout
+    width: 34,
   },
   content: {
     flex: 1,
     padding: 16,
   },
-  userInfoContainer: {
-    alignItems: 'center',
-    marginBottom: 40,
+  subscriptionCard: {
+    backgroundColor: '#1A1A1A',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: '#3B82F6',
   },
-  profileImageContainer: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#333',
-    justifyContent: 'center',
+  subscriptionHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 12,
+  },
+  subscriptionTitle: {
+    color: 'white',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginLeft: 10,
+  },
+  subscriptionDetails: {
     marginBottom: 16,
   },
-  userEmail: {
-    color: 'white',
-    fontSize: 16,
-    textAlign: 'center',
+  subscriptionTier: {
+    color: '#FFD700',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 4,
   },
-  optionsContainer: {
-    marginBottom: 40,
+  subscriptionExpiry: {
+    color: '#999',
+    fontSize: 14,
+  },
+  subscriptionAction: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#333',
+  },
+  manageText: {
+    color: '#3B82F6',
+    fontWeight: '600',
+  },
+  sectionContainer: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    color: '#999',
+    fontSize: 14,
+    fontWeight: '600',
+    textTransform: 'uppercase',
+    marginBottom: 12,
+    marginLeft: 4,
   },
   optionCard: {
     flexDirection: 'row',
@@ -187,16 +226,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 12,
   },
-  deleteAccountButton: {
-    backgroundColor: '#FF3B30',
+  socialContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 10,
+  },
+  socialButton: {
+    alignItems: 'center',
+    backgroundColor: '#1F1F1F',
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
+    width: '45%',
   },
-  deleteAccountText: {
+  socialText: {
     color: 'white',
-    fontWeight: 'bold',
-    fontSize: 16,
+    marginTop: 8,
   },
   version: {
     color: '#666',

@@ -119,35 +119,43 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
               resizeMode="contain"
             />
             
+            {/* AI Warning Message */}
+            <View style={screenStyles.aiWarningContainer}>
+              <Ionicons name="information-circle-outline" size={16} color="#999" />
+              <Text style={screenStyles.aiWarningText}>
+                If the result doesn't match expectations, the AI may have created a random image. Feel free to try again.
+              </Text>
+            </View>
+            
             {verificationNote ? (
               <Text style={screenStyles.verificationNote}>{verificationNote}</Text>
             ) : null}
             
-            <View style={screenStyles.resultActions}>
-              <TouchableOpacity 
-                style={screenStyles.resultActionButton}
+            <TouchableOpacity 
+                style={screenStyles.saveButton}
                 onPress={handleDownload}
               >
-                <Ionicons name="download-outline" size={22} color="white" />
-                <Text style={screenStyles.resultActionText}>Save</Text>
+                <Ionicons name="download-outline" size={20} color="black" />
+                <Text style={screenStyles.saveButtonText}>Save Image</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity 
-                style={screenStyles.resultActionButton}
-                onPress={handleShare}
-              >
-                <Ionicons name="share-social-outline" size={22} color="white" />
-                <Text style={screenStyles.resultActionText}>Share</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={screenStyles.resultActionButton}
-                onPress={handleRetry}
-              >
-                <Ionicons name="refresh-outline" size={22} color="white" />
-                <Text style={screenStyles.resultActionText}>Try Again</Text>
-              </TouchableOpacity>
-            </View>
+              <View style={screenStyles.secondaryButtonsContainer}>
+                <TouchableOpacity 
+                  style={screenStyles.tryAgainButton}
+                  onPress={handleRetry}
+                >
+                  <Ionicons name="refresh-outline" size={18} color="white" />
+                  <Text style={screenStyles.tryAgainButtonText}>Try Again</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={screenStyles.shareButton}
+                  onPress={handleShare}
+                >
+                  <Ionicons name="share-social-outline" size={18} color="white" />
+                  <Text style={screenStyles.shareButtonText}>Share</Text>
+                </TouchableOpacity>
+              </View>
           </View>
         ) : (
           <View style={screenStyles.errorContainer}>
@@ -261,6 +269,23 @@ const screenStyles = StyleSheet.create({
     height: width * 0.9,
     borderRadius: 12,
   },
+  aiWarningContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginTop: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 8,
+    maxWidth: width * 0.9,
+  },
+  aiWarningText: {
+    color: '#999',
+    fontSize: 12,
+    marginLeft: 6,
+    flex: 1,
+    lineHeight: 16,
+  },
   verificationNote: {
     color: 'rgba(255, 255, 255, 0.7)',
     fontSize: 12,
@@ -270,21 +295,57 @@ const screenStyles = StyleSheet.create({
     paddingHorizontal: 20,
     lineHeight: 18,
   },
-  resultActions: {
+  saveButton: {
+    backgroundColor: 'white',
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginTop: 20,
-  },
-  resultActionButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 8,
+    paddingVertical: 15,
+    borderRadius: 100,
+    width: '90%',
+    marginTop: 24,
   },
-  resultActionText: {
+  saveButtonText: {
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: 16,
+    marginLeft: 8,
+  },
+  secondaryButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '90%',
+    marginTop: 12,
+  },
+  tryAgainButton: {
+    backgroundColor: '#2563EB', 
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 100,
+    width: '48%',
+  },
+  tryAgainButtonText: {
     color: 'white',
-    marginTop: 8,
+    fontWeight: '600',
     fontSize: 14,
+    marginLeft: 6,
+  },
+  shareButton: {
+    backgroundColor: '#10B981', 
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    borderRadius: 100,
+    width: '48%',
+  },
+  shareButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 14,
+    marginLeft: 6,
   },
   errorContainer: {
     alignItems: 'center',

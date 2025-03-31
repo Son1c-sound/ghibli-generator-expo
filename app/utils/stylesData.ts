@@ -13,10 +13,16 @@ export const stylesList: StyleItem[] = [
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295995/Screenshot_2025-03-29_190425_pqmti9.png' 
   },
   { 
+    id: 33, 
+    name: 'GhibliV2', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390195/pnlywxojs1bn4m9ad6b5.png' 
+  },
+  { 
     id: 3, 
     name: 'Cartoon', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743384050/download_25_ujn2wd.png' 
   },
+
   { 
     id: 5, 
     name: 'Seinen', 
@@ -25,12 +31,12 @@ export const stylesList: StyleItem[] = [
   { 
     id: 4, 
     name: 'CyberPunk', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743305449/download_3_unhkhs.png' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743386466/ie6axw1rvn3ecsxavajw.png' 
   },
   { 
     id: 6, 
-    name: 'pixelart', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743384657/d0ba53mobfm2m7el4cya.png' 
+    name: 'PixelArt', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743386803/enoug6govsv3ekuw4l8a.png' 
   },
   { 
     id: 9, 

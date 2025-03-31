@@ -272,7 +272,7 @@ export default function AnimeConverter() {
                   onPress={handleImagePicker}
                 >
                   <Ionicons name="image-outline" size={24} color="black" />
-                  <Text style={screenStyles.uploadText}>Select Photo</Text>
+                  <Text style={screenStyles.uploadText}>Select Image</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -280,21 +280,14 @@ export default function AnimeConverter() {
                   onPress={handleCameraCapture}
                 >
                   <Ionicons name="camera-outline" size={24} color="black" />
-                  <Text style={screenStyles.uploadText}>Take Photo</Text>
+                  <Text style={screenStyles.uploadText}>Take Image</Text>
                 </TouchableOpacity>
               </View>
             )}
           </View>
 
           {!loading && (
-            <View style={screenStyles.testButtonContainer}>
-              <TouchableOpacity
-                style={screenStyles.testButton}
-                onPress={resetOnboardingTest}
-              >
-                <Text style={screenStyles.testButtonText}>Test Onboarding</Text>
-              </TouchableOpacity>
-            </View>
+                <Text style={screenStyles.testButtonText} onPress={resetOnboardingTest}>Test Onboarding</Text>
           )}
         </View>
 
@@ -478,11 +471,14 @@ const screenStyles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 16,
+    backgroundColor: '#2563EB',
+    borderRadius: 200
   },
   generateText: {
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
+
     marginLeft: 8,
   },
   imagePreviewContainer: {
@@ -498,7 +494,7 @@ const screenStyles = StyleSheet.create({
   },
   changeImageButton: {
     marginTop: 16,
-    backgroundColor: ACCENT_COLOR,
+    backgroundColor: '#2563EB',
     paddingVertical: 10,
     paddingHorizontal: 18,
     borderRadius: 20,

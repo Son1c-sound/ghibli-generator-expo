@@ -28,7 +28,10 @@ export const processSelectedImage = async (
 ): Promise<void> => {
   try {
     const fileInfo = await FileSystem.getInfoAsync(selectedImage);
-    const fileSizeInMB = fileInfo.size / 1024 / 1024;
+    if (!fileInfo.exists) {
+      throw new Error('File does not exist');
+    }
+    const fileSizeInMB = fileInfo.size! / 1024 / 1024;
     setImageSize(fileSizeInMB);
     
     if (fileSizeInMB > 5) {
