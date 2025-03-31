@@ -18,8 +18,15 @@ const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 const BOTTOM_SHEET_HEIGHT = SCREEN_HEIGHT * 0.3;
 
 const MasonryGridWithBottomSheet = () => {
-  const [leftColumnData, setLeftColumnData] = useState([]);
-  const [rightColumnData, setRightColumnData] = useState([]);
+  interface ImageData {
+    id: string;
+    src: string;
+    height: number;
+    index: number;
+  }
+
+  const [leftColumnData, setLeftColumnData] = useState<ImageData[]>([]);
+  const [rightColumnData, setRightColumnData] = useState<ImageData[]>([]);
   const [loading, setLoading] = useState(true);
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
   const [showWelcomeText, setShowWelcomeText] = useState(false);
@@ -29,7 +36,7 @@ const MasonryGridWithBottomSheet = () => {
   
   const bottomSheetAnim = useRef(new Animated.Value(0)).current;
   const welcomeTextOpacity = useRef(new Animated.Value(0)).current;
-  const imageAnimations = useRef({}).current;
+  const imageAnimations = useRef<Record<string, Animated.Value>>({}).current;
 
   useEffect(() => {
     fetchData();
@@ -69,14 +76,14 @@ const MasonryGridWithBottomSheet = () => {
       'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295995/Screenshot_2025-03-29_191414_cwkvsf.png',
     ];
     
-    const leftData = imageUrls.filter((_, i) => i % 2 === 0).map((src, i) => ({
+    const leftData: { id: string; src: string; height: number; index: number }[] = imageUrls.filter((_, i) => i % 2 === 0).map((src, i) => ({
       id: `left-${i}`,
       src: src,
       height: Math.floor(Math.random() * 100) + 100,
       index: i * 2,
     }));
     
-    const rightData = imageUrls.filter((_, i) => i % 2 === 1).map((src, i) => ({
+    const rightData: { id: string; src: string; height: number; index: number }[] = imageUrls.filter((_, i) => i % 2 === 1).map((src, i) => ({
       id: `right-${i}`,
       src: src,
       height: Math.floor(Math.random() * 100) + 100,
@@ -128,73 +135,6 @@ const MasonryGridWithBottomSheet = () => {
     });
   };
 
-  const closeBottomSheet = () => {
-    Animated.timing(welcomeTextOpacity, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-    
-    const resetAnimations = Object.values(imageAnimations).map(anim => {
-      return Animated.timing(anim, {
-        toValue: 0,
-        duration: 300,
-        useNativeDriver: true,
-      });
-    });
-    
-    Animated.parallel(resetAnimations).start();
-    
-    Animated.timing(bottomSheetAnim, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true,
-    }).start(() => {
-      setBottomSheetOpen(false);
-      setShowWelcomeText(false);
-    });
-  };
-
-  const renderItem = (item, isLeft) => {
-    const animValue = imageAnimations[item.id] || new Animated.Value(0);
-    
-    const opacity = animValue;
-    const scale = animValue.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0.7, 1],
-    });
-    
-    const top = isLeft
-      ? item.index * (item.height + 4)
-      : item.index * (item.height + 4);
-    
-    return (
-      <Animated.View 
-        key={item.id}
-        style={[
-          styles.itemContainer,
-          { 
-            height: item.height,
-            top,
-            opacity,
-            transform: [{ scale }]
-          }
-        ]}
-      >
-        <Image 
-          source={{ uri: item.src }}
-          style={styles.itemImage}
-          resizeMode="cover"
-        />
-      </Animated.View>
-    );
-  };
-
-  const bottomSheetTranslateY = bottomSheetAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [BOTTOM_SHEET_HEIGHT, 0],
-  });
-
   const handleContinue = async () => {
     await completeOnboarding();
     router.push('/');
@@ -216,7 +156,7 @@ const MasonryGridWithBottomSheet = () => {
           keyExtractor={(item) => item.id}
           numColumns={2}
           showsVerticalScrollIndicator={false}
-          renderItem={({ item }) => {
+          renderItem={({ item }:{item:any}) => {
             const animValue = imageAnimations[item.id] || new Animated.Value(0);
             
             const opacity = animValue;
