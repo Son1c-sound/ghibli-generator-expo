@@ -94,8 +94,10 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
       </View>
       
       <View style={screenStyles.resultContent}>
+        
         {loading ? (
           <View style={screenStyles.loadingContainer}>
+            
             <View style={screenStyles.blurredImageContainer}>
               <Image 
                 source={{ uri: image || '' }} 
@@ -103,7 +105,9 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
                 resizeMode="cover"
                 blurRadius={8}
               />
+              
               <View style={screenStyles.loadingOverlay}>
+                
                 <View style={screenStyles.loadingContent}>
                   <ActivityIndicator size="large" color="white" />
                   <Text style={screenStyles.loadingText}>
@@ -121,9 +125,18 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
                   
                   <Text style={screenStyles.loadingSubtext}>{Math.round(progress)}% complete</Text>
                 </View>
-              </View>
+                <View style={screenStyles.aiWarningContainer}>
+              <Ionicons name="information-circle-outline" size={16} color="#999" />
+              <Text style={screenStyles.aiWarningText}>
+                If the result doesn't match expectations, the AI may have hallucinated. Feel free to try again.
+              </Text>
             </View>
+              </View>
+              
+            </View>
+            
           </View>
+          
         ) : resultImage ? (
           <View style={screenStyles.resultImageContainer}>
             <Image 

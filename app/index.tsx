@@ -189,7 +189,7 @@ export default function AnimeConverter() {
   };
 
   const navigateToProfile = () => {
-    router.replace("/profile");
+    router.push("/profile");
   };
 
   const resetOnboardingTest = async () => {
