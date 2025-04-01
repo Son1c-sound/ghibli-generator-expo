@@ -328,7 +328,7 @@ export default function AnimeConverter() {
                     selectedStyle === style.id && screenStyles.selectedStyle,
                   ]}
                   onPress={() => {
-                    if (!isSubscribed && style.name !== 'Ghibli') {
+                    if (!isSubscribed && style.name !== 'Anime') {
                       showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK);
                       return;
                     }
@@ -340,7 +340,7 @@ export default function AnimeConverter() {
                       style={screenStyles.styleImage}
                       source={{ uri: style.src }}
                     />
-                    {!isSubscribed && style.name !== 'Ghibli' && (
+                    {!isSubscribed && style.name !== 'Anime' && (
                       <View
                         style={{
                           position: "absolute",
