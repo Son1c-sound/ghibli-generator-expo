@@ -329,7 +329,7 @@ export default function AnimeConverter() {
                   ]}
                   onPress={() => {
                     if (!isSubscribed && style.name !== 'Ghibli') {
-                      showPaywall("campaign_trigger");
+                      showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK);
                       return;
                     }
                     setSelectedStyle(style.id);

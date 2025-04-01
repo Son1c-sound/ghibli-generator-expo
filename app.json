@@ -9,14 +9,24 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.yourcompany.quickmobileappexpo",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to let you take photos for your profile and uploads.",
+        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to let you choose images for uploads and sharing."
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.zura345.quickmobileappexpo"
+      "package": "com.zura345.quickmobileappexpo",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ]
     },
     "web": {
       "bundler": "metro",

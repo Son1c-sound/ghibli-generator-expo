@@ -96,12 +96,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
       <View style={screenStyles.resultContent}>
         {loading ? (
           <View style={screenStyles.loadingContainer}>
-               <View style={screenStyles.aiWarningContainer}>
-              <Ionicons name="information-circle-outline" size={16} color="#999" />
-              <Text style={screenStyles.aiWarningText}>
-                If the result doesn't match expectations, the AI may have hallucinated. Feel free to try again.
-              </Text>
-            </View>
             <View style={screenStyles.blurredImageContainer}>
               <Image 
                 source={{ uri: image || '' }} 
