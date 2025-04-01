@@ -37,6 +37,19 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "9e59dcc6-2d8a-4f89-ab75-8d5487e97b17"
+      },
+      "doctor": {
+        "reactNativeDirectoryCheck": {
+          "listUnknownPackages": false
+        }
+      }
     }
   }
 }

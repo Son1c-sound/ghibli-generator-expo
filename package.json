@@ -15,15 +15,13 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@clerk/clerk-expo": "^2.9.6",
     "@expo/vector-icons": "^14.0.2",
-    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-seoul/masonry-list": "^1.4.2",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@superwall/react-native-superwall": "^2.0.9",
-    "@types/react-native-snap-carousel": "^3.8.11",
-    "expo": "~52.0.41",
+    "expo": "~52.0.42",
     "expo-blur": "~14.0.3",
     "expo-constants": "~17.0.8",
     "expo-font": "~13.0.4",
@@ -37,11 +35,11 @@
     "expo-splash-screen": "~0.29.22",
     "expo-status-bar": "~2.0.1",
     "expo-symbols": "~0.2.2",
-    "expo-system-ui": "~4.0.8",
+    "expo-system-ui": "~4.0.9",
     "expo-web-browser": "~14.0.2",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-native": "0.76.7",
+    "react-native": "0.76.8",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-masonry-grid": "^0.0.3",
     "react-native-masonry-list": "^2.16.2",
@@ -49,7 +47,6 @@
     "react-native-reanimated-carousel": "^4.0.2",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
-    "react-native-snap-carousel": "^3.9.1",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "toastify-react-native": "^6.0.0"
@@ -63,6 +60,13 @@
     "jest-expo": "~52.0.6",
     "react-test-renderer": "18.3.1",
     "typescript": "^5.3.3"
+  },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "listUnknownPackages": false
+      }
+    }
   },
   "private": true
 }
