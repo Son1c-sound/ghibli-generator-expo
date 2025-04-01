@@ -20,7 +20,7 @@ class SuperwallService {
     if (this.initialized) return;
 
     const apiKey = Platform.select({
-      ios: 'pk_e34985737863c07e9da60da508165e1e42a71cde9840a21a',
+      ios: 'pk_f1f88368442707ee5adb4812648ed90ccbffd8560027403d',
       android: 'pk_e34985737863c07e9da60da508165e1e42a71cde9840a21a',
       default: undefined,
     });
