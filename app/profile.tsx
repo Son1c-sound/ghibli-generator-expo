@@ -14,9 +14,7 @@ import { router } from 'expo-router';
 
 
 export default function Settings() {
-  // Example subscription data
-  const subscriptionTier = "Premium";
-  const expiryDate = "April 30, 2025";
+
   
   const navigateBack = () => {
      router.replace("/");
@@ -67,8 +65,7 @@ export default function Settings() {
             <Text style={styles.optionText}>Contact Developer</Text>
           </TouchableOpacity>
         </View>
-        
-        {/* Social Media */}
+
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Connect With Us</Text>
           
@@ -84,8 +81,7 @@ export default function Settings() {
             </TouchableOpacity>
           </View>
         </View>
-        
-        {/* Legal */}
+ 
         <View style={styles.sectionContainer}>
           <Text style={styles.sectionTitle}>Legal</Text>
           
