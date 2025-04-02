@@ -33,7 +33,7 @@ export default function Settings() {
   };
   
   const handleContactDeveloper = () => {
-    Linking.openURL('https://x.com/soniconx');
+    Linking.openURL('https://www.instagram.com/pixar.ai?utm_source=qr');
   };
   
   const openTwitter = () => {
