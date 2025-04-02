@@ -222,18 +222,11 @@ export default function AnimeConverter() {
 
         <View style={screenStyles.header}>
           <View style={screenStyles.titleContainer}>
-            <Text style={screenStyles.titleIcon}>✨</Text>
-            <Text style={screenStyles.title}>goToon</Text>
+            <Text style={screenStyles.titleIcon}></Text>
+            <Text style={screenStyles.title}>GoToon</Text>
           </View>
 
-          {!loading && (
-            <Text
-              style={screenStyles.testButtonText}
-              onPress={resetOnboardingTest}
-            >
-              Test Onboarding
-            </Text>
-          )}
+        
           <TouchableOpacity
             onPress={navigateToProfile}
             style={screenStyles.settingsButton}
