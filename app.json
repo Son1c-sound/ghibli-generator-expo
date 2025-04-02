@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "quick-mobile-app-expo",
+    "name": "goToon: Ghibli Generator",
     "slug": "quick-mobile-app-expo",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,10 +10,11 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.quickmobileappexpo",
+      "bundleIdentifier": "com.domainname.gotoonname",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to let you take photos for your profile and uploads.",
-        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to let you choose images for uploads and sharing."
+        "NSPhotoLibraryUsageDescription": "This app accesses your photo library to let you choose images for uploads and sharing.",
+        "ITSAppUsesNonExemptEncryption": false
       }
     },
     "android": {
