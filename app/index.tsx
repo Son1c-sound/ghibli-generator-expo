@@ -351,7 +351,7 @@ export default function AnimeConverter() {
                       </View>
                     )}
                   </View>
-                  <Text style={screenStyles.styleName}>{style.name}</Text>
+                  <Text style={screenStyles.styleName}>{style.DisplayName}</Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>

@@ -125,12 +125,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
                   
                   <Text style={screenStyles.loadingSubtext}>{Math.round(progress)}% complete</Text>
                 </View>
-                <View style={screenStyles.aiWarningContainer}>
-              <Ionicons name="information-circle-outline" size={16} color="#999" />
-              <Text style={screenStyles.aiWarningText}>
-                If the result doesn't match expectations, the AI may have hallucinated. Feel free to try again.
-              </Text>
-            </View>
               </View>
               
             </View>
@@ -144,14 +138,6 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
               style={screenStyles.fullResultImage}
               resizeMode="contain"
             />
-       
-            <View style={screenStyles.aiWarningContainer}>
-              <Ionicons name="information-circle-outline" size={16} color="#999" />
-              <Text style={screenStyles.aiWarningText}>
-                If the result doesn't match expectations, the AI may have hallucinated. Feel free to try again.
-              </Text>
-            </View>
-            
             {verificationNote ? (
               <Text style={screenStyles.verificationNote}>{verificationNote}</Text>
             ) : null}

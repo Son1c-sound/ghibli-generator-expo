@@ -9,6 +9,7 @@ export interface StyleItem {
   id: number;
   name: string;
   src: string;
+  DisplayName: string
 }
 
 interface ImageGenerationRequest {
@@ -183,25 +184,20 @@ export const handleDownload = async (
         return;
       }
       
-      // Extract base64 data
       const base64Data = resultImage.includes('base64,') 
         ? resultImage.split('base64,')[1] 
         : resultImage;
       
-      // Create a file in the cache directory
       const fileName = `anime_convert_${Date.now()}.jpg`;
       const fileUri = FileSystem.cacheDirectory + fileName;
       
-      // Write the image data to a file
       await FileSystem.writeAsStringAsync(fileUri, base64Data, {
         encoding: FileSystem.EncodingType.Base64,
       });
       
-      // Request permission to save to photo library
       const { status } = await MediaLibrary.requestPermissionsAsync();
       
       if (status === 'granted') {
-        // Save the file to media library
         const asset = await MediaLibrary.createAssetAsync(fileUri);
         
         Toast.success("Image Saved");
