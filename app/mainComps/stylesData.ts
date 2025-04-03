@@ -12,7 +12,7 @@ export const stylesList: StyleItem[] = [
     id: 2, 
     DisplayName: "Cartoon - (Trending Now)",
     name: 'trending', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743311677/download_17_dowitk.png' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743696823/wbitgwkahdwl64oup3zs.png' 
   },
   { 
     id: 4, 
@@ -24,7 +24,7 @@ export const stylesList: StyleItem[] = [
     id: 33, 
     DisplayName: "Classic Cartoon",
     name: 'trendingVersion2', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390195/pnlywxojs1bn4m9ad6b5.png' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743311677/download_13_yna1rl.png' 
   },
   { 
     id: 5, 
