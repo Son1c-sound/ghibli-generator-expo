@@ -10,19 +10,19 @@ export const stylesList: StyleItem[] = [
   },
   { 
     id: 2, 
-    DisplayName: "Cartoon - (Trending Now)",
+    DisplayName: "Chibli",
     name: 'trending', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743696823/wbitgwkahdwl64oup3zs.png' 
   },
   { 
     id: 4, 
-    DisplayName: "OldSchool Cartoon",
+    DisplayName: "OldSchool",
     name: 'OldSchool', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743487089/kxvubooxncxuxggxs8bk.png' 
   },
   { 
     id: 33, 
-    DisplayName: "Classic Cartoon",
+    DisplayName: "Classic Chibli",
     name: 'trendingVersion2', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743311677/download_13_yna1rl.png' 
   },
