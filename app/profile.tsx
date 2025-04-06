@@ -7,14 +7,17 @@ import {
   SafeAreaView,
   StatusBar,
   Linking,
-  ScrollView
+  ScrollView,
+  Dimensions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 
+const { width } = Dimensions.get('window');
+const ACCENT_COLOR = "#3B82F6";
 
 export default function Settings() {
-
   
   const navigateBack = () => {
      router.replace("/");
@@ -44,62 +47,100 @@ export default function Settings() {
     Linking.openURL('https://www.instagram.com/pixar.ai?utm_source=qr');
   };
 
-  return (
-    <ScrollView style={styles.container}> 
-    <SafeAreaView >
-      <StatusBar barStyle="light-content" />
-      
-      <View style={styles.header}>
-        <TouchableOpacity onPress={navigateBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="#3B82F6" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Settings</Text>
-        <View style={styles.spacer} />
-      </View>
-      
-      <View style={styles.content}>
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Help & Support</Text>
-          <TouchableOpacity style={styles.optionCard} onPress={handleContactDeveloper}>
-            <Ionicons name="code-slash-outline" size={22} color="#3B82F6" />
-            <Text style={styles.optionText}>Contact Developer</Text>
-          </TouchableOpacity>
-        </View>
+  const navigateToHome = () => {
+    router.replace("/");
+  };
 
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Connect With Us</Text>
-          
-          <View style={styles.socialContainer}>
-            <TouchableOpacity style={styles.socialButton} onPress={openTwitter}>
-              <Ionicons name="logo-twitter" size={28} color="#1DA1F2" />
-              <Text style={styles.socialText}>Twitter</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={styles.socialButton} onPress={openInstagram}>
-              <Ionicons name="logo-instagram" size={28} color="#C13584" />
-              <Text style={styles.socialText}>Instagram</Text>
-            </TouchableOpacity>
+  const handleCameraCapture = () => {
+    router.replace("/");
+  };
+
+  return (
+    <View style={styles.container}> 
+      <SafeAreaView style={{flex: 1}}>
+        <StatusBar barStyle="light-content" />
+        
+        <View style={styles.header}>
+          <TouchableOpacity onPress={navigateBack} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="#3B82F6" />
+          </TouchableOpacity>
+          <Text style={styles.title}>Settings</Text>
+          <View style={styles.spacer} />
+        </View>
+        
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.content}>
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionTitle}>Help & Support</Text>
+              <TouchableOpacity style={styles.optionCard} onPress={handleContactDeveloper}>
+                <Ionicons name="code-slash-outline" size={22} color="#3B82F6" />
+                <Text style={styles.optionText}>Contact Developer</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionTitle}>Connect With Us</Text>
+              
+              <View style={styles.socialContainer}>
+                <TouchableOpacity style={styles.socialButton} onPress={openTwitter}>
+                  <Ionicons name="logo-twitter" size={28} color="#1DA1F2" />
+                  <Text style={styles.socialText}>Twitter</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.socialButton} onPress={openInstagram}>
+                  <Ionicons name="logo-instagram" size={28} color="#C13584" />
+                  <Text style={styles.socialText}>Instagram</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+    
+            <View style={styles.sectionContainer}>
+              <Text style={styles.sectionTitle}>Legal</Text>
+              
+              <TouchableOpacity style={styles.optionCard} onPress={handleTerms}>
+                <Ionicons name="document-text-outline" size={22} color="#3B82F6" />
+                <Text style={styles.optionText}>Terms of Service</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.optionCard} onPress={handlePrivacyPolicy}>
+                <Ionicons name="shield-checkmark-outline" size={22} color="#3B82F6" />
+                <Text style={styles.optionText}>Privacy Policy</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
- 
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Legal</Text>
           
-          <TouchableOpacity style={styles.optionCard} onPress={handleTerms}>
-            <Ionicons name="document-text-outline" size={22} color="#3B82F6" />
-            <Text style={styles.optionText}>Terms of Service</Text>
+          <Text style={styles.version}>Version 1.0.0</Text>
+        </ScrollView>
+        
+        {/* Bottom Navigation Bar */}
+        <View style={styles.bottomNavBar}>
+          <TouchableOpacity 
+            style={styles.bottomNavButton} 
+            onPress={navigateToHome}
+          >
+            <Ionicons name="images-outline" size={24} color="white" />
+            <Text style={styles.bottomNavText}>Gallery</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.optionCard} onPress={handlePrivacyPolicy}>
-            <Ionicons name="shield-checkmark-outline" size={22} color="#3B82F6" />
-            <Text style={styles.optionText}>Privacy Policy</Text>
+          <TouchableOpacity 
+            style={styles.cameraButton} 
+            onPress={handleCameraCapture}
+          >
+            <View style={styles.cameraIconContainer}>
+              <Ionicons name="camera-outline" size={28} color="white" />
+            </View>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.bottomNavButton, styles.activeNavButton]} 
+            onPress={() => {}}
+          >
+            <Ionicons name="settings-outline" size={24} color={ACCENT_COLOR} />
+            <Text style={[styles.bottomNavText, styles.activeNavText]}>Settings</Text>
           </TouchableOpacity>
         </View>
-      </View>
-      
-      <Text style={styles.version}>Version 1.0.0</Text>
-    </SafeAreaView>
-    </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
@@ -107,6 +148,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  scrollContainer: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
@@ -128,52 +172,7 @@ const styles = StyleSheet.create({
     width: 34,
   },
   content: {
-    flex: 1,
     padding: 16,
-  },
-  subscriptionCard: {
-    backgroundColor: '#1A1A1A',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: '#3B82F6',
-  },
-  subscriptionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  subscriptionTitle: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 10,
-  },
-  subscriptionDetails: {
-    marginBottom: 16,
-  },
-  subscriptionTier: {
-    color: '#FFD700',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  subscriptionExpiry: {
-    color: '#999',
-    fontSize: 14,
-  },
-  subscriptionAction: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#333',
-  },
-  manageText: {
-    color: '#3B82F6',
-    fontWeight: '600',
   },
   sectionContainer: {
     marginBottom: 24,
@@ -220,5 +219,50 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     marginBottom: 16,
+  },
+  
+  // Bottom Navigation Bar Styles
+  bottomNavBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingTop: 10,
+    paddingBottom: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#333",
+  },
+  bottomNavButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+  },
+  activeNavButton: {
+    opacity: 1,
+  },
+  bottomNavText: {
+    color: "white",
+    marginTop: 4,
+    fontSize: 12,
+  },
+  activeNavText: {
+    color: ACCENT_COLOR,
+  },
+  cameraButton: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cameraIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: ACCENT_COLOR,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });

@@ -4,127 +4,52 @@ import {
   View, 
   Image, 
   Dimensions, 
-  ActivityIndicator, 
   TouchableOpacity, 
   Animated, 
-  Text
+  Text,
+  SafeAreaView
 } from 'react-native';
-import MasonryList from '@react-native-seoul/masonry-list';
 import useOnboarding from '@/hooks/useOnboarding';
 import { useRouter } from 'expo-router';
 import { useSuperwall } from '@/hooks/useSuperwall';
 import { SUPERWALL_TRIGGERS } from './config/superwall';
 
-
 const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
-const BOTTOM_SHEET_HEIGHT = SCREEN_HEIGHT * 0.3;
 
-const MasonryGridWithBottomSheet = () => {
-  interface ImageData {
-    id: string;
-    src: string;
-    height: number;
-    index: number;
-  }
-
+const ImagePlaceholderScreen = () => {
   const { showPaywall } = useSuperwall() 
-
-  const [leftColumnData, setLeftColumnData] = useState<ImageData[]>([]);
-  const [rightColumnData, setRightColumnData] = useState<ImageData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
   const [showWelcomeText, setShowWelcomeText] = useState(false);
   
-  const { isOnboarded, isLoading: onboardingLoading, completeOnboarding } = useOnboarding();
+  const { isOnboarded, completeOnboarding } = useOnboarding();
   const router = useRouter();
   
-  const bottomSheetAnim = useRef(new Animated.Value(0)).current;
+  const imageAnim = useRef(new Animated.Value(0)).current;
   const welcomeTextOpacity = useRef(new Animated.Value(0)).current;
-  const imageAnimations = useRef<Record<string, Animated.Value>>({}).current;
 
   useEffect(() => {
-    fetchData();
+    animateImage();
   }, []);
 
   const handleContinue = async () => {
-    // First, complete onboarding
     await completeOnboarding();
     
     try {
-      isOnboarded == true
       router.push('/');
       const paywallResult = await showPaywall(SUPERWALL_TRIGGERS.ONBOARDING);
     } catch (error) {
       console.error('Error showing paywall:', error);
-      // Navigate anyway as fallback
+     // Navigate anyway as fallback
       router.push('/');
     }
   };
 
-  useEffect(() => {
-    if ((leftColumnData.length > 0 && rightColumnData.length > 0) && !loading) {
-      [...leftColumnData, ...rightColumnData].forEach(item => {
-        imageAnimations[item.id] = new Animated.Value(0);
-      });
-      
-      openBottomSheet();
-    }
-  }, [leftColumnData, rightColumnData, loading]);
-
-  const fetchData = () => {
-    setLoading(true);
-    
-    const imageUrls = [
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743311725/7b4328da-7486-4298-9ef6-29c38a433342_ybwbsk.jpg',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743311677/download_13_yna1rl.png',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743311677/download_14_vyfk4m.png',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295994/anime_yfap6y.png',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295994/main-2_w8ldom.png',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295995/main-1_ogj0zg.png',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743313392/download_18_o1ak1c.png',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743315220/IMG_2693_wfsyno.jpg',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743304461/2313_mr9leg.png',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743308123/download_6_mwv31t.png',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743307006/o2rxody4sugd6aydrgtl.png',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295995/Screenshot_2025-03-29_191414_cwkvsf.png',
-      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743431302/mxitbbcahp86ijdpxt2q.jpg',
-    ];
-    
-    const leftData: { id: string; src: string; height: number; index: number }[] = imageUrls.filter((_, i) => i % 2 === 0).map((src, i) => ({
-      id: `left-${i}`,
-      src: src,
-      height: Math.floor(Math.random() * 100) + 100,
-      index: i * 2,
-    }));
-    
-    const rightData: { id: string; src: string; height: number; index: number }[] = imageUrls.filter((_, i) => i % 2 === 1).map((src, i) => ({
-      id: `right-${i}`,
-      src: src,
-      height: Math.floor(Math.random() * 100) + 100,
-      index: i * 2 + 1,
-    }));
-    
-    setLeftColumnData(leftData);
-    setRightColumnData(rightData);
-    setLoading(false);
-  };
-
-  const animateImagesSequentially = () => {
-    const allItems = [...leftColumnData, ...rightColumnData].sort((a, b) => {
-      return a.index - b.index;
-    });
-    
-    const animations = allItems.map((item, i) => {
-      return Animated.timing(imageAnimations[item.id], {
-        toValue: 1,
-        duration: 300,
-        delay: i * 120,
-        useNativeDriver: true,
-      });
-    });
-    
+  const animateImage = () => {
     Animated.sequence([
-      Animated.stagger(120, animations),
+      Animated.timing(imageAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
       
       Animated.timing(welcomeTextOpacity, {
         toValue: 1,
@@ -137,70 +62,45 @@ const MasonryGridWithBottomSheet = () => {
     });
   };
 
-  const openBottomSheet = () => {
-    setBottomSheetOpen(true);
-    
-    Animated.timing(bottomSheetAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start(() => {
-      animateImagesSequentially();
-    });
-  };
+  const imageOpacity = imageAnim;
+  const imageScale = imageAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.85, 1],
+  });
 
- 
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
-        <MasonryList
-          data={[...leftColumnData, ...rightColumnData].sort((a, b) => a.index - b.index)}
-          keyExtractor={(item) => item.id}
-          numColumns={2}
-          showsVerticalScrollIndicator={false}
-          renderItem={({ item }:{item:any}) => {
-            const animValue = imageAnimations[item.id] || new Animated.Value(0);
-            
-            const opacity = animValue;
-            const scale = animValue.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0.7, 1],
-            });
-            
-            return (
-              <Animated.View 
-                style={[
-                  styles.itemContainer,
-                  { 
-                    height: item.height,
-                    opacity,
-                    transform: [{ scale }]
-                  }
-                ]}
-              >
-                <Image 
-                  source={{ uri: item.src }}
-                  style={styles.itemImage}
-                  resizeMode="cover"
-                />
-              </Animated.View>
-            );
-          }}
-          contentContainerStyle={styles.listContentContainer}
-        />
+        <Animated.View 
+          style={[
+            styles.imageContainer,
+            {
+              opacity: imageOpacity,
+              transform: [{ scale: imageScale }]
+            }
+          ]}
+        >
+          <Image 
+            source={{ uri: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743914510/mugnuifqcfrmmjmy9xti.png' }}
+            style={styles.fullImage}
+            resizeMode="cover"
+          />
+        </Animated.View>
         
         <Animated.View style={[
           styles.welcomeTextContainer,
           { opacity: welcomeTextOpacity }
         ]}>
-          <Text style={styles.welcomeText}>Welcome to GoToon</Text>
-          <Text style={styles.welcomeSubtext}>Ready to turn yourself into animated character?</Text>
-          <TouchableOpacity 
-            style={styles.continueButton}
-            onPress={handleContinue}
-          >
-            <Text style={styles.continueButtonText}>Continue</Text>
-          </TouchableOpacity>
+          <View style={styles.bottomContent}>
+            <Text style={styles.welcomeText}>Welcome to GoToon</Text>
+            <Text style={styles.welcomeSubtext}>Ready to turn yourself into animated character?</Text>
+            <TouchableOpacity 
+              style={styles.continueButton}
+              onPress={handleContinue}
+            >
+              <Text style={styles.continueButtonText}>Continue</Text>
+            </TouchableOpacity>
+          </View>
         </Animated.View>
       </View>
     </View>
@@ -212,61 +112,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#000000',
-  },
   contentContainer: {
     flex: 1,
-  },
-  listContentContainer: {
-    padding: 2,
-    paddingBottom: BOTTOM_SHEET_HEIGHT,
-  },
-  itemContainer: {
-    margin: 2,
-    overflow: 'hidden',
-  },
-  itemImage: {
-    width: '100%',
-    borderRadius: 20,
-    height: '100%',
-  },
-  bottomSheet: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: BOTTOM_SHEET_HEIGHT,
-    backgroundColor: '#222222',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: -3,
-    },
-    shadowOpacity: 0.27,
-    shadowRadius: 4.65,
-    elevation: 6,
-  },
-  bottomSheetContent: {
-    flex: 1,
-    padding: 20,
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  button: {
-    backgroundColor: '#ffffff',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
+  imageContainer: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  buttonText: {
-    color: '#000000',
-    fontWeight: 'bold',
+  fullImage: {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    position: 'absolute',
   },
   welcomeTextContainer: {
     position: 'absolute',
@@ -274,9 +134,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    justifyContent: 'center',
+    backgroundColor: 'transparent', // Changed from rgba black to transparent
+    justifyContent: 'flex-end', // Position content at bottom
     alignItems: 'center',
+  },
+  bottomContent: {
+    width: '100%',
+    alignItems: 'center',
+    paddingBottom: 50, // Add padding at the bottom
   },
   welcomeText: {
     color: '#ffffff',
@@ -299,6 +164,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    marginBottom: 20, // Add margin at the bottom of the button
   },
   continueButtonText: {
     color: '#000000',
@@ -307,4 +173,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MasonryGridWithBottomSheet;
+export default ImagePlaceholderScreen;

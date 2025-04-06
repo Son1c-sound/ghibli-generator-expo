@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import { View,Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, StatusBar, Alert, ActivityIndicator,Dimensions, ScrollView, Platform,} from "react-native"
+import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, StatusBar, Alert, ActivityIndicator, Dimensions, ScrollView, Platform } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Ionicons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
@@ -10,7 +10,7 @@ import ResultScreen from "./mainComps/resultScreen"
 import { Share } from "react-native"
 import { useSuperwall } from "@/hooks/useSuperwall"
 import { SUPERWALL_TRIGGERS } from "./config/superwall"
-import { processSelectedImage, generateImage as generateStyledImage, handleDownload as saveImage,handleShare as shareImage, StyleItem } from "./utils/imageUtils"
+import { processSelectedImage, generateImage as generateStyledImage, handleDownload as saveImage, handleShare as shareImage, StyleItem } from "./utils/imageUtils"
 import { stylesList } from "./mainComps/stylesData"
 
 const { width } = Dimensions.get("window")
@@ -89,7 +89,7 @@ export default function AnimeConverter() {
 
   const handleCameraCapture = async () => {
     try {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync(                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  )
+      const { status } = await ImagePicker.requestCameraPermissionsAsync()
 
       if (status !== "granted") {
         Alert.alert(
@@ -189,9 +189,6 @@ export default function AnimeConverter() {
             <Text style={screenStyles.titleIcon}></Text>
             <Text style={screenStyles.title}>GoToon</Text>
           </View>
-          <TouchableOpacity onPress={navigateToProfile} style={screenStyles.settingsButton}>
-            <Ionicons name="settings" size={24} color={ACCENT_COLOR} />
-          </TouchableOpacity>
         </View>
         <View style={screenStyles.mainContent}>
           <View style={screenStyles.imageContainer}>
@@ -206,28 +203,14 @@ export default function AnimeConverter() {
                       <View style={[screenStyles.progressFill,{ width: `${loadingProgress}%` },]}/>
                     </View>
                   </View>
-                ) : (
-                  <View style={screenStyles.changeImageButtonsContainer}>
-                    <TouchableOpacity style={screenStyles.changeImageButton} onPress={handleImagePicker}>
-                      <Text style={screenStyles.changeImageText}>Gallery</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={screenStyles.changeImageButton} onPress={handleCameraCapture}>
-                      <Ionicons name="camera-outline" size={18} color="white" />
-                      <Text style={screenStyles.changeImageText}>Selfie</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
+                ) : null}
               </View>
             ) : (
-              <View style={screenStyles.uploadOptionsContainer}>
-                <TouchableOpacity style={screenStyles.uploadButton} onPress={handleImagePicker}>
-                  <Ionicons name="image-outline" size={24} color="black" />
-                  <Text style={screenStyles.uploadText}>Select Image</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={screenStyles.uploadButton} onPress={handleCameraCapture}>
-                  <Ionicons name="camera-outline" size={24} color="black" />
-                  <Text style={screenStyles.uploadText}>Take a Selfie</Text>
-                </TouchableOpacity>
+              <View style={screenStyles.emptyImageContainer}>
+                <View style={screenStyles.emptyImagePlaceholder}>
+                  <Ionicons name="image-outline" size={60} color="#333" />
+                  <Text style={screenStyles.emptyImageText}>Select an image or take a photo</Text>
+                </View>
               </View>
             )}
           </View>
@@ -298,6 +281,34 @@ export default function AnimeConverter() {
                 </View>
               </LinearGradient>
             </TouchableOpacity>
+            
+            {/* Bottom Navigation Bar */}
+            <View style={screenStyles.bottomNavBar}>
+              <TouchableOpacity 
+                style={screenStyles.bottomNavButton} 
+                onPress={handleImagePicker}
+              >
+                <Ionicons name="images-outline" size={24} color="white" />
+                <Text style={screenStyles.bottomNavText}>Gallery</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={screenStyles.cameraButton} 
+                onPress={handleCameraCapture}
+              >
+                <View style={screenStyles.cameraIconContainer}>
+                  <Ionicons name="camera-outline" size={28} color="white" />
+                </View>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={screenStyles.bottomNavButton} 
+                onPress={navigateToProfile}
+              >
+                <Ionicons name="settings-outline" size={24} color="white" />
+                <Text style={screenStyles.bottomNavText}>Settings</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       </SafeAreaView>
@@ -318,7 +329,6 @@ const screenStyles = StyleSheet.create({
     paddingTop: Platform.OS === "android" ? 40 : 40,
     marginBottom: 20,
   },
-
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -326,36 +336,6 @@ const screenStyles = StyleSheet.create({
   titleIcon: {
     fontSize: 20,
     marginRight: 8,
-  },
-  changeImageButtonsContainer: {
-    flexDirection: "row",
-
-    width: "100%",
-    marginTop: 16,
-    paddingHorizontal: 10,
-  },
-  changeImageButton: {
-    backgroundColor: "#2563EB",
-    marginRight: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    width: "32%",
-    marginLeft: 10,
-  },
-  changeImageText: {
-    color: "white",
-    fontSize: 14,
-    fontWeight: "600",
-    marginLeft: 6,
   },
   title: {
     fontSize: 18,
@@ -374,29 +354,27 @@ const screenStyles = StyleSheet.create({
     justifyContent: "center",
     height: "80%",
   },
-  uploadOptionsContainer: {
-    width: "100%",
+  emptyImageContainer: {
+    width: width * 0.7,
+    height: width * 0.7,
+    borderRadius: 10,
+    backgroundColor: "#1a1a1a",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  emptyImagePlaceholder: {
     alignItems: "center",
     justifyContent: "center",
-    gap: 20,
+    padding: 20,
   },
-  uploadButton: {
-    backgroundColor: "white",
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 100,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    width: "80%",
-  },
-  uploadText: {
+  emptyImageText: {
+    color: "#666",
+    marginTop: 10,
+    textAlign: "center",
     fontSize: 16,
-    fontWeight: "bold",
-    marginLeft: 8,
   },
   bottomContainer: {
-    marginBottom: 24,
+    marginBottom: 0,
   },
   styleTitleContainer: {
     flexDirection: "row",
@@ -441,6 +419,7 @@ const screenStyles = StyleSheet.create({
     borderRadius: 100,
     marginTop: 20,
     width: "100%",
+    marginBottom: 20,
   },
   disabledButton: {
     opacity: 0.6,
@@ -457,7 +436,6 @@ const screenStyles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
-
     marginLeft: 8,
   },
   imagePreviewContainer: {
@@ -470,23 +448,6 @@ const screenStyles = StyleSheet.create({
     height: width * 0.7,
     borderRadius: 10,
     resizeMode: "contain",
-  },
-  testButtonContainer: {
-    alignItems: "center",
-    marginTop: 16,
-  },
-  testButton: {
-    backgroundColor: "#333",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#555",
-  },
-  testButtonText: {
-    color: "red",
-    fontSize: 13,
-    fontWeight: "bold",
   },
   loadingOverlay: {
     position: "absolute",
@@ -516,5 +477,47 @@ const screenStyles = StyleSheet.create({
   progressFill: {
     height: "100%",
     backgroundColor: ACCENT_COLOR,
+  },
+  
+  // New bottom navigation styles
+  bottomNavBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingTop: 10,
+    paddingBottom: Platform.OS === "ios" ? 20 : 10,
+    borderTopWidth: 1,
+    borderTopColor: "#333",
+  },
+  bottomNavButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+  },
+  bottomNavButtonPlaceholder: {
+    flex: 1,
+  },
+  bottomNavText: {
+    color: "white",
+    marginTop: 4,
+    fontSize: 12,
+  },
+  cameraButton: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cameraIconContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: ACCENT_COLOR,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 })
