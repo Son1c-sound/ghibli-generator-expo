@@ -333,8 +333,7 @@ export default function AnimeConverter() {
               onPress={handleGenerateImage}
               disabled={!image || !selectedStyle || loading}
               style={screenStyles.generateButtonContainer}>
-              <LinearGradient
-                colors={[ACCENT_COLOR, "#1E40AF"]}
+              <LinearGradient colors={[ACCENT_COLOR, "#1E40AF"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={[screenStyles.generateButton, (!image || !selectedStyle || loading) && screenStyles.disabledButton,]}>
