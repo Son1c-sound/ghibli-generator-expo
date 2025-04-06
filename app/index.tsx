@@ -10,13 +10,7 @@ import ResultScreen from "./mainComps/resultScreen"
 import { Share } from "react-native"
 import { useSuperwall } from "@/hooks/useSuperwall"
 import { SUPERWALL_TRIGGERS } from "./config/superwall"
-import {
-  processSelectedImage,
-  generateImage as generateStyledImage,
-  handleDownload as saveImage,
-  handleShare as shareImage,
-  StyleItem,
-} from "./utils/imageUtils"
+import { processSelectedImage, generateImage as generateStyledImage, handleDownload as saveImage,handleShare as shareImage, StyleItem } from "./utils/imageUtils"
 import { stylesList } from "./mainComps/stylesData"
 
 const { width } = Dimensions.get("window")
@@ -61,12 +55,7 @@ export default function AnimeConverter() {
 
   if (isLoading) {
     return (
-      <SafeAreaView
-        style={[
-          screenStyles.container,
-          { justifyContent: "center", alignItems: "center" },
-        ]}
-      >
+      <SafeAreaView style={[screenStyles.container, {justifyContent: "center", alignItems: "center" }]}>
         <ActivityIndicator size="large" color={ACCENT_COLOR} />
       </SafeAreaView>
     )
@@ -262,19 +251,10 @@ export default function AnimeConverter() {
               <Text style={screenStyles.styleTitle}>Swipe For More Styles</Text>
             </View>
 
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{
-                paddingVertical: 10,
-                paddingHorizontal: 5,
-              }}
-            >
+            <ScrollView horizontal showsHorizontalScrollIndicator={false} 
+            contentContainerStyle={{paddingVertical: 10, paddingHorizontal: 5,}}>
               {styles.map((style) => (
-                <TouchableOpacity
-                  key={style.id}
-                  style={[
-                    screenStyles.styleItem,
+                <TouchableOpacity key={style.id} style={[screenStyles.styleItem,
                     selectedStyle === style.id && screenStyles.selectedStyle,
                   ]}
                   onPress={() => {
