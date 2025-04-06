@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import {View,Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, StatusBar, Alert, ActivityIndicator,Dimensions, ScrollView, Platform,} from "react-native"
+import { View,Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, StatusBar, Alert, ActivityIndicator,Dimensions, ScrollView, Platform,} from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Ionicons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
@@ -26,7 +26,6 @@ export default function AnimeConverter() {
   const [showResultScreen, setShowResultScreen] = useState(false)
   const [verificationNote, setVerificationNote] = useState("")
   const { isSubscribed, showPaywall } = useSuperwall()
-
   const { isOnboarded, isLoading } = useOnboarding()
 
   useEffect(() => {
@@ -63,14 +62,10 @@ export default function AnimeConverter() {
 
   const handleImagePicker = async () => {
     try {
-      const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync()
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
 
       if (status !== "granted") {
-        Alert.alert(
-          "Permission Required",
-          "Sorry, we need camera roll permissions to upload photos."
-        )
+        Alert.alert("Permission Required", "Sorry, we need camera roll permissions to upload photos.")
         return
       }
 
