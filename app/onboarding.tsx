@@ -1,81 +1,207 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   StyleSheet, 
   View, 
   Image, 
   Dimensions, 
+  ActivityIndicator, 
   TouchableOpacity, 
+  Animated, 
   Text
 } from 'react-native';
-import { useRouter } from 'expo-router';
+import MasonryList from '@react-native-seoul/masonry-list';
 import useOnboarding from '@/hooks/useOnboarding';
+import { useRouter } from 'expo-router';
 import { useSuperwall } from '@/hooks/useSuperwall';
 import { SUPERWALL_TRIGGERS } from './config/superwall';
 
-const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
 
-const SimplifiedComponent = () => {
-  const [step, setStep] = useState(1);
-  const { showPaywall } = useSuperwall();
-  const { isOnboarded, completeOnboarding } = useOnboarding();
+const { height: SCREEN_HEIGHT, width: SCREEN_WIDTH } = Dimensions.get('window');
+const BOTTOM_SHEET_HEIGHT = SCREEN_HEIGHT * 0.3;
+
+const MasonryGridWithBottomSheet = () => {
+  interface ImageData {
+    id: string;
+    src: string;
+    height: number;
+    index: number;
+  }
+
+  const { showPaywall } = useSuperwall() 
+
+  const [leftColumnData, setLeftColumnData] = useState<ImageData[]>([]);
+  const [rightColumnData, setRightColumnData] = useState<ImageData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
+  const [showWelcomeText, setShowWelcomeText] = useState(false);
+  
+  const { isOnboarded, isLoading: onboardingLoading, completeOnboarding } = useOnboarding();
   const router = useRouter();
   
+  const bottomSheetAnim = useRef(new Animated.Value(0)).current;
+  const welcomeTextOpacity = useRef(new Animated.Value(0)).current;
+  const imageAnimations = useRef<Record<string, Animated.Value>>({}).current;
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const handleContinue = async () => {
-    if (step === 1) {
-      setStep(2);
-      return;
-    }
-    
+    // First, complete onboarding
     await completeOnboarding();
     
     try {
-      isOnboarded == true;
+      isOnboarded == true
       router.push('/');
       const paywallResult = await showPaywall(SUPERWALL_TRIGGERS.ONBOARDING);
     } catch (error) {
       console.error('Error showing paywall:', error);
+      // Navigate anyway as fallback
       router.push('/');
     }
   };
 
+  useEffect(() => {
+    if ((leftColumnData.length > 0 && rightColumnData.length > 0) && !loading) {
+      [...leftColumnData, ...rightColumnData].forEach(item => {
+        imageAnimations[item.id] = new Animated.Value(0);
+      });
+      
+      openBottomSheet();
+    }
+  }, [leftColumnData, rightColumnData, loading]);
+
+  const fetchData = () => {
+    setLoading(true);
+    
+    const imageUrls = [
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743311725/7b4328da-7486-4298-9ef6-29c38a433342_ybwbsk.jpg',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743311677/download_13_yna1rl.png',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743311677/download_14_vyfk4m.png',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295994/anime_yfap6y.png',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295994/main-2_w8ldom.png',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295995/main-1_ogj0zg.png',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743313392/download_18_o1ak1c.png',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743315220/IMG_2693_wfsyno.jpg',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743304461/2313_mr9leg.png',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743308123/download_6_mwv31t.png',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743307006/o2rxody4sugd6aydrgtl.png',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295995/Screenshot_2025-03-29_191414_cwkvsf.png',
+      'https://res.cloudinary.com/dzvttwdye/image/upload/v1743431302/mxitbbcahp86ijdpxt2q.jpg',
+    ];
+    
+    const leftData: { id: string; src: string; height: number; index: number }[] = imageUrls.filter((_, i) => i % 2 === 0).map((src, i) => ({
+      id: `left-${i}`,
+      src: src,
+      height: Math.floor(Math.random() * 100) + 100,
+      index: i * 2,
+    }));
+    
+    const rightData: { id: string; src: string; height: number; index: number }[] = imageUrls.filter((_, i) => i % 2 === 1).map((src, i) => ({
+      id: `right-${i}`,
+      src: src,
+      height: Math.floor(Math.random() * 100) + 100,
+      index: i * 2 + 1,
+    }));
+    
+    setLeftColumnData(leftData);
+    setRightColumnData(rightData);
+    setLoading(false);
+  };
+
+  const animateImagesSequentially = () => {
+    const allItems = [...leftColumnData, ...rightColumnData].sort((a, b) => {
+      return a.index - b.index;
+    });
+    
+    const animations = allItems.map((item, i) => {
+      return Animated.timing(imageAnimations[item.id], {
+        toValue: 1,
+        duration: 300,
+        delay: i * 120,
+        useNativeDriver: true,
+      });
+    });
+    
+    Animated.sequence([
+      Animated.stagger(120, animations),
+      
+      Animated.timing(welcomeTextOpacity, {
+        toValue: 1,
+        duration: 800,
+        useNativeDriver: true,
+        delay: 300,
+      })
+    ]).start(() => {
+      setShowWelcomeText(true);
+    });
+  };
+
+  const openBottomSheet = () => {
+    setBottomSheetOpen(true);
+    
+    Animated.timing(bottomSheetAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => {
+      animateImagesSequentially();
+    });
+  };
+
+ 
   return (
     <View style={styles.container}>
       <View style={styles.contentContainer}>
-        <View style={styles.welcomeTextContainer}>
-          <Text style={styles.welcomeText}>Welcome to GoToon</Text>
-          <Text style={styles.welcomeSubtext}>Ready to turn yourself into animated character?</Text>
-        </View>
-        
-        <View style={styles.imageContainer}>
-          <Image 
-            source={{ uri: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295994/anime_yfap6y.png' }}
-            style={styles.placeholderImage}
-            resizeMode="cover"
-          />
-          
-          {step === 2 && (
-            <>
-              <View style={styles.additionalImageContainer}>
+        <MasonryList
+          data={[...leftColumnData, ...rightColumnData].sort((a, b) => a.index - b.index)}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }:{item:any}) => {
+            const animValue = imageAnimations[item.id] || new Animated.Value(0);
+            
+            const opacity = animValue;
+            const scale = animValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0.7, 1],
+            });
+            
+            return (
+              <Animated.View 
+                style={[
+                  styles.itemContainer,
+                  { 
+                    height: item.height,
+                    opacity,
+                    transform: [{ scale }]
+                  }
+                ]}
+              >
                 <Image 
-                  source={{ uri: '' }}
-                  style={styles.additionalImage}
+                  source={{ uri: item.src }}
+                  style={styles.itemImage}
                   resizeMode="cover"
                 />
-              </View>
-            </>
-          )}
-        </View>
-      </View>
-      
-      <View style={styles.footer}>
-        <TouchableOpacity 
-          style={styles.continueButton}
-          onPress={handleContinue}
-        >
-          <Text style={styles.continueButtonText}>
-            {step === 1 ? 'Continue' : 'Get Started'}
-          </Text>
-        </TouchableOpacity>
+              </Animated.View>
+            );
+          }}
+          contentContainerStyle={styles.listContentContainer}
+        />
+        
+        <Animated.View style={[
+          styles.welcomeTextContainer,
+          { opacity: welcomeTextOpacity }
+        ]}>
+          <Text style={styles.welcomeText}>Welcome to GoToon</Text>
+          <Text style={styles.welcomeSubtext}>Ready to turn yourself into animated character?</Text>
+          <TouchableOpacity 
+            style={styles.continueButton}
+            onPress={handleContinue}
+          >
+            <Text style={styles.continueButtonText}>Continue</Text>
+          </TouchableOpacity>
+        </Animated.View>
       </View>
     </View>
   );
@@ -86,15 +212,71 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000000',
   },
-  contentContainer: {
+  loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#000000',
+  },
+  contentContainer: {
+    flex: 1,
+  },
+  listContentContainer: {
+    padding: 2,
+    paddingBottom: BOTTOM_SHEET_HEIGHT,
+  },
+  itemContainer: {
+    margin: 2,
+    overflow: 'hidden',
+  },
+  itemImage: {
+    width: '100%',
+    borderRadius: 20,
+    height: '100%',
+  },
+  bottomSheet: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: BOTTOM_SHEET_HEIGHT,
+    backgroundColor: '#222222',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: -3,
+    },
+    shadowOpacity: 0.27,
+    shadowRadius: 4.65,
+    elevation: 6,
+  },
+  bottomSheetContent: {
+    flex: 1,
     padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  button: {
+    backgroundColor: '#ffffff',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: '#000000',
+    fontWeight: 'bold',
   },
   welcomeTextContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 40,
   },
   welcomeText: {
     color: '#ffffff',
@@ -109,40 +291,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.8,
   },
-  imageContainer: {
-    width: '80%',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 10,
-  },
-  placeholderImage: {
-    width: '100%',
-    aspectRatio: 1,
-    borderRadius: 20,
-    marginBottom: 10,
-  },
-  additionalImageContainer: {
-    width: '48%',
-    aspectRatio: 1,
-    borderRadius: 20,
-    overflow: 'hidden',
-  },
-  additionalImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 20,
-  },
-  footer: {
-    padding: 20,
-    paddingBottom: 40,
-  },
   continueButton: {
     backgroundColor: '#ffffff',
-    width: '100%',
+    width: '80%',
     paddingVertical: 15,
     borderRadius: 30,
+    marginTop: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -153,4 +307,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SimplifiedComponent;
+export default MasonryGridWithBottomSheet;
