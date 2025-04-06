@@ -188,7 +188,6 @@ export default function AnimeConverter() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={screenStyles.container}>
         <StatusBar barStyle="light-content" />
-
         <View style={screenStyles.header}>
           <View style={screenStyles.titleContainer}>
             <Text style={screenStyles.titleIcon}></Text>
@@ -216,7 +215,6 @@ export default function AnimeConverter() {
                     <TouchableOpacity style={screenStyles.changeImageButton} onPress={handleImagePicker}>
                       <Text style={screenStyles.changeImageText}>Gallery</Text>
                     </TouchableOpacity>
-
                     <TouchableOpacity style={screenStyles.changeImageButton} onPress={handleCameraCapture}>
                       <Ionicons name="camera-outline" size={18} color="white" />
                       <Text style={screenStyles.changeImageText}>Selfie</Text>
@@ -226,18 +224,11 @@ export default function AnimeConverter() {
               </View>
             ) : (
               <View style={screenStyles.uploadOptionsContainer}>
-                <TouchableOpacity
-                  style={screenStyles.uploadButton}
-                  onPress={handleImagePicker}
-                >
+                <TouchableOpacity style={screenStyles.uploadButton} onPress={handleImagePicker}>
                   <Ionicons name="image-outline" size={24} color="black" />
                   <Text style={screenStyles.uploadText}>Select Image</Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={screenStyles.uploadButton}
-                  onPress={handleCameraCapture}
-                >
+                <TouchableOpacity style={screenStyles.uploadButton} onPress={handleCameraCapture}>
                   <Ionicons name="camera-outline" size={24} color="black" />
                   <Text style={screenStyles.uploadText}>Take a Selfie</Text>
                 </TouchableOpacity>
@@ -250,7 +241,6 @@ export default function AnimeConverter() {
             <View style={screenStyles.styleTitleContainer}>
               <Text style={screenStyles.styleTitle}>Swipe For More Styles</Text>
             </View>
-
             <ScrollView horizontal showsHorizontalScrollIndicator={false} 
             contentContainerStyle={{paddingVertical: 10, paddingHorizontal: 5,}}>
               {styles.map((style) => (
@@ -268,14 +258,9 @@ export default function AnimeConverter() {
                       showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK)
                       return
                     }
-                    setSelectedStyle(style.id)
-                  }}
-                >
+                    setSelectedStyle(style.id)}}>
                   <View style={{ position: "relative" }}>
-                    <Image
-                      style={screenStyles.styleImage}
-                      source={{ uri: style.src }}
-                    />
+                    <Image style={screenStyles.styleImage} source={{ uri: style.src }} />
                     {!isSubscribed &&
                       style.name !== "Anime" &&
                       style.name !== "OldSchool" &&
@@ -292,13 +277,8 @@ export default function AnimeConverter() {
                             borderRadius: 8,
                             justifyContent: "center",
                             alignItems: "center",
-                          }}
-                        >
-                          <Ionicons
-                            name="lock-closed"
-                            size={20}
-                            color="white"
-                          />
+                            }}>
+                          <Ionicons name="lock-closed" size={20} color="white" />
                         </View>
                       )}
                   </View>
@@ -308,15 +288,8 @@ export default function AnimeConverter() {
                 </TouchableOpacity>
               ))}
             </ScrollView>
-
-            <TouchableOpacity
-              onPress={handleGenerateImage}
-              disabled={!image || !selectedStyle || loading}
-              style={screenStyles.generateButtonContainer}>
-              <LinearGradient colors={[ACCENT_COLOR, "#1E40AF"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-                style={[screenStyles.generateButton, (!image || !selectedStyle || loading) && screenStyles.disabledButton,]}>
+            <TouchableOpacity onPress={handleGenerateImage} disabled={!image || !selectedStyle || loading} style={screenStyles.generateButtonContainer}>
+              <LinearGradient colors={[ACCENT_COLOR, "#1E40AF"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[screenStyles.generateButton, (!image || !selectedStyle || loading) && screenStyles.disabledButton,]}>
                 <View style={screenStyles.generateButtonContent}>
                   {loading ? (
                     <ActivityIndicator size="small" color="white" />
