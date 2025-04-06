@@ -33,6 +33,36 @@ export const stylesList: StyleItem[] = [
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743483366/akex8ynnvp6recoixdud.jpg' 
   },
   { 
+    id: 3678, 
+    DisplayName: "Rick And Morty",
+    name: 'RickAndMorty', 
+    src: 'https://variety.com/wp-content/uploads/2024/10/image002-e1729182384298.jpg?crop=0px%2C24px%2C862px%2C485px&resize=1000%2C563' 
+  },
+  { 
+    id: 332345677777777, 
+    DisplayName: "Pixar",
+    name: 'Pixar', 
+    src: 'https://i.pinimg.com/474x/95/e1/68/95e168c6abfc5633434c5a946491471e.jpg' 
+  },
+  { 
+    id: 3323456897, 
+    DisplayName: "SouthPark",
+    name: 'SouthPark', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743384050/download_25_ujn2wd.png' 
+  },
+  { 
+    id: 3323456, 
+    DisplayName: "Lego",
+    name: 'Lego', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743896925/r0qvqqucbuyqocqxugvr.png' 
+  },
+  { 
+    id: 332345656, 
+    DisplayName: "Simpsons",
+    name: 'Simpsons', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743896840/yxyhnq1wsrabf2prkqct.png' 
+  },
+  { 
     id: 3, 
     DisplayName: "Comic Cartoon",
     name: 'Cartoon', 

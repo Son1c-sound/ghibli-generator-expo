@@ -53,7 +53,7 @@ export default function AnimeConverter() {
  
     if (isLoading) return;
 
-    if (!isOnboarded) {
+    if (isOnboarded) {
       router.replace("/onboarding");
     }
   }, [isOnboarded, isLoading]);
@@ -298,11 +298,10 @@ export default function AnimeConverter() {
             )}
           </View>
         </View>
-
         {!loading && (
           <View style={screenStyles.bottomContainer}>
             <View style={screenStyles.styleTitleContainer}>
-              <Text style={screenStyles.styleTitle}>Choose a Style</Text>
+              <Text style={screenStyles.styleTitle}>Swipe For More Styles</Text>
             </View>
 
             <ScrollView
@@ -321,7 +320,7 @@ export default function AnimeConverter() {
                     selectedStyle === style.id && screenStyles.selectedStyle,
                   ]}
                   onPress={() => {
-                    if (!isSubscribed && style.name !== 'Anime') {
+                    if (!isSubscribed && style.name !== 'Anime' && style.name !== 'OldSchool'  && style.name && style.name !== 'Lego') {
                       showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK);
                       return;
                     }
@@ -333,7 +332,7 @@ export default function AnimeConverter() {
                       style={screenStyles.styleImage}
                       source={{ uri: style.src }}
                     />
-                    {!isSubscribed && style.name !== 'Anime' && (
+                    {!isSubscribed && style.name !== 'Anime' && style.name !== 'OldSchool'  && style.name && style.name !== 'Lego'  && (
                       <View
                         style={{
                           position: "absolute",
@@ -371,6 +370,7 @@ export default function AnimeConverter() {
                     screenStyles.disabledButton,
                 ]}
               >
+                
                 <View style={screenStyles.generateButtonContent}>
                   {loading ? (
                     <ActivityIndicator size="small" color="white" />
