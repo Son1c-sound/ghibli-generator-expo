@@ -1,78 +1,63 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  SafeAreaView,
-  StatusBar,
-  Alert,
-  ActivityIndicator,
-  Dimensions,
-  ScrollView,
-  Platform,
-} from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
-import { Redirect, router } from "expo-router";
-import useOnboarding from "@/hooks/useOnboarding";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import ResultScreen from "./mainComps/resultScreen";
-import { Share } from "react-native";
-import { useSuperwall } from "@/hooks/useSuperwall";
-import { SUPERWALL_TRIGGERS } from "./config/superwall";
+import React, { useEffect, useState } from "react"
+import {View,Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, StatusBar, Alert, ActivityIndicator,Dimensions, ScrollView, Platform,} from "react-native"
+import { LinearGradient } from "expo-linear-gradient"
+import { Ionicons } from "@expo/vector-icons"
+import * as ImagePicker from "expo-image-picker"
+import { router } from "expo-router"
+import useOnboarding from "@/hooks/useOnboarding"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
+import ResultScreen from "./mainComps/resultScreen"
+import { Share } from "react-native"
+import { useSuperwall } from "@/hooks/useSuperwall"
+import { SUPERWALL_TRIGGERS } from "./config/superwall"
 import {
   processSelectedImage,
   generateImage as generateStyledImage,
   handleDownload as saveImage,
   handleShare as shareImage,
   StyleItem,
-} from "./utils/imageUtils";
-import { stylesList } from "./mainComps/stylesData";
+} from "./utils/imageUtils"
+import { stylesList } from "./mainComps/stylesData"
 
-const { width } = Dimensions.get("window");
-const ACCENT_COLOR = "#3B82F6";
+const { width } = Dimensions.get("window")
+const ACCENT_COLOR = "#3B82F6"
 
 export default function AnimeConverter() {
-  const [selectedStyle, setSelectedStyle] = useState<number | null>(null);
-  const [image, setImage] = useState<string | null>(null);
-  const [resultImage, setResultImage] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [imageSize, setImageSize] = useState(0);
-  const [showResultScreen, setShowResultScreen] = useState(false);
-  const [verificationNote, setVerificationNote] = useState("");
-  const { isSubscribed, showPaywall } = useSuperwall();
+  const [selectedStyle, setSelectedStyle] = useState<number | null>(null)
+  const [image, setImage] = useState<string | null>(null)
+  const [resultImage, setResultImage] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [loadingProgress, setLoadingProgress] = useState(0)
+  const [imageSize, setImageSize] = useState(0)
+  const [showResultScreen, setShowResultScreen] = useState(false)
+  const [verificationNote, setVerificationNote] = useState("")
+  const { isSubscribed, showPaywall } = useSuperwall()
 
-  const { isOnboarded, isLoading } = useOnboarding();
+  const { isOnboarded, isLoading } = useOnboarding()
 
   useEffect(() => {
- 
-    if (isLoading) return;
+    if (isLoading) return
 
     if (!isOnboarded) {
-      router.replace("/onboarding");
+      router.replace("/onboarding")
     }
-  }, [isOnboarded, isLoading]);
+  }, [isOnboarded, isLoading])
 
   useEffect(() => {
     if (loading) {
       const interval = setInterval(() => {
         setLoadingProgress((prevProgress) => {
-          const newProgress = prevProgress + Math.random() * 10;
-          return newProgress > 95 ? 95 : newProgress;
-        });
-      }, 500);
+          const newProgress = prevProgress + Math.random() * 10
+          return newProgress > 95 ? 95 : newProgress
+        })
+      }, 500)
 
       return () => {
-        clearInterval(interval);
-        setLoadingProgress(0);
-      };
+        clearInterval(interval)
+        setLoadingProgress(0)
+      }
     }
-  }, [loading]);
+  }, [loading])
 
   if (isLoading) {
     return (
@@ -84,20 +69,20 @@ export default function AnimeConverter() {
       >
         <ActivityIndicator size="large" color={ACCENT_COLOR} />
       </SafeAreaView>
-    );
+    )
   }
 
   const handleImagePicker = async () => {
     try {
       const { status } =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
+        await ImagePicker.requestMediaLibraryPermissionsAsync()
 
       if (status !== "granted") {
         Alert.alert(
           "Permission Required",
           "Sorry, we need camera roll permissions to upload photos."
-        );
-        return;
+        )
+        return
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
@@ -105,45 +90,45 @@ export default function AnimeConverter() {
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.7,
-      });
+      })
 
       if (!result.canceled) {
-        const selectedImage = result.assets[0].uri;
-        handleSelectedImage(selectedImage);
+        const selectedImage = result.assets[0].uri
+        handleSelectedImage(selectedImage)
       }
     } catch (error) {
-      console.log("Error picking image:", error);
-      Alert.alert("Error", "Something went wrong while selecting your image");
+      console.log("Error picking image:", error)
+      Alert.alert("Error", "Something went wrong while selecting your image")
     }
-  };
+  }
 
   const handleCameraCapture = async () => {
     try {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      const { status } = await ImagePicker.requestCameraPermissionsAsync()
 
       if (status !== "granted") {
         Alert.alert(
           "Permission Required",
           "Sorry, we need camera permissions to take photos."
-        );
-        return;
+        )
+        return
       }
 
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.7,
-      });
+      })
 
       if (!result.canceled) {
-        const selectedImage = result.assets[0].uri;
-        handleSelectedImage(selectedImage);
+        const selectedImage = result.assets[0].uri
+        handleSelectedImage(selectedImage)
       }
     } catch (error) {
-      console.log("Error taking photo:", error);
-      Alert.alert("Error", "Something went wrong while taking your photo");
+      console.log("Error taking photo:", error)
+      Alert.alert("Error", "Something went wrong while taking your photo")
     }
-  };
+  }
 
   const handleSelectedImage = async (selectedImage: string) => {
     await processSelectedImage(
@@ -152,11 +137,11 @@ export default function AnimeConverter() {
       setImageSize,
       setResultImage,
       setShowResultScreen
-    );
-  };
+    )
+  }
 
   const handleGenerateImage = async () => {
-    setLoading(true);
+    setLoading(true)
     try {
       await generateStyledImage(
         image,
@@ -165,39 +150,34 @@ export default function AnimeConverter() {
         setLoading,
         setShowResultScreen,
         setResultImage
-      );
-      setLoadingProgress(100);
+      )
+      setLoadingProgress(100)
     } catch (error) {
-      console.log("Error generating image:", error);
-      Alert.alert("Error", "Something went wrong while generating your image");
-      setLoading(false);
-      setLoadingProgress(0);
+      console.log("Error generating image:", error)
+      Alert.alert("Error", "Something went wrong while generating your image")
+      setLoading(false)
+      setLoadingProgress(0)
     }
-  };
+  }
 
   const handleDownload = async () => {
-    await saveImage(resultImage, handleShare);
-  };
+    await saveImage(resultImage, handleShare)
+  }
 
   const handleShare = async () => {
-    await shareImage(resultImage, Share);
-  };
+    await shareImage(resultImage, Share)
+  }
 
   const handleRetry = () => {
-    setShowResultScreen(false);
-    setResultImage(null);
-  };
+    setShowResultScreen(false)
+    setResultImage(null)
+  }
 
   const navigateToProfile = () => {
-    router.push("/profile");
-  };
+    router.push("/profile")
+  }
 
-  const resetOnboardingTest = async () => {
-    await AsyncStorage.removeItem("@onboarding_completed");
-    router.replace("/onboarding");
-  };
-
-  const styles: StyleItem[] = stylesList;
+  const styles: StyleItem[] = stylesList
 
   if (showResultScreen) {
     return (
@@ -212,7 +192,7 @@ export default function AnimeConverter() {
         handleDownload={handleDownload}
         handleShare={handleShare}
       />
-    );
+    )
   }
 
   return (
@@ -225,52 +205,30 @@ export default function AnimeConverter() {
             <Text style={screenStyles.titleIcon}></Text>
             <Text style={screenStyles.title}>GoToon</Text>
           </View>
-
-        
-          <TouchableOpacity
-            onPress={navigateToProfile}
-            style={screenStyles.settingsButton}
-          >
+          <TouchableOpacity onPress={navigateToProfile} style={screenStyles.settingsButton}>
             <Ionicons name="settings" size={24} color={ACCENT_COLOR} />
           </TouchableOpacity>
         </View>
-
         <View style={screenStyles.mainContent}>
           <View style={screenStyles.imageContainer}>
             {image ? (
               <View style={screenStyles.imagePreviewContainer}>
-                <Image
-                  source={{ uri: image }}
-                  style={screenStyles.imagePreview}
-                />
+                <Image source={{ uri: image }} style={screenStyles.imagePreview} />
                 {loading ? (
                   <View style={screenStyles.loadingOverlay}>
                     <ActivityIndicator size="large" color="white" />
-                    <Text style={screenStyles.loadingText}>
-                      Processing... {Math.round(loadingProgress)}%
-                    </Text>
+                    <Text style={screenStyles.loadingText}>Processing... {Math.round(loadingProgress)}% </Text>
                     <View style={screenStyles.progressBar}>
-                      <View
-                        style={[
-                          screenStyles.progressFill,
-                          { width: `${loadingProgress}%` },
-                        ]}
-                      />
+                      <View style={[screenStyles.progressFill,{ width: `${loadingProgress}%` },]}/>
                     </View>
                   </View>
                 ) : (
                   <View style={screenStyles.changeImageButtonsContainer}>
-                    <TouchableOpacity
-                      style={screenStyles.changeImageButton}
-                      onPress={handleImagePicker}
-                    >
+                    <TouchableOpacity style={screenStyles.changeImageButton} onPress={handleImagePicker}>
                       <Text style={screenStyles.changeImageText}>Gallery</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                      style={screenStyles.changeImageButton}
-                      onPress={handleCameraCapture}
-                    >
+                    <TouchableOpacity style={screenStyles.changeImageButton} onPress={handleCameraCapture}>
                       <Ionicons name="camera-outline" size={18} color="white" />
                       <Text style={screenStyles.changeImageText}>Selfie</Text>
                     </TouchableOpacity>
@@ -320,11 +278,17 @@ export default function AnimeConverter() {
                     selectedStyle === style.id && screenStyles.selectedStyle,
                   ]}
                   onPress={() => {
-                    if (!isSubscribed && style.name !== 'Anime' && style.name !== 'OldSchool'  && style.name && style.name !== 'Lego') {
-                      showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK);
-                      return;
+                    if (
+                      !isSubscribed &&
+                      style.name !== "Anime" &&
+                      style.name !== "OldSchool" &&
+                      style.name &&
+                      style.name !== "Lego"
+                    ) {
+                      showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK)
+                      return
                     }
-                    setSelectedStyle(style.id);
+                    setSelectedStyle(style.id)
                   }}
                 >
                   <View style={{ position: "relative" }}>
@@ -332,25 +296,35 @@ export default function AnimeConverter() {
                       style={screenStyles.styleImage}
                       source={{ uri: style.src }}
                     />
-                    {!isSubscribed && style.name !== 'Anime' && style.name !== 'OldSchool'  && style.name && style.name !== 'Lego'  && (
-                      <View
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          backgroundColor: "rgba(0, 0, 0, 0.5)",
-                          borderRadius: 8,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}
-                      >
-                        <Ionicons name="lock-closed" size={20} color="white" />
-                      </View>
-                    )}
+                    {!isSubscribed &&
+                      style.name !== "Anime" &&
+                      style.name !== "OldSchool" &&
+                      style.name &&
+                      style.name !== "Lego" && (
+                        <View
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                            borderRadius: 8,
+                            justifyContent: "center",
+                            alignItems: "center",
+                          }}
+                        >
+                          <Ionicons
+                            name="lock-closed"
+                            size={20}
+                            color="white"
+                          />
+                        </View>
+                      )}
                   </View>
-                  <Text style={screenStyles.styleName}>{style.DisplayName}</Text>
+                  <Text style={screenStyles.styleName}>
+                    {style.DisplayName}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -358,19 +332,12 @@ export default function AnimeConverter() {
             <TouchableOpacity
               onPress={handleGenerateImage}
               disabled={!image || !selectedStyle || loading}
-              style={screenStyles.generateButtonContainer}
-            >
+              style={screenStyles.generateButtonContainer}>
               <LinearGradient
                 colors={[ACCENT_COLOR, "#1E40AF"]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
-                style={[
-                  screenStyles.generateButton,
-                  (!image || !selectedStyle || loading) &&
-                    screenStyles.disabledButton,
-                ]}
-              >
-                
+                style={[screenStyles.generateButton, (!image || !selectedStyle || loading) && screenStyles.disabledButton,]}>
                 <View style={screenStyles.generateButtonContent}>
                   {loading ? (
                     <ActivityIndicator size="small" color="white" />
@@ -387,7 +354,7 @@ export default function AnimeConverter() {
         )}
       </SafeAreaView>
     </GestureHandlerRootView>
-  );
+  )
 }
 
 const screenStyles = StyleSheet.create({
@@ -498,7 +465,7 @@ const screenStyles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     width: 80,
-    marginRight: 12,
+    marginRight: 8,
     borderWidth: 1,
     borderColor: "transparent",
   },
@@ -507,8 +474,8 @@ const screenStyles = StyleSheet.create({
     borderColor: ACCENT_COLOR,
   },
   styleImage: {
-    width: 64,
-    height: 64,
+    width: 69,
+    height: 69,
     borderRadius: 8,
     backgroundColor: "#333",
     marginBottom: 4,
@@ -602,6 +569,4 @@ const screenStyles = StyleSheet.create({
     height: "100%",
     backgroundColor: ACCENT_COLOR,
   },
-});
-
-
+})
