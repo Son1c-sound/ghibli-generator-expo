@@ -12,7 +12,7 @@ export const stylesList: StyleItem[] = [
     id: 2, 
     DisplayName: "Chibli",
     name: 'trending', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743696823/wbitgwkahdwl64oup3zs.png' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390195/pnlywxojs1bn4m9ad6b5.png' 
   },
   { 
     id: 4, 
@@ -73,6 +73,12 @@ export const stylesList: StyleItem[] = [
     DisplayName: "Pixel Art",
     name: 'PixelArt', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390979/fxtcvex3j8ncjbmksrod.png' 
+  },
+  { 
+    id: 3219, 
+    DisplayName: "Cyberpunk",
+    name: 'Cyberpunk', 
+    src: 'https://static1.thegamerimages.com/wordpress/wp-content/uploads/2024/11/mixcollage-26-nov-2024-10-12-am-4945.jpg' 
   },
   { 
     id: 9, 

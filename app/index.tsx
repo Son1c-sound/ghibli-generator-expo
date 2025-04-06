@@ -93,7 +93,7 @@ export default function AnimeConverter() {
 
   const handleCameraCapture = async () => {
     try {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync()
+      const { status } = await ImagePicker.requestCameraPermissionsAsync(                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  )
 
       if (status !== "granted") {
         Alert.alert(
@@ -251,7 +251,7 @@ export default function AnimeConverter() {
                     if (
                       !isSubscribed &&
                       style.name !== "Anime" &&
-                      style.name !== "OldSchool" &&
+                      style.name !== "OldSchool" && 
                       style.name &&
                       style.name !== "Lego"
                     ) {
