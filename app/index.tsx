@@ -53,7 +53,7 @@ export default function AnimeConverter() {
  
     if (isLoading) return;
 
-    if (isOnboarded) {
+    if (!isOnboarded) {
       router.replace("/onboarding");
     }
   }, [isOnboarded, isLoading]);
