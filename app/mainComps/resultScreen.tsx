@@ -12,10 +12,9 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Alert } from 'react-native';
-
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get('window');
-
 
 interface ResultScreenProps {
   image: string | null;
@@ -83,136 +82,141 @@ const ResultScreen: React.FC<ResultScreenProps> = ({
   };
 
   return (
-    <SafeAreaView style={screenStyles.container}>
-      <StatusBar barStyle="light-content" />
-      <View style={screenStyles.resultHeader}>
-        <TouchableOpacity onPress={handleRetry} style={screenStyles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={screenStyles.resultTitle}>Your Styled Image</Text>
-        <View style={{width: 24}} />
-      </View>
-      
-      <View style={screenStyles.resultContent}>
+    <LinearGradient
+      colors={['#1a1a2e', '#16213e', '#0f172a']}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 0, y: 1 }}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={screenStyles.container}>
+        <StatusBar barStyle="light-content" />
+        <View style={screenStyles.resultHeader}>
+          <TouchableOpacity onPress={handleRetry} style={screenStyles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <Text style={screenStyles.resultTitle}>Your Styled Image</Text>
+          <View style={{width: 24}} />
+        </View>
         
-        {loading ? (
-          <View style={screenStyles.loadingContainer}>
-            
-            <View style={screenStyles.blurredImageContainer}>
-              <Image 
-                source={{ uri: image || '' }} 
-                style={screenStyles.blurredImage}
-                resizeMode="cover"
-                blurRadius={8}
-              />
+        <View style={screenStyles.resultContent}>
+          
+          {loading ? (
+            <View style={screenStyles.loadingContainer}>
               
-              <View style={screenStyles.loadingOverlay}>
+              <View style={screenStyles.blurredImageContainer}>
+                <Image 
+                  source={{ uri: image || '' }} 
+                  style={screenStyles.blurredImage}
+                  resizeMode="cover"
+                  blurRadius={8}
+                />
                 
-                <View style={screenStyles.loadingContent}>
-                  <ActivityIndicator size="large" color="white" />
-                  <Text style={screenStyles.loadingText}>
-                    Applying {styles.find(style => style.id === selectedStyle)?.name} style...
-                  </Text>
-         
-                  <View style={screenStyles.progressBarContainer}>
-                    <View 
-                      style={[
-                        screenStyles.progressBar, 
-                        { width: `${progress}%` }
-                      ]} 
-                    />
-                  </View>
+                <View style={screenStyles.loadingOverlay}>
                   
-                  <Text style={screenStyles.loadingSubtext}>{Math.round(progress)}% complete</Text>
+                  <View style={screenStyles.loadingContent}>
+                    <ActivityIndicator size="large" color="white" />
+                    <Text style={screenStyles.loadingText}>
+                      Applying {styles.find(style => style.id === selectedStyle)?.name} style...
+                    </Text>
+           
+                    <View style={screenStyles.progressBarContainer}>
+                      <View 
+                        style={[
+                          screenStyles.progressBar, 
+                          { width: `${progress}%` }
+                        ]} 
+                      />
+                    </View>
+                    
+                    <Text style={screenStyles.loadingSubtext}>{Math.round(progress)}% complete</Text>
+                  </View>
                 </View>
+                
               </View>
               
             </View>
             
-          </View>
-          
-        ) : resultImage ? (
-          <View style={screenStyles.resultImageContainer}>
-            <Image 
-              source={{ uri: resultImage }} 
-              style={screenStyles.fullResultImage}
-              resizeMode="contain"
-            />
-            {verificationNote ? (
-              <Text style={screenStyles.verificationNote}>{verificationNote}</Text>
-            ) : null}
-            
-            <TouchableOpacity 
-                style={[
-                  screenStyles.saveButton,
-                  (isSaving || isSaved) && screenStyles.saveButtonDisabled
-                ]}
-                onPress={handleSaveImage}
-                disabled={isSaving || isSaved}
-              >
-                {isSaving ? (
-                  <ActivityIndicator size="small" color="black" />
-                ) : isSaved ? (
-                  <>
-                    <Ionicons name="checkmark-circle" size={20} color="black" />
-                    <Text style={screenStyles.saveButtonText}>Saved to Gallery</Text>
-                  </>
-                ) : (
-                  <>
-                    <Ionicons name="download-outline" size={20} color="black" />
-                    <Text style={screenStyles.saveButtonText}>Save Image</Text>
-                  </>
-                )}
-              </TouchableOpacity>
+          ) : resultImage ? (
+            <View style={screenStyles.resultImageContainer}>
+              <Image 
+                source={{ uri: resultImage }} 
+                style={screenStyles.fullResultImage}
+                resizeMode="contain"
+              />
+              {verificationNote ? (
+                <Text style={screenStyles.verificationNote}>{verificationNote}</Text>
+              ) : null}
               
-              <View style={screenStyles.secondaryButtonsContainer}>
-                <TouchableOpacity 
-                  style={screenStyles.tryAgainButton}
-                  onPress={handleRetry}
+              <TouchableOpacity 
+                  style={[
+                    screenStyles.saveButton,
+                    (isSaving || isSaved) && screenStyles.saveButtonDisabled
+                  ]}
+                  onPress={handleSaveImage}
+                  disabled={isSaving || isSaved}
                 >
-                  <Ionicons name="refresh-outline" size={18} color="white" />
-                  <Text style={screenStyles.tryAgainButtonText}>Try Again</Text>
+                  {isSaving ? (
+                    <ActivityIndicator size="small" color="black" />
+                  ) : isSaved ? (
+                    <>
+                      <Ionicons name="checkmark-circle" size={20} color="black" />
+                      <Text style={screenStyles.saveButtonText}>Saved to Gallery</Text>
+                    </>
+                  ) : (
+                    <>
+                      <Ionicons name="download-outline" size={20} color="black" />
+                      <Text style={screenStyles.saveButtonText}>Save Image</Text>
+                    </>
+                  )}
                 </TouchableOpacity>
                 
-                <TouchableOpacity 
-                  style={screenStyles.shareButton}
-                  onPress={handleShare}
-                >
-                  <Ionicons name="share-social-outline" size={18} color="white" />
-                  <Text style={screenStyles.shareButtonText}>Share</Text>
-                </TouchableOpacity>
-              </View>
-          </View>
-        ) : (
-          <View style={screenStyles.errorContainer}>
-            <Ionicons name="alert-circle-outline" size={48} color="#EC4899" />
-            <Text style={screenStyles.errorText}>Something went wrong</Text>
-            <TouchableOpacity 
-              style={screenStyles.retryButton}
-              onPress={handleRetry}
-            >
-              <Text style={screenStyles.retryText}>Try Again</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-
-    </SafeAreaView>
+                <View style={screenStyles.secondaryButtonsContainer}>
+                  <TouchableOpacity 
+                    style={screenStyles.tryAgainButton}
+                    onPress={handleRetry}
+                  >
+                    <Ionicons name="refresh-outline" size={18} color="white" />
+                    <Text style={screenStyles.tryAgainButtonText}>Try Again</Text>
+                  </TouchableOpacity>
+                  
+                  <TouchableOpacity 
+                    style={screenStyles.shareButton}
+                    onPress={handleShare}
+                  >
+                    <Ionicons name="share-social-outline" size={18} color="white" />
+                    <Text style={screenStyles.shareButtonText}>Share</Text>
+                  </TouchableOpacity>
+                </View>
+            </View>
+          ) : (
+            <View style={screenStyles.errorContainer}>
+              <Ionicons name="alert-circle-outline" size={48} color="#EC4899" />
+              <Text style={screenStyles.errorText}>Something went wrong</Text>
+              <TouchableOpacity 
+                style={screenStyles.retryButton}
+                onPress={handleRetry}
+              >
+                <Text style={screenStyles.retryText}>Try Again</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
 const screenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
     padding: 16,
+    backgroundColor: 'transparent',
   },
   resultHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingTop: 40,
-  
   },
   backButton: {
     padding: 8,
@@ -225,7 +229,6 @@ const screenStyles = StyleSheet.create({
   },
   resultContent: {
     flex: 1,
-  
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -235,14 +238,12 @@ const screenStyles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     height: '100%'
-  
   },
   loadingText: {
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
-
   },
   loadingSubtext: {
     color: 'rgba(255, 255, 255, 0.7)',
@@ -256,6 +257,13 @@ const screenStyles = StyleSheet.create({
     borderRadius: 16,
     overflow: 'hidden',
     position: 'relative',
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    shadowColor: '#3B82F6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 5,
   },
   blurredImage: {
     width: '100%',
@@ -269,7 +277,7 @@ const screenStyles = StyleSheet.create({
     bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay instead of gradient
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   loadingContent: {
     width: '100%',
@@ -286,7 +294,7 @@ const screenStyles = StyleSheet.create({
   },
   progressBar: {
     height: '100%',
-    backgroundColor: '#3B82F6', // Blue progress bar
+    backgroundColor: '#3B82F6',
     borderRadius: 3,
   },
   resultImageContainer: {
@@ -298,6 +306,14 @@ const screenStyles = StyleSheet.create({
     width: width * 0.9,
     height: width * 0.9,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(59, 130, 246, 0.3)',
+    shadowColor: '#3B82F6',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 5,
+    backgroundColor: 'rgba(59, 130, 246, 0.05)',
   },
   aiWarningContainer: {
     flexDirection: 'row',

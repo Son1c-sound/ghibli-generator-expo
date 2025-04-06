@@ -88,7 +88,7 @@ export default function AnimeConverter() {
 
   const handleCameraCapture = async () => {
     try {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync(                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  )
+      const { status } = await ImagePicker.requestCameraPermissionsAsync()
 
       if (status !== "granted") {
         Alert.alert(
@@ -181,7 +181,13 @@ export default function AnimeConverter() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={screenStyles.container}>
+      <LinearGradient
+        colors={['#1a1a2e', '#16213e', '#0f172a']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
+        style={{ flex: 1 }}
+      >
+        <SafeAreaView style={screenStyles.container}>
         <StatusBar barStyle="light-content" />
         <View style={screenStyles.header}>
           <View style={screenStyles.titleContainer}>
@@ -261,25 +267,11 @@ export default function AnimeConverter() {
                       style.name !== "OldSchool" &&
                       style.name &&
                       style.name !== "Lego" && (
-                        <View
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            borderRadius: 8,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            }}>
-                          <Ionicons name="lock-closed" size={20} color="white" />
+                        <View style={screenStyles.premiumBadge}>
+                          <Text style={screenStyles.premiumText}>Premium</Text>
                         </View>
                       )}
                   </View>
-                  <Text style={screenStyles.styleName}>
-                    {style.DisplayName}
-                  </Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -300,6 +292,7 @@ export default function AnimeConverter() {
           </View>
         )}
       </SafeAreaView>
+      </LinearGradient>
     </GestureHandlerRootView>
   )
 }
@@ -307,8 +300,8 @@ export default function AnimeConverter() {
 const screenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
     padding: 16,
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: "row",
@@ -317,7 +310,6 @@ const screenStyles = StyleSheet.create({
     paddingTop: Platform.OS === "android" ? 40 : 40,
     marginBottom: 20,
   },
-
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -328,7 +320,6 @@ const screenStyles = StyleSheet.create({
   },
   changeImageButtonsContainer: {
     flexDirection: "row",
-
     width: "100%",
     marginTop: 16,
     paddingHorizontal: 10,
@@ -418,7 +409,6 @@ const screenStyles = StyleSheet.create({
   },
   selectedStyle: {
     backgroundColor: "rgba(59, 130, 246, 0.2)",
-    borderColor: ACCENT_COLOR,
   },
   styleImage: {
     width: 69,
@@ -427,11 +417,19 @@ const screenStyles = StyleSheet.create({
     backgroundColor: "#333",
     marginBottom: 4,
   },
-  styleName: {
+  premiumBadge: {
+    position: "absolute",
+    bottom: 8,
+    right: 4,
+    backgroundColor: "rgba(100, 100, 100, 0.8)",
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+    borderRadius: 4,
+  },
+  premiumText: {
     color: "white",
-    fontSize: 12,
-    textAlign: "center",
-    marginTop: 4,
+    fontSize: 9,
+    fontWeight: "bold",
   },
   generateButtonContainer: {
     width: "100%",
@@ -456,7 +454,6 @@ const screenStyles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     fontSize: 16,
-
     marginLeft: 8,
   },
   imagePreviewContainer: {
