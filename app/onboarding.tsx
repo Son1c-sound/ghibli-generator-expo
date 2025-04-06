@@ -26,7 +26,6 @@ const SimplifiedComponent = () => {
       return;
     }
     
-    // Final continue button - complete onboarding and route to home
     await completeOnboarding();
     
     try {
@@ -35,7 +34,6 @@ const SimplifiedComponent = () => {
       const paywallResult = await showPaywall(SUPERWALL_TRIGGERS.ONBOARDING);
     } catch (error) {
       console.error('Error showing paywall:', error);
-      // Navigate anyway as fallback
       router.push('/');
     }
   };

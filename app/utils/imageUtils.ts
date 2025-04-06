@@ -70,7 +70,7 @@ export const generateImage = async (
   setShowResultScreen: (show: boolean) => void,
   setResultImage: (image: string | null) => void
 ): Promise<void> => {
-  // Input validation
+
   if (!image) {
     Alert.alert('No Image', 'Please select an image first');
     return;
@@ -119,7 +119,7 @@ export const generateImage = async (
     
     try {
       console.log('Sending request to server...');
-      const response = await fetch('https://ghibil-studio-server.vercel.app/api/generate-image', {
+      const response = await fetch('https://ghibil-studio-server-production.up.railway.app/api/generate-image', {
         method: 'POST',
         body: JSON.stringify(requestData),
         headers: {
