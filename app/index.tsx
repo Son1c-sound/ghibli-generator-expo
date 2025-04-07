@@ -14,7 +14,7 @@ import { processSelectedImage, generateImage as generateStyledImage, handleDownl
 import { stylesList } from "./mainComps/stylesData"
 
 const { width } = Dimensions.get("window")
-const ACCENT_COLOR = "#3B82F6"
+const ACCENT_COLOR = "#f5f5f5"
 
 export default function AnimeConverter() {
   const [selectedStyle, setSelectedStyle] = useState<number | null>(null)
@@ -63,8 +63,7 @@ export default function AnimeConverter() {
 
   const styles: StyleItem[] = stylesList
   
-  const handleStyleSelect = (styleId) => {
-    // Find the selected style
+  const handleStyleSelect = (styleId:any) => {
     const style = styles.find(s => s.id === styleId)
     
     if (!isSubscribed && 
@@ -78,142 +77,130 @@ export default function AnimeConverter() {
     }
     
     setSelectedStyle(styleId)
-    // Navigate to upload/camera screen
-    // You would implement this navigation logic later
     router.push({
       pathname: "/upload",
       params: { styleId }
     })
   }
 
-  // Find the Ghibli style for featured card
   const ghibliStyle = styles.find(style => style.name === "Ghibli") || styles[0]
-  
-  // All other styles for the grid
   const otherStyles = styles.filter(style => style.id !== ghibliStyle.id)
 
   if (showResultScreen) {
     return (
       <ResultScreen
-        image={image}
-        resultImage={resultImage}
-        loading={loading}
-        selectedStyle={selectedStyle}
-        verificationNote={verificationNote}
-        styles={styles}
-        handleRetry={handleRetry}
-        handleDownload={handleDownload}
-        handleShare={handleShare}
       />
     )
   }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={screenStyles.container}>
-        <StatusBar barStyle="light-content" />
-        <View style={screenStyles.header}>
-          <View style={screenStyles.titleContainer}>
-            <Text style={screenStyles.titleIcon}></Text>
-            <Text style={screenStyles.title}>GoToon</Text>
+      <LinearGradient
+        colors={['#000000', '#000000', '#000000']}
+        locations={[0, 0.35, 0.7]}
+        style={{ flex: 1 }}
+      >
+        <SafeAreaView style={screenStyles.container}>
+          <StatusBar barStyle="light-content" />
+          <View style={screenStyles.header}>
           </View>
-        </View>
-        
-        <ScrollView style={screenStyles.scrollContainer} showsVerticalScrollIndicator={false}>
-          {/* Featured Style Card */}
-          <View style={screenStyles.featuredContainer}>
-            <Text style={screenStyles.sectionTitle}>Featured Style</Text>
-            <TouchableOpacity
-              style={screenStyles.featuredCard}
-              onPress={() => handleStyleSelect(ghibliStyle.id)}
-            >
-              <Image 
-                source={{ uri: ghibliStyle.src }} 
-                style={screenStyles.featuredImage} 
-              />
-              
-              <LinearGradient
-                colors={['transparent', 'rgba(0,0,0,0.8)']}
-                style={screenStyles.featuredGradient}
+          <ScrollView style={screenStyles.scrollContainer} showsVerticalScrollIndicator={false}>
+            <View style={screenStyles.featuredContainer}>
+              <Text style={screenStyles.sectionTitle}>Featured Style</Text>
+              <TouchableOpacity
+                style={screenStyles.featuredCard}
+                onPress={() => handleStyleSelect(ghibliStyle.id)}
               >
-                <View style={screenStyles.featuredTextContainer}>
-                  <Text style={screenStyles.featuredTitle}>{ghibliStyle.DisplayName}</Text>
-                  <Text style={screenStyles.featuredDescription}>
-                    Transform your photos into magical Ghibli-inspired art
-                  </Text>
-                  
-                  {!isSubscribed && 
-                    ghibliStyle.name !== "Anime" && 
-                    ghibliStyle.name !== "OldSchool" && 
-                    ghibliStyle.name !== "Lego" && (
-                    <View style={screenStyles.lockIconContainer}>
-                      <Ionicons name="lock-closed" size={16} color="white" />
-                    </View>
-                  )}
-                </View>
-              </LinearGradient>
-            </TouchableOpacity>
-          </View>
-          
-          {/* Other Styles Grid */}
-          <View style={screenStyles.stylesGridContainer}>
-            <Text style={screenStyles.sectionTitle}>More Styles</Text>
-            <View style={screenStyles.stylesGrid}>
-              {otherStyles.map((style, index) => (
-                <TouchableOpacity
-                  key={style.id}
-                  style={screenStyles.styleCard}
-                  onPress={() => handleStyleSelect(style.id)}
+                <Image 
+                  source={{ uri: ghibliStyle.src }} 
+                  style={screenStyles.featuredImage} 
+                />
+                
+                <LinearGradient
+                  colors={['transparent', 'rgba(0,0,0,0.8)']}
+                  style={screenStyles.featuredGradient}
                 >
-                  <View style={screenStyles.styleImageContainer}>
-                    <Image source={{ uri: style.src }} style={screenStyles.styleImage} />
+                  <View style={screenStyles.featuredTextContainer}>
+                    <Text style={screenStyles.featuredTitle}>{ghibliStyle.DisplayName}</Text>
+                    <Text style={screenStyles.featuredDescription}>
+                      Transform your photos into magical Anime-inspired art
+                    </Text>
                     
                     {!isSubscribed && 
-                      style.name !== "Anime" && 
-                      style.name !== "OldSchool" && 
-                      style.name !== "Lego" && (
-                      <View style={screenStyles.styleLockOverlay}>
-                        <Ionicons name="lock-closed" size={20} color="white" />
+                      ghibliStyle.name !== "Anime" && 
+                      ghibliStyle.name !== "OldSchool" && 
+                      ghibliStyle.name !== "Lego" && (
+                      <View style={screenStyles.lockIconContainer}>
+                        <Ionicons name="lock-closed" size={16} color="white" />
                       </View>
                     )}
                   </View>
-                  
-                  <View style={screenStyles.styleTextContainer}>
-                    <Text style={screenStyles.styleName}>{style.DisplayName}</Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
+                </LinearGradient>
+              </TouchableOpacity>
             </View>
+            
+            <View style={screenStyles.stylesGridContainer}>
+              <Text style={screenStyles.sectionTitle}>Explore More</Text>
+              <View style={screenStyles.stylesGrid}>
+                {otherStyles.map((style, index) => (
+                  <TouchableOpacity
+                    key={style.id}
+                    style={screenStyles.styleCard}
+                    onPress={() => handleStyleSelect(style.id)}
+                  >
+                    <View style={screenStyles.styleImageContainer}>
+                      <Image source={{ uri: style.src }} style={screenStyles.styleImage} />
+                      
+                      <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,0.7)']}
+                        style={screenStyles.styleGradient}
+                      >
+                        <View style={screenStyles.styleTextContainer}>
+                          <Text style={screenStyles.styleName}>{style.DisplayName}</Text>
+                        </View>
+                      </LinearGradient>
+                      
+                      {!isSubscribed && 
+                        style.name !== "Anime" && 
+                        style.name !== "OldSchool" && 
+                        style.name !== "Lego" && (
+                        <View style={screenStyles.styleLockOverlay}>
+                          <Ionicons name="lock-closed" size={20} color="white" />
+                        </View>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </ScrollView>
+          
+          <View style={screenStyles.bottomNavBar}>
+            <TouchableOpacity 
+              style={screenStyles.bottomNavButton}
+            >
+              <Ionicons name="grid-outline" size={24} color="white" />
+              <Text style={screenStyles.bottomNavText}>Styles</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={screenStyles.bottomNavButton}
+              onPress={() => router.push("/chat")}
+            >
+              <Ionicons name="chatbubble-outline" size={24} color="white" />
+              <Text style={screenStyles.bottomNavText}>AI Chat</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={screenStyles.bottomNavButton}
+              onPress={() => router.push("/profile")}
+            >
+              <Ionicons name="settings-outline" size={24} color="white" />
+              <Text style={screenStyles.bottomNavText}>Settings</Text>
+            </TouchableOpacity>
           </View>
-        </ScrollView>
-        
-        {/* Bottom Navigation Bar */}
-        <View style={screenStyles.bottomNavBar}>
-          <TouchableOpacity 
-            style={screenStyles.bottomNavButton}
-          >
-            <Ionicons name="grid-outline" size={24} color="white" />
-            <Text style={screenStyles.bottomNavText}>Styles</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={screenStyles.cameraButton}
-            onPress={() => router.push("/camera")}
-          >
-            <View style={screenStyles.cameraIconContainer}>
-              <Ionicons name="camera-outline" size={28} color="white" />
-            </View>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={screenStyles.bottomNavButton}
-            onPress={() => router.push("/profile")}
-          >
-            <Ionicons name="settings-outline" size={24} color="white" />
-            <Text style={screenStyles.bottomNavText}>Settings</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+        </SafeAreaView>
+      </LinearGradient>
     </GestureHandlerRootView>
   )
 }
@@ -221,7 +208,7 @@ export default function AnimeConverter() {
 const screenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#171717",
+    backgroundColor: "transparent",
   },
   scrollContainer: {
     flex: 1,
@@ -248,8 +235,6 @@ const screenStyles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
   },
-  
-  // Section titles
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
@@ -257,8 +242,6 @@ const screenStyles = StyleSheet.create({
     marginBottom: 12,
     marginLeft: 4,
   },
-  
-  // Featured style card
   featuredContainer: {
     marginBottom: 24,
   },
@@ -267,7 +250,8 @@ const screenStyles = StyleSheet.create({
     overflow: "hidden",
     height: 220,
     width: "100%",
-    backgroundColor: "#1E1D22",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   featuredImage: {
     width: "100%",
@@ -298,14 +282,14 @@ const screenStyles = StyleSheet.create({
     position: "absolute",
     top: 16,
     right: 16,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
     padding: 8,
     borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
-  
-  // Styles grid
   stylesGridContainer: {
-    marginBottom: 100, // Extra space for bottom nav
+    marginBottom: 100,
   },
   stylesGrid: {
     flexDirection: "row",
@@ -313,11 +297,12 @@ const screenStyles = StyleSheet.create({
     justifyContent: "space-between",
   },
   styleCard: {
-    width: (width - 48) / 2, // 2 columns with spacing
+    width: (width - 48) / 2,
     marginBottom: 16,
     borderRadius: 12,
     overflow: "hidden",
-    backgroundColor: "#1a1a1a",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   styleImageContainer: {
     width: "100%",
@@ -327,6 +312,14 @@ const screenStyles = StyleSheet.create({
   styleImage: {
     width: "100%",
     height: "100%",
+  },
+  styleGradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: "100%",
+    justifyContent: "flex-end",
   },
   styleLockOverlay: {
     position: "absolute",
@@ -340,28 +333,35 @@ const screenStyles = StyleSheet.create({
   },
   styleTextContainer: {
     padding: 12,
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
   },
   styleName: {
     fontSize: 16,
     fontWeight: "600",
     color: "white",
   },
-  
-  // Bottom navigation
   bottomNavBar: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#333",
     position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "black",
-    paddingBottom: Platform.OS === "ios" ? 24 : 10,
+    bottom: Platform.OS === "ios" ? 30 : 20,
+    left: 20,
+    right: 20,
+    backgroundColor: "rgba(2, 0, 0, 0.86)",
+    paddingBottom: 10,
+    borderRadius: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    borderColor: "rgba(255, 255, 255, 0.15)",
   },
   bottomNavButton: {
     flex: 1,
@@ -373,22 +373,5 @@ const screenStyles = StyleSheet.create({
     color: "white",
     marginTop: 4,
     fontSize: 12,
-  },
-  cameraButton: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cameraIconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: ACCENT_COLOR,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
 });

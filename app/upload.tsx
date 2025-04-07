@@ -9,16 +9,19 @@ import {
   StatusBar, 
   Alert, 
   ActivityIndicator, 
-  Dimensions 
+  Dimensions,
+  ScrollView,
+  Platform
 } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Ionicons } from "@expo/vector-icons"
 import * as ImagePicker from "expo-image-picker"
 import { router, useLocalSearchParams } from "expo-router"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
+import { useSuperwall } from "@/hooks/useSuperwall"
+import { SUPERWALL_TRIGGERS } from "./config/superwall"
+import { generateImage, StyleItem } from "./utils/imageUtils"
 import { stylesList } from "./mainComps/stylesData"
-import { generateImage } from "./utils/imageUtils"
-
 
 const { width } = Dimensions.get("window")
 const ACCENT_COLOR = "#3B82F6"
@@ -29,9 +32,21 @@ export default function UploadScreen() {
   const [loading, setLoading] = useState(false)
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [imageSize, setImageSize] = useState(0)
+  const { isSubscribed, showPaywall } = useSuperwall()
   
-  // Find the selected style
   const selectedStyle = stylesList.find(style => style.id === Number(styleId)) || stylesList[0]
+
+  useEffect(() => {
+    if (!isSubscribed && 
+        selectedStyle && 
+        selectedStyle.name !== "Anime" && 
+        selectedStyle.name !== "OldSchool" && 
+        selectedStyle.name !== "Lego") {
+      showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK)
+      router.replace("/")
+      return
+    }
+  }, [selectedStyle, isSubscribed])
 
   useEffect(() => {
     if (loading) {
@@ -100,8 +115,23 @@ export default function UploadScreen() {
     }
   }
 
-  const handleSelectedImage = async (selectedImage) => {
+  const handleSelectedImage = async (selectedImage:any) => {
     setImage(selectedImage)
+  }
+
+  const handleStyleChange = (style:any) => {
+    if (!isSubscribed && 
+        style.name !== "Anime" && 
+        style.name !== "OldSchool" && 
+        style.name !== "Lego") {
+      showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK)
+      return
+    }
+    
+    router.replace({
+      pathname: "/upload",
+      params: { styleId: style.id }
+    })
   }
 
   const handleGenerateImage = async () => {
@@ -113,7 +143,6 @@ export default function UploadScreen() {
     setLoading(true)
     
     try {
-      // Process the image using the generateImage function
       const resultImageUri = await generateImage(
         image,
         Number(styleId),
@@ -122,7 +151,6 @@ export default function UploadScreen() {
       )
       
       if (resultImageUri) {
-        // Navigate to the result screen with the necessary data
         router.push({
           pathname: "/result",
           params: {
@@ -141,107 +169,149 @@ export default function UploadScreen() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <SafeAreaView style={styles.container}>
-        <StatusBar barStyle="light-content" />
-        
-        {/* Header */}
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={styles.backButton}
-          >
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>{selectedStyle ? selectedStyle.DisplayName : "Upload"}</Text>
-          <View style={styles.headerSpacing} />
-        </View>
-        
-        {/* Style Preview */}
-        <View style={styles.stylePreviewContainer}>
-          <Image 
-            source={{ uri: selectedStyle ? selectedStyle.src : null }} 
-            style={styles.stylePreviewImage} 
-          />
-          <Text style={styles.styleDescription}>
-            {`Transform your photos into ${selectedStyle ? selectedStyle.DisplayName : ""} style`}
-          </Text>
-        </View>
-        
-        {/* Image Upload Area */}
-        <View style={styles.uploadContainer}>
-          {image ? (
-            <View style={styles.imagePreviewContainer}>
-              <Image source={{ uri: image }} style={styles.imagePreview} />
-              {loading && (
-                <View style={styles.loadingOverlay}>
-                  <ActivityIndicator size="large" color="white" />
-                  <Text style={styles.loadingText}>
-                    Processing... {Math.round(loadingProgress)}%
+      <LinearGradient
+        colors={['#000000', '#000000', '#000000']}
+        locations={[0, 0.35, 0.7]}
+        style={{ flex: 1 }}
+      >
+        <SafeAreaView style={styles.container}>
+          <StatusBar barStyle="light-content" />
+          
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={styles.backButton}
+            >
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
+            <Text style={styles.headerTitle}>{selectedStyle ? selectedStyle.DisplayName : "Upload"}</Text>
+            <View style={styles.headerSpacing} />
+          </View>
+          
+          <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+            <View style={styles.stylePreviewContainer}>
+              <View style={styles.styleImageWrapper}>
+                <Image 
+                  source={{ uri: selectedStyle ? selectedStyle.src : null as any }} 
+                  style={styles.stylePreviewImage} 
+                />
+              </View>
+              <Text style={styles.styleDescription}>
+                {`Transform your photos into ${selectedStyle ? selectedStyle.DisplayName : ""} style`}
+              </Text>
+            </View>
+            
+            <View style={styles.uploadContainer}>
+              {image ? (
+                <View style={styles.imagePreviewContainer}>
+                  <Image source={{ uri: image }} style={styles.imagePreview} />
+                  {loading && (
+                    <View style={styles.loadingOverlay}>
+                      <ActivityIndicator size="large" color="white" />
+                      <Text style={styles.loadingText}>
+                        Processing... {Math.round(loadingProgress)}%
+                      </Text>
+                      <View style={styles.progressBar}>
+                        <View
+                          style={[
+                            styles.progressFill,
+                            { width: `${loadingProgress}%` },
+                          ]}
+                        />
+                      </View>
+                    </View>
+                  )}
+                </View>
+              ) : (
+                <View
+                  style={styles.emptyImageContainer}
+                >
+                  <Ionicons name="image-outline" size={60} color="#f5f5f5" />
+                  <Text style={styles.emptyImageText}>
+                    Select or capture an image
                   </Text>
-                  <View style={styles.progressBar}>
-                    <View
-                      style={[
-                        styles.progressFill,
-                        { width: `${loadingProgress}%` },
-                      ]}
-                    />
+                  
+                  <View style={styles.uploadButtonsContainer}>
+                    <TouchableOpacity
+                      style={styles.uploadButton}
+                      onPress={handleImagePicker}
+                    >
+                      <View style={styles.uploadButtonGradient}>
+                        <Ionicons name="images-outline" size={24} color="black" />
+                        <Text style={styles.uploadButtonText}>Gallery</Text>
+                      </View>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity
+                      style={styles.uploadButton}
+                      onPress={handleCameraCapture}
+                    >
+                      <View style={styles.uploadButtonGradient}>
+                        <Ionicons name="camera-outline" size={24} color="black" />
+                        <Text style={styles.uploadButtonText}>Camera</Text>
+                      </View>
+                    </TouchableOpacity>
                   </View>
                 </View>
               )}
             </View>
-          ) : (
-            <View style={styles.emptyImageContainer}>
-              <Ionicons name="image-outline" size={60} color="#666" />
-              <Text style={styles.emptyImageText}>
-                Select or capture an image
-              </Text>
-              
-              <View style={styles.uploadButtonsContainer}>
+            
+            {image && !loading && (
+              <View style={styles.generateButtonContainer}>
                 <TouchableOpacity
-                  style={styles.uploadButton}
-                  onPress={handleImagePicker}
+                  style={styles.generateButtonContent}
+                  onPress={handleGenerateImage}
                 >
-                  <Ionicons name="images-outline" size={24} color="white" />
-                  <Text style={styles.uploadButtonText}>Gallery</Text>
+                  <Ionicons name="sparkles" size={20} color="black" />
+                  <Text style={styles.generateText}>Generate Image</Text>
                 </TouchableOpacity>
                 
                 <TouchableOpacity
-                  style={styles.uploadButton}
-                  onPress={handleCameraCapture}
+                  style={styles.changeImageButton}
+                  onPress={() => setImage(null)}
                 >
-                  <Ionicons name="camera-outline" size={24} color="white" />
-                  <Text style={styles.uploadButtonText}>Camera</Text>
+                  <Text style={styles.changeImageText}>Change Image</Text>
                 </TouchableOpacity>
               </View>
-            </View>
-          )}
-        </View>
-        {image && !loading && (
-          <View style={styles.generateButtonContainer}>
-            <LinearGradient
-              colors={[ACCENT_COLOR, "#1E40AF"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.generateButton}
-            >
-              <TouchableOpacity
-                style={styles.generateButtonContent}
-                onPress={handleGenerateImage}
-              >
-                <Ionicons name="sparkles" size={20} color="white" />
-                <Text style={styles.generateText}>Generate Image</Text>
-              </TouchableOpacity>
-            </LinearGradient>
+            )}
             
-            <TouchableOpacity
-              style={styles.changeImageButton}
-              onPress={() => setImage(null)}
-            >
-              <Text style={styles.changeImageText}>Change Image</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </SafeAreaView>
+            <View style={styles.switchStyleContainer}>
+              <Text style={styles.switchStyleTitle}>Switch Style</Text>
+              <View style={styles.stylesGrid}>
+                {stylesList.map((style) => (
+                  <TouchableOpacity
+                    key={style.id}
+                    style={[
+                      styles.styleCardGrid,
+                      selectedStyle && selectedStyle.id === style.id ? styles.selectedStyleCard : null
+                    ]}
+                    onPress={() => handleStyleChange(style)}
+                  >
+                    <View style={styles.styleCardImageContainer}>
+                      <Image source={{ uri: style.src }} style={styles.styleCardImage} />
+                      <LinearGradient
+                        colors={['transparent', 'rgba(0,0,0,0.7)']}
+                        style={styles.styleCardGradient}
+                      >
+                        <Text style={styles.styleCardName}>{style.DisplayName}</Text>
+                      </LinearGradient>
+                      
+                      {!isSubscribed && 
+                        style.name !== "Anime" && 
+                        style.name !== "OldSchool" && 
+                        style.name !== "Lego" && (
+                        <View style={styles.styleLockOverlay}>
+                          <Ionicons name="lock-closed" size={16} color="white" />
+                        </View>
+                      )}
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </LinearGradient>
     </GestureHandlerRootView>
   )
 }
@@ -249,8 +319,11 @@ export default function UploadScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#171717",
+    backgroundColor: "transparent",
     padding: 16,
+  },
+  scrollContent: {
+    paddingBottom: 40,
   },
   header: {
     flexDirection: "row",
@@ -260,10 +333,16 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   backButton: {
-    padding: 8,
+    padding: 10,
+    color: "white",
+    borderRadius: 20,
+    width: 42,
+    height: 42,
+    alignItems: "center",
+    justifyContent: "center",
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     color: "white",
   },
@@ -272,38 +351,52 @@ const styles = StyleSheet.create({
   },
   stylePreviewContainer: {
     alignItems: "center",
-    marginBottom: 24,
+    marginBottom: 30,
+  },
+  styleImageWrapper: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    padding: 3,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
+    backgroundColor: "rgba(245, 245, 245, 0.2)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
   stylePreviewImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 12,
+    width: 116,
+    height: 116,
+    borderRadius: 58,
   },
   styleDescription: {
     color: "white",
-    fontSize: 16,
+    fontSize: 18,
     textAlign: "center",
+    fontWeight: "500",
   },
   uploadContainer: {
-    flex: 1,
-    justifyContent: "center",
     alignItems: "center",
+    marginTop: 10,
   },
   emptyImageContainer: {
-    width: width * 0.8,
-    height: width * 0.8,
-    borderRadius: 16,
-    backgroundColor: "#1a1a1a",
+    width: width * 0.85,
+    height: width * 0.85,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
+    overflow: "hidden",
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   emptyImageText: {
-    color: "#999",
+    color: "rgba(255, 255, 255, 0.9)",
     fontSize: 16,
-    marginTop: 12,
-    marginBottom: 24,
+    marginTop: 16,
+    marginBottom: 30,
+    fontWeight: "500",
   },
   uploadButtonsContainer: {
     flexDirection: "row",
@@ -311,24 +404,36 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   uploadButton: {
-    backgroundColor: "#333",
     borderRadius: 12,
-    padding: 16,
-    alignItems: "center",
+    overflow: "hidden",
     marginHorizontal: 8,
     width: 120,
   },
+  uploadButtonGradient: {
+    padding: 16,
+    alignItems: "center",
+    borderRadius: 12,
+    backgroundColor: "#f5f5f5",
+  },
   uploadButtonText: {
-    color: "white",
+    color: "black",
     marginTop: 8,
+    fontWeight: "600",
   },
   imagePreviewContainer: {
     position: "relative",
+    borderRadius: 20,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 5,
+    elevation: 8,
   },
   imagePreview: {
-    width: width * 0.8,
-    height: width * 0.8,
-    borderRadius: 16,
+    width: width * 0.85,
+    height: width * 0.85,
+    borderRadius: 20,
   },
   loadingOverlay: {
     position: "absolute",
@@ -339,32 +444,35 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.7)",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 16,
+    borderRadius: 20,
   },
   loadingText: {
     color: "white",
     marginTop: 12,
     fontSize: 16,
+    fontWeight: "600",
   },
   progressBar: {
     width: "70%",
     height: 8,
     backgroundColor: "rgba(255, 255, 255, 0.2)",
     borderRadius: 4,
-    marginTop: 12,
+    marginTop: 16,
     overflow: "hidden",
   },
   progressFill: {
     height: "100%",
-    backgroundColor: ACCENT_COLOR,
+    backgroundColor: "#f5f5f5",
   },
   generateButtonContainer: {
     width: "100%",
-    marginTop: 24,
-    marginBottom: 12,
+    marginTop: 30,
+    alignItems: "center",
   },
   generateButton: {
-    borderRadius: 12,
+    width: "90%",
+    backgroundColor: "#3B82F6",
+    borderRadius: 30,
     overflow: "hidden",
     marginBottom: 16,
   },
@@ -373,9 +481,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 16,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 30,
+    width: "90%",
   },
   generateText: {
-    color: "white",
+    color: "black",
     fontWeight: "bold",
     fontSize: 16,
     marginLeft: 8,
@@ -385,7 +496,74 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   changeImageText: {
-    color: "#999",
-    fontSize: 14,
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 16,
+    fontWeight: "500",
   },
+  switchStyleContainer: {
+    marginTop: 30,
+    marginBottom: 20,
+    width: "100%",
+  },
+  switchStyleTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "white",
+    marginBottom: 16,
+    marginLeft: 4,
+  },
+  stylesGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    width: width * 0.85,
+    alignSelf: "center",
+  },
+  styleCardGrid: {
+    width: (width * 0.85 - 16) / 3,
+    height: (width * 0.85 - 16) / 3,
+    marginBottom: 8,
+    borderRadius: 12,
+    overflow: "hidden",
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+  },
+  selectedStyleCard: {
+    borderWidth: 2,
+    borderColor: "#f5f5f5",
+  },
+  styleCardImageContainer: {
+    width: "100%",
+    height: "100%",
+    position: "relative",
+  },
+  styleCardImage: {
+    width: "100%",
+    height: "100%",
+  },
+  styleCardGradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: "50%",
+    justifyContent: "flex-end",
+    padding: 8,
+  },
+  styleCardName: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "white",
+  },
+  styleLockOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  }
 });

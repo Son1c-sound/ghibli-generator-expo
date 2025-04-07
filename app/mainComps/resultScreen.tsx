@@ -20,23 +20,18 @@ import * as FileSystem from "expo-file-system";
 import { Toast } from "toastify-react-native";
 
 const { width, height } = Dimensions.get("window");
-const ACCENT_COLOR = "#3B82F6";
+const ACCENT_COLOR = "#f5f5f5";
 
 export default function ResultScreen() {
   const { resultImage, styleId, prompt = "" } = useLocalSearchParams();
   const numericStyleId = styleId ? parseInt(styleId.toString(), 10) : null;
   
-  // Find the selected style
   const selectedStyle = stylesList.find(style => style.id === numericStyleId) || stylesList[0];
-
-  // Generate a description if not provided
-  const promptDescription = prompt || 
-    `A ${selectedStyle?.DisplayName || "styled"} character with detailed features, vibrant colors, and artistic composition.`;
 
   const handleShare = async () => {
     try {
       await Share.share({
-        url: resultImage,
+        url: Array.isArray(resultImage) ? resultImage[0] : resultImage,
         message: `Check out my ${selectedStyle?.DisplayName || "GoToon"} style image!`
       });
     } catch (error) {
@@ -47,7 +42,6 @@ export default function ResultScreen() {
 
   const handleDownload = async () => {
     try {
-      // Request permission
       const { status } = await MediaLibrary.requestPermissionsAsync();
       
       if (status !== "granted") {
@@ -55,26 +49,24 @@ export default function ResultScreen() {
         return;
       }
       
-      // Create a unique filename
       const filename = FileSystem.documentDirectory + `gotoon_${Date.now()}.jpg`;
       
-      // Handle base64 images
-      if (resultImage.startsWith('data:image')) {
+      if (typeof resultImage === 'string' && resultImage.startsWith('data:image')) {
         const base64Data = resultImage.split('base64,')[1];
         await FileSystem.writeAsStringAsync(filename, base64Data, {
           encoding: FileSystem.EncodingType.Base64,
         });
         
-        // Save to media library
         const asset = await MediaLibrary.createAssetAsync(filename);
         await MediaLibrary.createAlbumAsync("GoToon", asset, false);
         
         Toast.success("Image saved to gallery");
       } else {
-        // Download the file to local filesystem
-        const result = await FileSystem.downloadAsync(resultImage, filename);
+        const result = await FileSystem.downloadAsync(
+          Array.isArray(resultImage) ? resultImage[0] : resultImage,
+          filename
+        );
         
-        // Save to media library
         const asset = await MediaLibrary.createAssetAsync(result.uri);
         await MediaLibrary.createAlbumAsync("GoToon", asset, false);
         
@@ -86,9 +78,8 @@ export default function ResultScreen() {
     }
   };
 
-  const handleOpenEditor = () => {
-    // Navigate to editor screen (to be implemented)
-    Toast.info("Editor feature coming soon");
+  const handleGenerateNew = () => {
+    router.replace("/");
   };
 
   return (
@@ -96,7 +87,6 @@ export default function ResultScreen() {
       <SafeAreaView style={styles.container}>
         <StatusBar barStyle="light-content" />
         
-        {/* Header */}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => router.back()}
@@ -104,34 +94,13 @@ export default function ResultScreen() {
           >
             <Ionicons name="chevron-back" size={24} color="white" />
           </TouchableOpacity>
-          
-          <TouchableOpacity style={styles.menuButton}>
-            <Ionicons name="ellipsis-horizontal" size={24} color="white" />
-          </TouchableOpacity>
         </View>
         
-        {/* Main Content */}
         <View style={styles.contentContainer}>
-          {/* Image Container */}
           <View style={styles.imageContainer}>
-            <Image source={{ uri: resultImage }} style={styles.resultImage} />
+            <Image source={{ uri: Array.isArray(resultImage) ? resultImage[0] : resultImage }} style={styles.resultImage} />
           </View>
           
-          {/* Result Info */}
-          <View style={styles.infoContainer}>
-            <View style={styles.titleRow}>
-              <Text style={styles.titleText}>Prompt Result</Text>
-              <TouchableOpacity style={styles.copyButton}>
-                <Ionicons name="copy-outline" size={22} color="white" />
-              </TouchableOpacity>
-            </View>
-            
-            <Text style={styles.promptText}>
-              "{promptDescription}"
-            </Text>
-          </View>
-          
-          {/* Action Buttons */}
           <View style={styles.actionRow}>
             <TouchableOpacity style={styles.iconButton} onPress={handleDownload}>
               <Ionicons name="download-outline" size={24} color="white" />
@@ -144,12 +113,11 @@ export default function ResultScreen() {
             </TouchableOpacity>
           </View>
           
-          {/* Editor Button */}
           <TouchableOpacity 
             style={styles.editorButton}
-            onPress={handleOpenEditor}
+            onPress={handleGenerateNew}
           >
-            <Text style={styles.editorButtonText}>Open Editor</Text>
+            <Text style={styles.editorButtonText}>Generate New</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -160,7 +128,7 @@ export default function ResultScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212",
+    backgroundColor: "#000000",
   },
   header: {
     flexDirection: "row",
@@ -169,6 +137,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: Platform.OS === "android" ? 16 : 8,
     paddingBottom: 16,
+    marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+
   },
   backButton: {
     width: 40,
@@ -176,59 +146,29 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 20,
-    backgroundColor: "rgba(50, 50, 70, 0.6)",
-  },
-  menuButton: {
-    width: 40,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 20,
-    backgroundColor: "rgba(50, 50, 70, 0.6)",
+    color: "white",
+    borderColor: "rgba(255, 255, 255, 0.3)",
   },
   contentContainer: {
     flex: 1,
     paddingHorizontal: 16,
     paddingBottom: 30,
+    marginTop: 30,
   },
   imageContainer: {
     width: "100%",
-    height: height * 0.55,
+    height: height * 0.6,
     borderRadius: 20,
     overflow: "hidden",
-    backgroundColor: "#1a1a1a",
-    marginBottom: 16,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    marginBottom: 30,
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.2)",
   },
   resultImage: {
     width: "100%",
     height: "100%",
     resizeMode: "cover",
-  },
-  infoContainer: {
-    backgroundColor: "rgba(30, 30, 40, 0.5)",
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
-  },
-  titleRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  titleText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "600",
-  },
-  copyButton: {
-    padding: 4,
-  },
-  promptText: {
-    color: "rgba(255, 255, 255, 0.8)",
-    fontSize: 15,
-    lineHeight: 22,
-    fontStyle: "italic",
   },
   actionRow: {
     flexDirection: "row",
@@ -246,14 +186,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   editorButton: {
-    backgroundColor: "white",
+    backgroundColor: "#f5f5f5",
     borderRadius: 24,
     paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
   },
   editorButtonText: {
-    color: "#121212",
+    color: "#000000",
     fontSize: 16,
     fontWeight: "600",
   },
