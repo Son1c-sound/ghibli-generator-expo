@@ -204,6 +204,7 @@ export default function AIChatScreen() {
           </KeyboardAvoidingView>
         </View>
       </View>
+  
     </GestureHandlerRootView>
   );
 }
