@@ -100,7 +100,7 @@ export default function AnimeConverter() {
         locations={[0, 0.35, 0.7]}
         style={{ flex: 1 }}
       >
-        <SafeAreaView style={screenStyles.container}>
+        <SafeAreaView style={screenStyles.safeAreaContainer}>
           <StatusBar barStyle="light-content" />
           <View style={screenStyles.header}>
           </View>
@@ -173,39 +173,49 @@ export default function AnimeConverter() {
                 ))}
               </View>
             </View>
+            
+            <View style={screenStyles.bottomPadding} />
           </ScrollView>
-          
-          <View style={screenStyles.bottomNavBar}>
-            <TouchableOpacity 
-              style={screenStyles.bottomNavButton}
-            >
-              <Ionicons name="grid-outline" size={24} color="white" />
-              <Text style={screenStyles.bottomNavText}>Styles</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={screenStyles.bottomNavButton}
-              onPress={() => router.push("/chat")}
-            >
-              <Ionicons name="chatbubble-outline" size={24} color="white" />
-              <Text style={screenStyles.bottomNavText}>AI Chat</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={screenStyles.bottomNavButton}
-              onPress={() => router.push("/profile")}
-            >
-              <Ionicons name="settings-outline" size={24} color="white" />
-              <Text style={screenStyles.bottomNavText}>Settings</Text>
-            </TouchableOpacity>
-          </View>
         </SafeAreaView>
+        
+        <View style={screenStyles.bottomNavContainer}>
+          <SafeAreaView>
+            <View style={screenStyles.bottomNavBar}>
+              <TouchableOpacity 
+                style={screenStyles.bottomNavButton}
+              >
+                <Ionicons name="grid-outline" size={24} color="white" />
+                <Text style={screenStyles.bottomNavText}>Styles</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={screenStyles.bottomNavButton}
+                onPress={() => router.push("/chat")}
+              >
+                <Ionicons name="chatbubble-outline" size={24} color="white" />
+                <Text style={screenStyles.bottomNavText}>AI Chat</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={screenStyles.bottomNavButton}
+                onPress={() => router.push("/profile")}
+              >
+                <Ionicons name="settings-outline" size={24} color="white" />
+                <Text style={screenStyles.bottomNavText}>Settings</Text>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
+        </View>
       </LinearGradient>
     </GestureHandlerRootView>
   )
 }
 
 const screenStyles = StyleSheet.create({
+  safeAreaContainer: {
+    flex: 1,
+    backgroundColor: "transparent",
+  },
   container: {
     flex: 1,
     backgroundColor: "transparent",
@@ -289,7 +299,7 @@ const screenStyles = StyleSheet.create({
     borderColor: "rgba(255, 255, 255, 0.3)",
   },
   stylesGridContainer: {
-    marginBottom: 100,
+    marginBottom: 20,
   },
   stylesGrid: {
     flexDirection: "row",
@@ -343,25 +353,25 @@ const screenStyles = StyleSheet.create({
     fontWeight: "600",
     color: "white",
   },
+  bottomPadding: {
+    height: 90,
+  },
+  bottomNavContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#000000",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255, 255, 255, 0.2)",
+  },
   bottomNavBar: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 10,
-    position: "absolute",
-    bottom: Platform.OS === "ios" ? 30 : 20,
-    left: 20,
-    right: 20,
-    backgroundColor: "rgba(2, 0, 0, 0.86)",
-    paddingBottom: 10,
-    borderRadius: 30,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-    borderColor: "rgba(255, 255, 255, 0.15)",
+    paddingBottom: Platform.OS === "ios" ? 10 : 10,
   },
   bottomNavButton: {
     flex: 1,
