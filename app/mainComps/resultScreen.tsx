@@ -1,409 +1,260 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  Image, 
+import React from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
   SafeAreaView,
   StatusBar,
-  ActivityIndicator,
   Dimensions,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { Alert } from 'react-native';
+  Platform,
+  Share
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { router, useLocalSearchParams } from "expo-router";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { stylesList } from "../mainComps/stylesData";
+import * as MediaLibrary from "expo-media-library";
+import * as FileSystem from "expo-file-system";
+import { Toast } from "toastify-react-native";
 
+const { width, height } = Dimensions.get("window");
+const ACCENT_COLOR = "#3B82F6";
 
-const { width } = Dimensions.get('window');
-
-
-interface ResultScreenProps {
-  image: string | null;
-  resultImage: string | null;
-  loading: boolean;
-  selectedStyle: number | null;
-  verificationNote: string;
-  styles: Array<{id: number; name: string; src: string}>;
-  handleRetry: () => void;
-  handleDownload: () => Promise<void>;
-  handleShare: () => Promise<void>;
-}
-
-const ResultScreen: React.FC<ResultScreenProps> = ({
-  image,
-  resultImage,
-  loading,
-  selectedStyle,
-  verificationNote,
-  styles,
-  handleRetry,
-  handleDownload,
-  handleShare,
-}) => {
-
-  const [progress, setProgress] = useState(0);
-  const [isSaving, setIsSaving] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
+export default function ResultScreen() {
+  const { resultImage, styleId, prompt = "" } = useLocalSearchParams();
+  const numericStyleId = styleId ? parseInt(styleId.toString(), 10) : null;
   
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    
-    if (loading) {
-      setProgress(0);
-      interval = setInterval(() => {
-        setProgress(prev => {
-          const increment = prev < 50 ? 5 : prev < 80 ? 2 : 0.5;
-          const newValue = prev + increment;
-          return newValue > 90 ? 90 : newValue;
-        });
-      }, 500);
-    } else {
-      setProgress(100);
-    }
-    
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [loading]);
+  // Find the selected style
+  const selectedStyle = stylesList.find(style => style.id === numericStyleId) || stylesList[0];
 
+  // Generate a description if not provided
+  const promptDescription = prompt || 
+    `A ${selectedStyle?.DisplayName || "styled"} character with detailed features, vibrant colors, and artistic composition.`;
 
-  const handleSaveImage = async () => {
-    if (isSaving || isSaved) return;
-    
-    setIsSaving(true);
+  const handleShare = async () => {
     try {
-      await handleDownload();
-      setIsSaved(true);
+      await Share.share({
+        url: resultImage,
+        message: `Check out my ${selectedStyle?.DisplayName || "GoToon"} style image!`
+      });
     } catch (error) {
-      console.error("Error saving image:", error);
-      Alert.alert("Error", "Failed to save image to gallery.");
-    } finally {
-      setIsSaving(false);
+      console.log("Error sharing image:", error);
+      Toast.error("Failed to share image");
     }
   };
 
-  return (
-    <SafeAreaView style={screenStyles.container}>
-      <StatusBar barStyle="light-content" />
-      <View style={screenStyles.resultHeader}>
-        <TouchableOpacity onPress={handleRetry} style={screenStyles.backButton}>
-          <Ionicons name="arrow-back" size={24} color="white" />
-        </TouchableOpacity>
-        <Text style={screenStyles.resultTitle}>Your Styled Image</Text>
-        <View style={{width: 24}} />
-      </View>
+  const handleDownload = async () => {
+    try {
+      // Request permission
+      const { status } = await MediaLibrary.requestPermissionsAsync();
       
-      <View style={screenStyles.resultContent}>
+      if (status !== "granted") {
+        Toast.error("Permission needed to save image");
+        return;
+      }
+      
+      // Create a unique filename
+      const filename = FileSystem.documentDirectory + `gotoon_${Date.now()}.jpg`;
+      
+      // Handle base64 images
+      if (resultImage.startsWith('data:image')) {
+        const base64Data = resultImage.split('base64,')[1];
+        await FileSystem.writeAsStringAsync(filename, base64Data, {
+          encoding: FileSystem.EncodingType.Base64,
+        });
         
-        {loading ? (
-          <View style={screenStyles.loadingContainer}>
-            
-            <View style={screenStyles.blurredImageContainer}>
-              <Image 
-                source={{ uri: image || '' }} 
-                style={screenStyles.blurredImage}
-                resizeMode="cover"
-                blurRadius={8}
-              />
-              
-              <View style={screenStyles.loadingOverlay}>
-                
-                <View style={screenStyles.loadingContent}>
-                  <ActivityIndicator size="large" color="white" />
-                  <Text style={screenStyles.loadingText}>
-                    Applying {styles.find(style => style.id === selectedStyle)?.name} style...
-                  </Text>
-         
-                  <View style={screenStyles.progressBarContainer}>
-                    <View 
-                      style={[
-                        screenStyles.progressBar, 
-                        { width: `${progress}%` }
-                      ]} 
-                    />
-                  </View>
-                  
-                  <Text style={screenStyles.loadingSubtext}>{Math.round(progress)}% complete</Text>
-                </View>
-              </View>
-              
-            </View>
-            
+        // Save to media library
+        const asset = await MediaLibrary.createAssetAsync(filename);
+        await MediaLibrary.createAlbumAsync("GoToon", asset, false);
+        
+        Toast.success("Image saved to gallery");
+      } else {
+        // Download the file to local filesystem
+        const result = await FileSystem.downloadAsync(resultImage, filename);
+        
+        // Save to media library
+        const asset = await MediaLibrary.createAssetAsync(result.uri);
+        await MediaLibrary.createAlbumAsync("GoToon", asset, false);
+        
+        Toast.success("Image saved to gallery");
+      }
+    } catch (error) {
+      console.log("Error downloading image:", error);
+      Toast.error("Failed to save image");
+    }
+  };
+
+  const handleOpenEditor = () => {
+    // Navigate to editor screen (to be implemented)
+    Toast.info("Editor feature coming soon");
+  };
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => router.back()}
+            style={styles.backButton}
+          >
+            <Ionicons name="chevron-back" size={24} color="white" />
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.menuButton}>
+            <Ionicons name="ellipsis-horizontal" size={24} color="white" />
+          </TouchableOpacity>
+        </View>
+        
+        {/* Main Content */}
+        <View style={styles.contentContainer}>
+          {/* Image Container */}
+          <View style={styles.imageContainer}>
+            <Image source={{ uri: resultImage }} style={styles.resultImage} />
           </View>
           
-        ) : resultImage ? (
-          <View style={screenStyles.resultImageContainer}>
-            <Image 
-              source={{ uri: resultImage }} 
-              style={screenStyles.fullResultImage}
-              resizeMode="contain"
-            />
-            {verificationNote ? (
-              <Text style={screenStyles.verificationNote}>{verificationNote}</Text>
-            ) : null}
-            
-            <TouchableOpacity 
-                style={[
-                  screenStyles.saveButton,
-                  (isSaving || isSaved) && screenStyles.saveButtonDisabled
-                ]}
-                onPress={handleSaveImage}
-                disabled={isSaving || isSaved}
-              >
-                {isSaving ? (
-                  <ActivityIndicator size="small" color="black" />
-                ) : isSaved ? (
-                  <>
-                    <Ionicons name="checkmark-circle" size={20} color="black" />
-                    <Text style={screenStyles.saveButtonText}>Saved to Gallery</Text>
-                  </>
-                ) : (
-                  <>
-                    <Ionicons name="download-outline" size={20} color="black" />
-                    <Text style={screenStyles.saveButtonText}>Save Image</Text>
-                  </>
-                )}
+          {/* Result Info */}
+          <View style={styles.infoContainer}>
+            <View style={styles.titleRow}>
+              <Text style={styles.titleText}>Prompt Result</Text>
+              <TouchableOpacity style={styles.copyButton}>
+                <Ionicons name="copy-outline" size={22} color="white" />
               </TouchableOpacity>
-              
-              <View style={screenStyles.secondaryButtonsContainer}>
-                <TouchableOpacity 
-                  style={screenStyles.tryAgainButton}
-                  onPress={handleRetry}
-                >
-                  <Ionicons name="refresh-outline" size={18} color="white" />
-                  <Text style={screenStyles.tryAgainButtonText}>Try Again</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity 
-                  style={screenStyles.shareButton}
-                  onPress={handleShare}
-                >
-                  <Ionicons name="share-social-outline" size={18} color="white" />
-                  <Text style={screenStyles.shareButtonText}>Share</Text>
-                </TouchableOpacity>
-              </View>
+            </View>
+            
+            <Text style={styles.promptText}>
+              "{promptDescription}"
+            </Text>
           </View>
-        ) : (
-          <View style={screenStyles.errorContainer}>
-            <Ionicons name="alert-circle-outline" size={48} color="#EC4899" />
-            <Text style={screenStyles.errorText}>Something went wrong</Text>
-            <TouchableOpacity 
-              style={screenStyles.retryButton}
-              onPress={handleRetry}
-            >
-              <Text style={screenStyles.retryText}>Try Again</Text>
+          
+          {/* Action Buttons */}
+          <View style={styles.actionRow}>
+            <TouchableOpacity style={styles.iconButton} onPress={handleDownload}>
+              <Ionicons name="download-outline" size={24} color="white" />
+              <Text style={styles.iconText}>Download</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.iconButton} onPress={handleShare}>
+              <Ionicons name="share-social-outline" size={24} color="white" />
+              <Text style={styles.iconText}>Share</Text>
             </TouchableOpacity>
           </View>
-        )}
-      </View>
-
-    </SafeAreaView>
+          
+          {/* Editor Button */}
+          <TouchableOpacity 
+            style={styles.editorButton}
+            onPress={handleOpenEditor}
+          >
+            <Text style={styles.editorButtonText}>Open Editor</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </GestureHandlerRootView>
   );
-};
+}
 
-const screenStyles = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
-    padding: 16,
+    backgroundColor: "#121212",
   },
-  resultHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingTop: 40,
-  
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === "android" ? 16 : 8,
+    paddingBottom: 16,
   },
   backButton: {
-    padding: 8,
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+    backgroundColor: "rgba(50, 50, 70, 0.6)",
   },
-  resultTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: 'white',
-    textAlign: 'center',
+  menuButton: {
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    borderRadius: 20,
+    backgroundColor: "rgba(50, 50, 70, 0.6)",
   },
-  resultContent: {
+  contentContainer: {
     flex: 1,
-  
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingContainer: {
-    alignItems: 'center',
-    marginTop: -90,
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%'
-  
-  },
-  loadingText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-
-  },
-  loadingSubtext: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 14,
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  blurredImageContainer: {
-    width: width * 0.85,
-    height: width * 0.85,
-    borderRadius: 16,
-    overflow: 'hidden',
-    position: 'relative',
-  },
-  blurredImage: {
-    width: '100%',
-    height: '100%',
-  },
-  loadingOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent overlay instead of gradient
-  },
-  loadingContent: {
-    width: '100%',
-    padding: 20,
-    alignItems: 'center',
-  },
-  progressBarContainer: {
-    width: '80%',
-    height: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 3,
-    marginTop: 20,
-    overflow: 'hidden',
-  },
-  progressBar: {
-    height: '100%',
-    backgroundColor: '#3B82F6', // Blue progress bar
-    borderRadius: 3,
-  },
-  resultImageContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '100%',
-  },
-  fullResultImage: {
-    width: width * 0.9,
-    height: width * 0.9,
-    borderRadius: 12,
-  },
-  aiWarningContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 10,
-    marginTop: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderRadius: 8,
-    maxWidth: width * 0.9,
-    marginBottom: 22,
+    paddingBottom: 30,
   },
-  aiWarningText: {
-    color: '#999',
-    fontSize: 12,
-    marginLeft: 6,
-    flex: 1,
-    lineHeight: 16,
-  },
-  verificationNote: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 16,
+  imageContainer: {
+    width: "100%",
+    height: height * 0.55,
+    borderRadius: 20,
+    overflow: "hidden",
+    backgroundColor: "#1a1a1a",
     marginBottom: 16,
-    paddingHorizontal: 20,
-    lineHeight: 18,
   },
-  saveButton: {
-    backgroundColor: 'white',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 15,
-    borderRadius: 100,
-    width: '90%',
-    marginTop: 24,
+  resultImage: {
+    width: "100%",
+    height: "100%",
+    resizeMode: "cover",
   },
-  saveButtonDisabled: {
-    opacity: 0.8,
-  },
-  saveButtonText: {
-    color: 'black',
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginLeft: 8,
-  },
-  secondaryButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '90%',
-    marginTop: 12,
-  },
-  tryAgainButton: {
-    backgroundColor: '#2563EB', 
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 100,
-    width: '48%',
-  },
-  tryAgainButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
-    marginLeft: 6,
-  },
-  shareButton: {
-    backgroundColor: '#10B981', 
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 12,
-    borderRadius: 100,
-    width: '48%',
-  },
-  shareButtonText: {
-    color: 'white',
-    fontWeight: '600',
-    fontSize: 14,
-    marginLeft: 6,
-  },
-  errorContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  errorText: {
-    color: 'white',
-    fontSize: 18,
-    marginTop: 16,
+  infoContainer: {
+    backgroundColor: "rgba(30, 30, 40, 0.5)",
+    borderRadius: 16,
+    padding: 16,
     marginBottom: 24,
   },
-  retryButton: {
-    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 100,
-    borderWidth: 1,
-    borderColor: '#3B82F6',
+  titleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
   },
-  retryText: {
-    color: '#3B82F6',
+  titleText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  copyButton: {
+    padding: 4,
+  },
+  promptText: {
+    color: "rgba(255, 255, 255, 0.8)",
+    fontSize: 15,
+    lineHeight: 22,
+    fontStyle: "italic",
+  },
+  actionRow: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 24,
+  },
+  iconButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: 90,
+  },
+  iconText: {
+    color: "white",
+    marginTop: 8,
+    fontSize: 14,
+  },
+  editorButton: {
+    backgroundColor: "white",
+    borderRadius: 24,
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  editorButtonText: {
+    color: "#121212",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "600",
   },
 });
-
-export default ResultScreen;

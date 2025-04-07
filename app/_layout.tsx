@@ -48,6 +48,8 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="profile" options={{ headerShown: false }} />
+        <Stack.Screen name="result" options={{ headerShown: false }} />
+        <Stack.Screen name="upload" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />

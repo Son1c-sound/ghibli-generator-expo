@@ -61,108 +61,36 @@ export default function AnimeConverter() {
     )
   }
 
-  const handleImagePicker = async () => {
-    try {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
-
-      if (status !== "granted") {
-        Alert.alert("Permission Required", "Sorry, we need camera roll permissions to upload photos." )
-        return
-      }
-
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.7,
-      })
-
-      if (!result.canceled) {
-        const selectedImage = result.assets[0].uri
-        handleSelectedImage(selectedImage)
-      }
-    } catch (error) {
-      console.log("Error picking image:", error)
-      Alert.alert("Error", "Something went wrong while selecting your image")
-    }
-  }
-
-  const handleCameraCapture = async () => {
-    try {
-      const { status } = await ImagePicker.requestCameraPermissionsAsync()
-
-      if (status !== "granted") {
-        Alert.alert(
-          "Permission Required",
-          "Sorry, we need camera permissions to take photos."
-        )
-        return
-      }
-
-      const result = await ImagePicker.launchCameraAsync({
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 0.7,
-      })
-
-      if (!result.canceled) {
-        const selectedImage = result.assets[0].uri
-        handleSelectedImage(selectedImage)
-      }
-    } catch (error) {
-      console.log("Error taking photo:", error)
-      Alert.alert("Error", "Something went wrong while taking your photo")
-    }
-  }
-
-  const handleSelectedImage = async (selectedImage: string) => {
-    await processSelectedImage(
-      selectedImage,
-      setImage,
-      setImageSize,
-      setResultImage,
-      setShowResultScreen
-    )
-  }
-
-  const handleGenerateImage = async () => {
-    setLoading(true)
-    try {
-      await generateStyledImage(
-        image,
-        selectedStyle,
-        styles,
-        setLoading,
-        setShowResultScreen,
-        setResultImage
-      )
-      setLoadingProgress(100)
-    } catch (error) {
-      console.log("Error generating image:", error)
-      Alert.alert("Error", "Something went wrong while generating your image")
-      setLoading(false)
-      setLoadingProgress(0)
-    }
-  }
-
-  const handleDownload = async () => {
-    await saveImage(resultImage, handleShare)
-  }
-
-  const handleShare = async () => {
-    await shareImage(resultImage, Share)
-  }
-
-  const handleRetry = () => {
-    setShowResultScreen(false)
-    setResultImage(null)
-  }
-
-  const navigateToProfile = () => {
-    router.push("/profile")
-  }
-
   const styles: StyleItem[] = stylesList
+  
+  const handleStyleSelect = (styleId) => {
+    // Find the selected style
+    const style = styles.find(s => s.id === styleId)
+    
+    if (!isSubscribed && 
+        style && 
+        style.name !== "Anime" && 
+        style.name !== "OldSchool" && 
+        style.name && 
+        style.name !== "Lego") {
+      showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK)
+      return
+    }
+    
+    setSelectedStyle(styleId)
+    // Navigate to upload/camera screen
+    // You would implement this navigation logic later
+    router.push({
+      pathname: "/upload",
+      params: { styleId }
+    })
+  }
+
+  // Find the Ghibli style for featured card
+  const ghibliStyle = styles.find(style => style.name === "Ghibli") || styles[0]
+  
+  // All other styles for the grid
+  const otherStyles = styles.filter(style => style.id !== ghibliStyle.id)
 
   if (showResultScreen) {
     return (
@@ -190,127 +118,101 @@ export default function AnimeConverter() {
             <Text style={screenStyles.title}>GoToon</Text>
           </View>
         </View>
-        <View style={screenStyles.mainContent}>
-          <View style={screenStyles.imageContainer}>
-            {image ? (
-              <View style={screenStyles.imagePreviewContainer}>
-                <Image source={{ uri: image }} style={screenStyles.imagePreview} />
-                {loading ? (
-                  <View style={screenStyles.loadingOverlay}>
-                    <ActivityIndicator size="large" color="white" />
-                    <Text style={screenStyles.loadingText}>Processing... {Math.round(loadingProgress)}% </Text>
-                    <View style={screenStyles.progressBar}>
-                      <View style={[screenStyles.progressFill,{ width: `${loadingProgress}%` },]}/>
+        
+        <ScrollView style={screenStyles.scrollContainer} showsVerticalScrollIndicator={false}>
+          {/* Featured Style Card */}
+          <View style={screenStyles.featuredContainer}>
+            <Text style={screenStyles.sectionTitle}>Featured Style</Text>
+            <TouchableOpacity
+              style={screenStyles.featuredCard}
+              onPress={() => handleStyleSelect(ghibliStyle.id)}
+            >
+              <Image 
+                source={{ uri: ghibliStyle.src }} 
+                style={screenStyles.featuredImage} 
+              />
+              
+              <LinearGradient
+                colors={['transparent', 'rgba(0,0,0,0.8)']}
+                style={screenStyles.featuredGradient}
+              >
+                <View style={screenStyles.featuredTextContainer}>
+                  <Text style={screenStyles.featuredTitle}>{ghibliStyle.DisplayName}</Text>
+                  <Text style={screenStyles.featuredDescription}>
+                    Transform your photos into magical Ghibli-inspired art
+                  </Text>
+                  
+                  {!isSubscribed && 
+                    ghibliStyle.name !== "Anime" && 
+                    ghibliStyle.name !== "OldSchool" && 
+                    ghibliStyle.name !== "Lego" && (
+                    <View style={screenStyles.lockIconContainer}>
+                      <Ionicons name="lock-closed" size={16} color="white" />
                     </View>
-                  </View>
-                ) : null}
-              </View>
-            ) : (
-              <View style={screenStyles.emptyImageContainer}>
-                <View style={screenStyles.emptyImagePlaceholder}>
-                  <Ionicons name="image-outline" size={60} color="#333" />
-                  <Text style={screenStyles.emptyImageText}>Select an image or take a photo</Text>
-                </View>
-              </View>
-            )}
-          </View>
-        </View>
-        {!loading && (
-          <View style={screenStyles.bottomContainer}>
-            <View style={screenStyles.styleTitleContainer}>
-              <Text style={screenStyles.styleTitle}>Swipe For More Styles</Text>
-            </View>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} 
-            contentContainerStyle={{paddingVertical: 10, paddingHorizontal: 5,}}>
-              {styles.map((style) => (
-                <TouchableOpacity key={style.id} style={[screenStyles.styleItem,
-                    selectedStyle === style.id && screenStyles.selectedStyle,
-                  ]}
-                  onPress={() => {
-                    if (
-                      !isSubscribed &&
-                      style.name !== "Anime" &&
-                      style.name !== "OldSchool" && 
-                      style.name && 
-                      style.name !== "Lego"
-                    ) {
-                      showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK)
-                      return
-                    }
-                    setSelectedStyle(style.id)}}>
-                  <View style={{ position: "relative" }}>
-                    <Image style={screenStyles.styleImage} source={{ uri: style.src }} />
-                    {!isSubscribed &&
-                      style.name !== "Anime" &&
-                      style.name !== "OldSchool" &&
-                      style.name &&
-                      style.name !== "Lego" && (
-                        <View
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            backgroundColor: "rgba(0, 0, 0, 0.5)",
-                            borderRadius: 8,
-                            justifyContent: "center",
-                            alignItems: "center",
-                            }}>
-                          <Ionicons name="lock-closed" size={20} color="white" />
-                        </View>
-                      )}
-                  </View>
-                  <Text style={screenStyles.styleName}>
-                    {style.DisplayName}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <TouchableOpacity onPress={handleGenerateImage} disabled={!image || !selectedStyle || loading} style={screenStyles.generateButtonContainer}>
-              <LinearGradient colors={[ACCENT_COLOR, "#1E40AF"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={[screenStyles.generateButton, (!image || !selectedStyle || loading) && screenStyles.disabledButton,]}>
-                <View style={screenStyles.generateButtonContent}>
-                  {loading ? (
-                    <ActivityIndicator size="small" color="white" />
-                  ) : (
-                    <Ionicons name="sparkles" size={20} color="white" />
                   )}
-                  <Text style={screenStyles.generateText}>
-                    {loading ? "Processing..." : "Generate Image"}
-                  </Text>
                 </View>
               </LinearGradient>
             </TouchableOpacity>
-            
-            {/* Bottom Navigation Bar */}
-            <View style={screenStyles.bottomNavBar}>
-              <TouchableOpacity 
-                style={screenStyles.bottomNavButton} 
-                onPress={handleImagePicker}
-              >
-                <Ionicons name="images-outline" size={24} color="white" />
-                <Text style={screenStyles.bottomNavText}>Gallery</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={screenStyles.cameraButton} 
-                onPress={handleCameraCapture}
-              >
-                <View style={screenStyles.cameraIconContainer}>
-                  <Ionicons name="camera-outline" size={28} color="white" />
-                </View>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={screenStyles.bottomNavButton} 
-                onPress={navigateToProfile}
-              >
-                <Ionicons name="settings-outline" size={24} color="white" />
-                <Text style={screenStyles.bottomNavText}>Settings</Text>
-              </TouchableOpacity>
+          </View>
+          
+          {/* Other Styles Grid */}
+          <View style={screenStyles.stylesGridContainer}>
+            <Text style={screenStyles.sectionTitle}>More Styles</Text>
+            <View style={screenStyles.stylesGrid}>
+              {otherStyles.map((style, index) => (
+                <TouchableOpacity
+                  key={style.id}
+                  style={screenStyles.styleCard}
+                  onPress={() => handleStyleSelect(style.id)}
+                >
+                  <View style={screenStyles.styleImageContainer}>
+                    <Image source={{ uri: style.src }} style={screenStyles.styleImage} />
+                    
+                    {!isSubscribed && 
+                      style.name !== "Anime" && 
+                      style.name !== "OldSchool" && 
+                      style.name !== "Lego" && (
+                      <View style={screenStyles.styleLockOverlay}>
+                        <Ionicons name="lock-closed" size={20} color="white" />
+                      </View>
+                    )}
+                  </View>
+                  
+                  <View style={screenStyles.styleTextContainer}>
+                    <Text style={screenStyles.styleName}>{style.DisplayName}</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
-        )}
+        </ScrollView>
+        
+        {/* Bottom Navigation Bar */}
+        <View style={screenStyles.bottomNavBar}>
+          <TouchableOpacity 
+            style={screenStyles.bottomNavButton}
+          >
+            <Ionicons name="grid-outline" size={24} color="white" />
+            <Text style={screenStyles.bottomNavText}>Styles</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={screenStyles.cameraButton}
+            onPress={() => router.push("/camera")}
+          >
+            <View style={screenStyles.cameraIconContainer}>
+              <Ionicons name="camera-outline" size={28} color="white" />
+            </View>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={screenStyles.bottomNavButton}
+            onPress={() => router.push("/profile")}
+          >
+            <Ionicons name="settings-outline" size={24} color="white" />
+            <Text style={screenStyles.bottomNavText}>Settings</Text>
+          </TouchableOpacity>
+        </View>
       </SafeAreaView>
     </GestureHandlerRootView>
   )
@@ -319,15 +221,19 @@ export default function AnimeConverter() {
 const screenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    backgroundColor: "#171717",
+  },
+  scrollContainer: {
+    flex: 1,
     padding: 16,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 16,
     paddingTop: Platform.OS === "android" ? 40 : 40,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   titleContainer: {
     flexDirection: "row",
@@ -338,165 +244,130 @@ const screenStyles = StyleSheet.create({
     marginRight: 8,
   },
   title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "white",
+  },
+  
+  // Section titles
+  sectionTitle: {
     fontSize: 18,
+    fontWeight: "600",
+    color: "white",
+    marginBottom: 12,
+    marginLeft: 4,
+  },
+  
+  // Featured style card
+  featuredContainer: {
+    marginBottom: 24,
+  },
+  featuredCard: {
+    borderRadius: 16,
+    overflow: "hidden",
+    height: 220,
+    width: "100%",
+    backgroundColor: "#1E1D22",
+  },
+  featuredImage: {
+    width: "100%",
+    height: "100%",
+  },
+  featuredGradient: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: "50%",
+    justifyContent: "flex-end",
+  },
+  featuredTextContainer: {
+    padding: 16,
+  },
+  featuredTitle: {
+    fontSize: 24,
     fontWeight: "bold",
     color: "white",
+    marginBottom: 6,
   },
-  settingsButton: {
-    padding: 5,
+  featuredDescription: {
+    fontSize: 14,
+    color: "rgba(255, 255, 255, 0.8)",
   },
-  mainContent: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  imageContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-    height: "80%",
-  },
-  emptyImageContainer: {
-    width: width * 0.7,
-    height: width * 0.7,
-    borderRadius: 10,
-    backgroundColor: "#1a1a1a",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  emptyImagePlaceholder: {
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-  },
-  emptyImageText: {
-    color: "#666",
-    marginTop: 10,
-    textAlign: "center",
-    fontSize: 16,
-  },
-  bottomContainer: {
-    marginBottom: 0,
-  },
-  styleTitleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  styleTitle: {
-    color: "white",
-    fontSize: 16,
-    marginLeft: 6,
-  },
-  styleItem: {
-    alignItems: "center",
+  lockIconContainer: {
+    position: "absolute",
+    top: 16,
+    right: 16,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     padding: 8,
-    borderRadius: 8,
-    width: 80,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: "transparent",
+    borderRadius: 20,
   },
-  selectedStyle: {
-    backgroundColor: "rgba(59, 130, 246, 0.2)",
-    borderColor: ACCENT_COLOR,
+  
+  // Styles grid
+  stylesGridContainer: {
+    marginBottom: 100, // Extra space for bottom nav
   },
-  styleImage: {
-    width: 69,
-    height: 69,
-    borderRadius: 8,
-    backgroundColor: "#333",
-    marginBottom: 4,
-  },
-  styleName: {
-    color: "white",
-    fontSize: 12,
-    textAlign: "center",
-    marginTop: 4,
-  },
-  generateButtonContainer: {
-    width: "100%",
-  },
-  generateButton: {
-    borderRadius: 100,
-    marginTop: 20,
-    width: "100%",
-    marginBottom: 20,
-  },
-  disabledButton: {
-    opacity: 0.6,
-  },
-  generateButtonContent: {
+  stylesGrid: {
     flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    backgroundColor: "#2563EB",
-    borderRadius: 200,
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
-  generateText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 16,
-    marginLeft: 8,
+  styleCard: {
+    width: (width - 48) / 2, // 2 columns with spacing
+    marginBottom: 16,
+    borderRadius: 12,
+    overflow: "hidden",
+    backgroundColor: "#1a1a1a",
   },
-  imagePreviewContainer: {
-    alignItems: "center",
-    justifyContent: "center",
+  styleImageContainer: {
+    width: "100%",
+    height: 140,
     position: "relative",
   },
-  imagePreview: {
-    width: width * 0.7,
-    height: width * 0.7,
-    borderRadius: 10,
-    resizeMode: "contain",
+  styleImage: {
+    width: "100%",
+    height: "100%",
   },
-  loadingOverlay: {
+  styleLockOverlay: {
     position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
-    borderRadius: 10,
   },
-  loadingText: {
-    color: "white",
-    marginTop: 12,
+  styleTextContainer: {
+    padding: 12,
+  },
+  styleName: {
     fontSize: 16,
-    fontWeight: "500",
-  },
-  progressBar: {
-    width: "70%",
-    height: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.2)",
-    borderRadius: 4,
-    marginTop: 12,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: ACCENT_COLOR,
+    fontWeight: "600",
+    color: "white",
   },
   
-  // New bottom navigation styles
+  // Bottom navigation
   bottomNavBar: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: 10,
-    paddingBottom: Platform.OS === "ios" ? 20 : 10,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: "#333",
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "black",
+    paddingBottom: Platform.OS === "ios" ? 24 : 10,
   },
   bottomNavButton: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 10,
-  },
-  bottomNavButtonPlaceholder: {
-    flex: 1,
   },
   bottomNavText: {
     color: "white",
@@ -520,4 +391,4 @@ const screenStyles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-})
+});
