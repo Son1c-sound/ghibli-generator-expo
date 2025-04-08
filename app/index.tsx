@@ -27,6 +27,7 @@ export default function AnimeConverter() {
   const [imageSize, setImageSize] = useState(0)
   const [showResultScreen, setShowResultScreen] = useState(false)
   const [verificationNote, setVerificationNote] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const { isSubscribed, showPaywall } = useSuperwall()
 
   const { isOnboarded, isLoading } = useOnboarding()
@@ -65,6 +66,9 @@ export default function AnimeConverter() {
 
   const styles: StyleItem[] = stylesList
   
+  // Get all unique categories
+  const categories = [...new Set(styles.map(style => style.category))].filter(Boolean)
+  
   const handleStyleSelect = (styleId:any) => {
     const style = styles.find(s => s.id === styleId)
     
@@ -85,8 +89,17 @@ export default function AnimeConverter() {
     })
   }
 
+  // Filter styles based on selected category
+  const filteredStyles = selectedCategory 
+    ? styles.filter(style => style.category === selectedCategory)
+    : styles
+  
   const ghibliStyle = styles.find(style => style.name === "Ghibli") || styles[0]
-  const otherStyles = styles.filter(style => style.id !== ghibliStyle.id)
+  
+  // Filter "other styles" based on selected category
+  const otherStyles = selectedCategory
+    ? filteredStyles.filter(style => style.id !== ghibliStyle.id)
+    : styles.filter(style => style.id !== ghibliStyle.id)
 
   if (showResultScreen) {
     return (
@@ -97,19 +110,21 @@ export default function AnimeConverter() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-
       <LinearGradient
         colors={['#000000', '#000000', '#000000']}
         locations={[0, 0.35, 0.7]}
         style={{ flex: 1 }}
       >
-        
         <SafeAreaView style={screenStyles.safeAreaContainer}>
           <StatusBar barStyle="light-content" />
           <View style={screenStyles.header}>
-          <HeaderBanner/>
+            <HeaderBanner/>
           </View>
+          
           <ScrollView style={screenStyles.scrollContainer} showsVerticalScrollIndicator={false}>
+
+    
+            
             <View style={screenStyles.featuredContainer}>
               <Text style={screenStyles.sectionTitle}>Featured Style</Text>
               <TouchableOpacity
@@ -145,7 +160,45 @@ export default function AnimeConverter() {
             </View>
             <Text onPress={() => {resetBannerDismissal()}} style={screenStyles.sectionTitle}>reset</Text>
             <View style={screenStyles.stylesGridContainer}>
-              <Text style={screenStyles.sectionTitle}>Explore More</Text>
+              <Text style={screenStyles.sectionTitle}>
+                {selectedCategory ? `${selectedCategory} Styles` : 'Explore More'}
+              </Text>
+              <View style={screenStyles.categoryFiltersContainer}>
+              <ScrollView 
+                horizontal 
+                showsHorizontalScrollIndicator={false} 
+                contentContainerStyle={screenStyles.categoryFiltersScroll}
+              >
+                <TouchableOpacity
+                  style={[
+                    screenStyles.categoryFilterButton,
+                    selectedCategory === null && screenStyles.categoryFilterButtonActive
+                  ]}
+                  onPress={() => setSelectedCategory(null)}
+                >
+                  <Text style={[
+                    screenStyles.categoryFilterText,
+                    selectedCategory === null && screenStyles.categoryFilterTextActive
+                  ]}>All</Text>
+                </TouchableOpacity>
+                
+                {categories.map((category) => (
+                  <TouchableOpacity
+                    key={category}
+                    style={[
+                      screenStyles.categoryFilterButton,
+                      selectedCategory === category && screenStyles.categoryFilterButtonActive
+                    ]}
+                    onPress={() => setSelectedCategory(category as any)}
+                  >
+                    <Text style={[
+                      screenStyles.categoryFilterText,
+                      selectedCategory === category && screenStyles.categoryFilterTextActive
+                    ]}>{category}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
               <View style={screenStyles.stylesGrid}>
                 {otherStyles.map((style, index) => (
                   <TouchableOpacity
@@ -182,8 +235,9 @@ export default function AnimeConverter() {
             <View style={screenStyles.bottomPadding} />
           </ScrollView>
         </SafeAreaView>
-        
-        <View style={screenStyles.bottomNavContainer}>
+      </LinearGradient>
+              
+      <View style={screenStyles.bottomNavContainer}>
           <SafeAreaView>
             <View style={screenStyles.bottomNavBar}>
               <TouchableOpacity 
@@ -211,7 +265,6 @@ export default function AnimeConverter() {
             </View>
           </SafeAreaView>
         </View>
-      </LinearGradient>
     </GestureHandlerRootView>
   )
 }
@@ -236,7 +289,34 @@ const screenStyles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: Platform.OS === "android" ? 40 : 40,
     marginBottom: 10,
-  
+  },
+
+  categoryFiltersContainer: {
+    marginBottom: 16,
+  },
+  categoryFiltersScroll: {
+    paddingHorizontal: 4,
+  },
+  categoryFilterButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    marginRight: 8,
+    backgroundColor: "rgba(255, 255, 255, 0.1)",
+    borderColor: "rgba(255, 255, 255, 0.2)",
+  },
+  categoryFilterButtonActive: {
+    backgroundColor: "rgba(255, 255, 255, 0.25)",
+    borderColor: "rgba(255, 255, 255, 0.4)",
+  },
+  categoryFilterText: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontWeight: "500",
+    fontSize: 14,
+  },
+  categoryFilterTextActive: {
+    color: "white",
+    fontWeight: "600",
   },
   titleContainer: {
     flexDirection: "row",

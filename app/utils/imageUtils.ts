@@ -9,6 +9,7 @@ export interface StyleItem {
   name: string;
   src: string;
   DisplayName: string
+  category?: string;
 }
 
 interface ImageGenerationRequest {

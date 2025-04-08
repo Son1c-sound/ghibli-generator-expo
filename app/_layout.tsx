@@ -44,14 +44,13 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="chat" options={{ headerShown: false }} />
         <Stack.Screen name="profile" options={{ headerShown: false }} />
         <Stack.Screen name="result" options={{ headerShown: false }} />
         <Stack.Screen name="upload" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-        <Stack.Screen name="chat" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

@@ -1,227 +1,265 @@
 import { StyleItem } from '../utils/imageUtils';
 
-
 export const stylesList: StyleItem[] = [
   { 
     id: 1, 
     DisplayName: "Anime",
     name: 'Anime', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390806/cooylozjk3ssauku8jer.png' 
-  },
-  { 
-    id: 2, 
-    DisplayName: "Chibli",
-    name: 'trending', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390195/pnlywxojs1bn4m9ad6b5.png' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390806/cooylozjk3ssauku8jer.png',
+    category: 'Animation',
   },
   { 
     id: 4, 
     DisplayName: "OldSchool",
     name: 'OldSchool', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743487089/kxvubooxncxuxggxs8bk.png' 
-  },
-  { 
-    id: 33, 
-    DisplayName: "Classic Chibli",
-    name: 'trendingVersion2', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743311677/download_13_yna1rl.png' 
-  },
-  { 
-    id: 5, 
-    DisplayName: "Retro Style",
-    name: 'Retro', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743483366/akex8ynnvp6recoixdud.jpg' 
-  },
-  { 
-    id: 3678, 
-    DisplayName: "Rick And Morty",
-    name: 'RickAndMorty', 
-    src: 'https://variety.com/wp-content/uploads/2024/10/image002-e1729182384298.jpg?crop=0px%2C24px%2C862px%2C485px&resize=1000%2C563' 
-  },
-  { 
-    id: 332345677777777, 
-    DisplayName: "Pixar",
-    name: 'Pixar', 
-    src: 'https://i.pinimg.com/474x/95/e1/68/95e168c6abfc5633434c5a946491471e.jpg' 
-  },
-  { 
-    id: 3323456897, 
-    DisplayName: "SouthPark",
-    name: 'SouthPark', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743384050/download_25_ujn2wd.png' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743487089/kxvubooxncxuxggxs8bk.png',
+    category: 'Animation',
   },
   { 
     id: 3323456, 
     DisplayName: "Lego",
     name: 'Lego', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743896925/r0qvqqucbuyqocqxugvr.png' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743896925/r0qvqqucbuyqocqxugvr.png',
+    category: 'Animation',
   },
+  { 
+    id: 2, 
+    DisplayName: "Chibli",
+    name: 'trending', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390195/pnlywxojs1bn4m9ad6b5.png',
+    category: 'Animation',
+  },
+
+  { 
+    id: 33, 
+    DisplayName: "Classic Chibli",
+    name: 'trendingVersion2', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743311677/download_13_yna1rl.png',
+    category: 'Animation',
+  },
+  { 
+    id: 5, 
+    DisplayName: "Retro Style",
+    name: 'Retro', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743483366/akex8ynnvp6recoixdud.jpg',
+    category: 'Animation',
+  },
+  { 
+    id: 3678, 
+    DisplayName: "Rick And Morty",
+    name: 'RickAndMorty', 
+    src: 'https://variety.com/wp-content/uploads/2024/10/image002-e1729182384298.jpg?crop=0px%2C24px%2C862px%2C485px&resize=1000%2C563',
+    category: 'Animation',
+  },
+  { 
+    id: 332345677777777, 
+    DisplayName: "Pixar",
+    name: 'Pixar', 
+    src: 'https://i.pinimg.com/474x/95/e1/68/95e168c6abfc5633434c5a946491471e.jpg',
+    category: 'Animation',
+  },
+  { 
+    id: 3323456897, 
+    DisplayName: "SouthPark",
+    name: 'SouthPark', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743384050/download_25_ujn2wd.png',
+    category: 'Animation',
+  },
+
   { 
     id: 332345656, 
     DisplayName: "Simpsons",
     name: 'Simpsons', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743896840/yxyhnq1wsrabf2prkqct.png' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743896840/yxyhnq1wsrabf2prkqct.png',
+    category: 'Animation',
   },
   { 
     id: 3, 
     DisplayName: "Comic Cartoon",
     name: 'Cartoon', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743384050/download_25_ujn2wd.png' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743384050/download_25_ujn2wd.png',
+    category: 'Animation',
   },
   { 
     id: 6, 
     DisplayName: "Pixel Art",
     name: 'PixelArt', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390979/fxtcvex3j8ncjbmksrod.png' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390979/fxtcvex3j8ncjbmksrod.png',
+    category: 'Animation',
   },
   { 
     id: 3219, 
     DisplayName: "Cyberpunk",
     name: 'Cyberpunk', 
-    src: 'https://static1.thegamerimages.com/wordpress/wp-content/uploads/2024/11/mixcollage-26-nov-2024-10-12-am-4945.jpg' 
+    src: 'https://static1.thegamerimages.com/wordpress/wp-content/uploads/2024/11/mixcollage-26-nov-2024-10-12-am-4945.jpg',
+    category: 'Animation',
   },
   { 
     id: 9, 
     DisplayName: "3D Image",
     name: 'threeD', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295994/Screenshot_2025-03-29_190345_gk19da.png' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295994/Screenshot_2025-03-29_190345_gk19da.png',
+    category: 'Animation',
   },
   { 
     id: 10, 
     DisplayName: "Historical Portrait",
     name: 'HistoricalPortrait', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/historical-portrait.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/historical-portrait.jpg',
+    category: 'Historical',
   },
   { 
     id: 11, 
     DisplayName: "Movie Poster",
     name: 'MoviePoster', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/movie-poster.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/movie-poster.jpg',
+    category: 'Professional',
   },
   { 
     id: 12, 
     DisplayName: "Rap Album Cover",
     name: 'RapAlbumCover', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/rap-album.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/rap-album.jpg',
+    category: 'Professional',
   },
   { 
     id: 13, 
     DisplayName: "Professional Headshot",
     name: 'ProfessionalHeadshot', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/professional-headshot.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/professional-headshot.jpg',
+    category: 'Professional',
   },
   { 
     id: 14, 
     DisplayName: "Victorian Engraving",
     name: 'VictorianEngraving', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/victorian-engraving.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/victorian-engraving.jpg',
+    category: 'Historical',
   },
   { 
     id: 15, 
     DisplayName: "Ancient Mosaic",
     name: 'AncientMosaic', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/ancient-mosaic.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/ancient-mosaic.jpg',
+    category: 'Historical',
   },
   { 
     id: 16, 
     DisplayName: "Botanical Illustration",
     name: 'BotanicalIllustration', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/botanical-illustration.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/botanical-illustration.jpg',
+    category: 'Historical',
   },
   { 
     id: 17, 
     DisplayName: "Silkscreen Print",
     name: 'SilkscreenPrint', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/silkscreen-print.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/silkscreen-print.jpg',
+    category: 'Professional',
   },
   { 
     id: 18, 
     DisplayName: "Stained Glass",
     name: 'StainedGlass', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/stained-glass.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/stained-glass.jpg',
+    category: 'Historical',
   },
   { 
     id: 19, 
     DisplayName: "Comic Book",
     name: 'ComicBook', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/comic-book.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/comic-book.jpg',
+    category: 'Animation',
   },
   { 
     id: 20, 
     DisplayName: "Watercolor",
     name: 'Watercolor', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/watercolor.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/watercolor.jpg',
+    category: 'Professional',
   },
   { 
     id: 21, 
     DisplayName: "Oil Painting",
     name: 'OilPainting', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/oil-painting.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/oil-painting.jpg',
+    category: 'Professional',
   },
   { 
     id: 22, 
     DisplayName: "Pastel Drawing",
     name: 'PastelDrawing', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/pastel-drawing.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/pastel-drawing.jpg',
+    category: 'Professional',
   },
   { 
     id: 23, 
     DisplayName: "Pencil Sketch",
     name: 'PencilSketch', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/pencil-sketch.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/pencil-sketch.jpg',
+    category: 'Professional',
   },
   { 
     id: 24, 
     DisplayName: "Pop Art",
     name: 'PopArt', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/pop-art.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/pop-art.jpg',
+    category: 'Professional',
   },
   { 
     id: 25, 
     DisplayName: "Steampunk",
     name: 'Steampunk', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/steampunk.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/steampunk.jpg',
+    category: 'Historical',
   },
   { 
     id: 26, 
     DisplayName: "Impressionist",
     name: 'Impressionist', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/impressionist.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/impressionist.jpg',
+    category: 'Historical',
   },
   { 
     id: 27, 
     DisplayName: "Vintage Postcard",
     name: 'VintagePostcard', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/vintage-postcard.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/vintage-postcard.jpg',
+    category: 'Historical',
   },
   { 
     id: 28, 
     DisplayName: "Vaporwave",
     name: 'Vaporwave', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/vaporwave.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/vaporwave.jpg',
+    category: 'Professional',
   },
   { 
     id: 29, 
     DisplayName: "Low Poly",
     name: 'LowPoly', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/low-poly.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/low-poly.jpg',
+    category: 'Animation',
   },
   { 
     id: 30, 
     DisplayName: "Cut Paper",
     name: 'CutPaper', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/cut-paper.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/cut-paper.jpg',
+    category: 'Professional',
   },
   { 
     id: 31, 
     DisplayName: "Woodcut",
     name: 'Woodcut', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/woodcut.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/woodcut.jpg',
+    category: 'Historical',
   },
   { 
     id: 32, 
     DisplayName: "Art Deco",
     name: 'ArtDeco', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/art-deco.jpg' 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/art-deco.jpg',
+    category: 'Historical',
   }
 ];

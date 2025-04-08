@@ -10,11 +10,11 @@ import {
   StatusBar,
   Dimensions,
   Platform,
-  ScrollView,
-  KeyboardAvoidingView,
   ActivityIndicator,
   Animated,
-  Easing
+  Easing,
+  ScrollView,
+  Keyboard
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
@@ -23,19 +23,53 @@ import { LinearGradient } from "expo-linear-gradient";
 
 const { width, height } = Dimensions.get("window");
 
-export default function AIChatScreen() {
-  const [messages, setMessages] = useState([
-    { 
-      id: 1, 
-      text: "Hello! I can help you generate images. Describe what you'd like to create!", 
-      isUser: false, 
-      timestamp: new Date() 
-    }
-  ]);
+const SUGGESTED_PROMPTS = [
+  {
+    id: '1',
+    text: 'Sunset over mountains with a lake reflection',
+    category: 'Landscape'
+  },
+  {
+    id: '2',
+    text: 'Cyberpunk cityscape at night with neon lights',
+    category: 'Sci-Fi'
+  },
+  {
+    id: '3',
+    text: 'A magical forest with glowing mushrooms and fairies',
+    category: 'Fantasy'
+  },
+  {
+    id: '4',
+    text: 'Abstract painting with vibrant colors and geometric shapes',
+    category: 'Art'
+  },
+  {
+    id: '5',
+    text: 'Underwater scene with coral reef and tropical fish',
+    category: 'Nature'
+  },
+  {
+    id: '6',
+    text: 'Vintage car on a desert road with dramatic sky',
+    category: 'Travel'
+  },
+  {
+    id: '7',
+    text: 'Astronaut floating in space with Earth in background',
+    category: 'Space'
+  },
+  {
+    id: '8',
+    text: 'Cozy cabin interior with fireplace in winter',
+    category: 'Lifestyle'
+  }
+];
+
+export default function AIImageGenerator() {
   const [inputText, setInputText] = useState("");
   const [generatedImage, setGeneratedImage] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const scrollViewRef = useRef();
   const loadingAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -53,48 +87,16 @@ export default function AIChatScreen() {
     }
   }, [isGenerating]);
 
-  const sendMessage = () => {
+  const generateImage = () => {
     if (inputText.trim() === "") return;
     
-    const userMessage = {
-      id: messages.length + 1,
-      text: inputText,
-      isUser: true,
-      timestamp: new Date()
-    };
+    Keyboard.dismiss();
     
-    setMessages(prev => [...prev, userMessage]);
-    setInputText("");
-    
-    setTimeout(() => {
-      const aiMessage = {
-        id: messages.length + 2,
-        text: `I'll generate an image based on "${inputText}". Please wait...`,
-        isUser: false,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, aiMessage]);
-      
-      generateImage(inputText);
-    }, 1000);
-  };
-  
-  const generateImage = (prompt) => {
     setIsGenerating(true);
     
     setTimeout(() => {
       setGeneratedImage("https://via.placeholder.com/500");
       setIsGenerating(false);
-      
-      const successMessage = {
-        id: messages.length + 3,
-        text: "Here's your generated image! What do you think?",
-        isUser: false,
-        timestamp: new Date()
-      };
-      
-      setMessages(prev => [...prev, successMessage]);
     }, 3000);
   };
   
@@ -110,22 +112,14 @@ export default function AIChatScreen() {
     }
   };
   
-  useEffect(() => {
-    if (scrollViewRef.current) {
-      setTimeout(() => {
-        scrollViewRef.current.scrollToEnd({ animated: true });
-      }, 200);
-    }
-  }, [messages]);
+  const handlePromptSelect = (prompt) => {
+    setInputText(prompt.text);
+  };
 
   const spin = loadingAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg']
   });
-
-  const formatTime = (date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -133,7 +127,6 @@ export default function AIChatScreen() {
         <StatusBar barStyle="light-content" />
         
         <SafeAreaView style={styles.safeAreaContainer}>
-          {/* Header with gradient */}
           <LinearGradient
             colors={['rgba(30, 30, 30, 0.9)', 'rgba(0, 0, 0, 0.8)']}
             style={styles.headerGradient}
@@ -208,85 +201,63 @@ export default function AIChatScreen() {
             )}
           </View>
           
-          <View style={styles.chatContainer}>
+          <View style={styles.suggestedPromptsSection}>
+            <Text style={styles.suggestedPromptsTitle}>Suggested Prompts</Text>
             <ScrollView 
-              ref={scrollViewRef}
-              style={styles.messagesContainer}
-              contentContainerStyle={styles.messagesContent}
-              showsVerticalScrollIndicator={false}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.suggestedPromptsScrollContainer}
             >
-              {messages.map(message => (
-                <View key={message.id} style={styles.messageWrapper}>
-                  {!message.isUser && (
-                    <View style={styles.avatarContainer}>
-                      <LinearGradient
-                        colors={['#4776E6', '#8E54E9']}
-                        style={styles.avatar}
-                      >
-                        <Text style={styles.avatarText}>AI</Text>
-                      </LinearGradient>
-                    </View>
-                  )}
-                  <View style={styles.messageContent}>
-                    <View 
-                      style={[
-                        styles.messageBubble,
-                        message.isUser ? styles.userBubble : styles.aiBubble
-                      ]}
-                    >
-                      <Text style={message.isUser ? styles.userMessageText : styles.aiMessageText}>
-                        {message.text}
-                      </Text>
-                    </View>
-                    <Text style={styles.timestamp}>{formatTime(message.timestamp)}</Text>
+              {SUGGESTED_PROMPTS.map((prompt) => (
+                <TouchableOpacity
+                  key={prompt.id}
+                  style={styles.promptCard}
+                  onPress={() => handlePromptSelect(prompt)}
+                >
+                  <View style={styles.promptCardBackground}>
+                    <Text style={styles.promptCategory}>{prompt.category}</Text>
+                    <Text style={styles.promptText}>{prompt.text}</Text>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))}
-              <View style={styles.bottomPadding} />
             </ScrollView>
           </View>
+          
+          <View style={styles.spacer} />
         </SafeAreaView>
         
         <LinearGradient
           colors={['rgba(0, 0, 0, 0.8)', '#000000']}
-          style={styles.bottomNavContainer}
+          style={styles.bottomInputContainer}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-            keyboardVerticalOffset={Platform.OS === "ios" ? 10 : 0}
-          >
-            <SafeAreaView>
-              <View style={styles.inputContainer}>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Describe the image you want..."
-                  placeholderTextColor="rgba(255, 255, 255, 0.6)"
-                  value={inputText}
-                  onChangeText={setInputText}
-                  multiline
-                />
-                <TouchableOpacity 
-                  style={[
-                    styles.sendButton, 
-                    inputText.trim() === "" && styles.disabledSendButton
-                  ]} 
-                  onPress={sendMessage}
-                  disabled={inputText.trim() === ""}
+          <SafeAreaView>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Describe the image you want to create..."
+                placeholderTextColor="rgba(255, 255, 255, 0.6)"
+                value={inputText}
+                onChangeText={setInputText}
+                multiline={true}
+                numberOfLines={3}
+              />
+              <TouchableOpacity 
+                style={[
+                  styles.generateButton, 
+                  inputText.trim() === "" && styles.disabledGenerateButton
+                ]} 
+                onPress={generateImage}
+                disabled={inputText.trim() === ""}
+              >
+                <LinearGradient
+                  colors={inputText.trim() === "" ? ['#999', '#777'] : ['#4776E6', '#8E54E9']}
+                  style={styles.generateButtonGradient}
                 >
-                  <LinearGradient
-                    colors={inputText.trim() === "" ? ['#999', '#777'] : ['#4776E6', '#8E54E9']}
-                    style={styles.sendButtonGradient}
-                  >
-                    <Ionicons 
-                      name="send" 
-                      size={20} 
-                      color={inputText.trim() === "" ? "rgba(0, 0, 0, 0.4)" : "white"} 
-                    />
-                  </LinearGradient>
-                </TouchableOpacity>
-              </View>
-            </SafeAreaView>
-          </KeyboardAvoidingView>
+                  <Text style={styles.generateButtonText}>Generate</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+          </SafeAreaView>
         </LinearGradient>
       </View>
     </GestureHandlerRootView>
@@ -465,137 +436,104 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 22,
   },
-  chatContainer: {
-    flex: 1,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    backgroundColor: "rgba(20, 20, 20, 0.85)",
-    borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.15)",
-    borderBottomWidth: 0,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 5,
+  suggestedPromptsSection: {
+    paddingLeft: 16,
+    marginTop: 15,
+    marginBottom: 15,
   },
-  messagesContainer: {
-    flex: 1,
-    padding: 16,
+  suggestedPromptsTitle: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "600",
+    marginBottom: 12,
   },
-  messagesContent: {
-    paddingBottom: 10,
+  suggestedPromptsScrollContainer: {
+    paddingRight: 16,
   },
-  messageWrapper: {
-    flexDirection: "row",
-    marginBottom: 16,
-    alignItems: "flex-end",
-  },
-  avatarContainer: {
-    marginRight: 10,
-    marginBottom: 16,
-  },
-  avatar: {
-    width: 32,
-    height: 32,
+  promptCard: {
+    width: width * 0.7,
+    height: 100,
+    marginRight: 12,
     borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
+    overflow: 'hidden',
+    backgroundColor: 'rgba(40, 40, 40, 0.9)',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  avatarText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  messageContent: {
-    flex: 1,
-    alignItems: 'flex-start',
-  },
-  messageBubble: {
+  promptCardBackground: {
+    width: '100%',
+    height: '100%',
     padding: 12,
-    borderRadius: 18,
-    maxWidth: "90%",
+    justifyContent: 'space-between',
   },
-  userBubble: {
-    backgroundColor: "#f5f5f5",
-    alignSelf: "flex-end",
-    borderBottomRightRadius: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 1,
+  promptCategory: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 13,
+    fontWeight: "500",
+    backgroundColor: 'rgba(20, 20, 20, 0.5)',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
+    alignSelf: 'flex-start',
   },
-  aiBubble: {
-    backgroundColor: "rgba(50, 50, 50, 0.9)",
-    alignSelf: "flex-start",
-    borderBottomLeftRadius: 4,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 1,
-  },
-  userMessageText: {
+  promptText: {
+    color: "white",
     fontSize: 15,
-    color: "#000",
-  },
-  aiMessageText: {
-    fontSize: 15,
-    color: "#fff",
+    fontWeight: "600",
     lineHeight: 22,
   },
-  timestamp: {
-    fontSize: 10,
-    color: "rgba(255, 255, 255, 0.5)",
-    marginTop: 4,
-    alignSelf: 'flex-end',
+  spacer: {
+    flex: 1,
+    minHeight: 40,
   },
-  bottomPadding: {
-    height: 70,
-  },
-  bottomNavContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
+  bottomInputContainer: {
     borderTopWidth: 1,
     borderTopColor: "rgba(255, 255, 255, 0.1)",
-    paddingTop: 8,
+    paddingTop: 12,
+    paddingHorizontal: 16,
+    paddingBottom: Platform.OS === "ios" ? 30 : 16,
   },
-  inputContainer: {
-    flexDirection: "row",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    paddingBottom: Platform.OS === "ios" ? 25 : 15,
-    alignItems: "flex-end",
+  inputWrapper: {
+    flexDirection: "column",
+    alignItems: "stretch",
+    width: "100%",
   },
   input: {
-    flex: 1,
     backgroundColor: "rgba(50, 50, 50, 0.8)",
-    borderRadius: 20,
+    borderRadius: 15,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 12,
+    paddingBottom: 12,
     color: "white",
     fontSize: 16,
-    maxHeight: 100,
-    minHeight: 46,
+    minHeight: 100,
+    textAlignVertical: "top",
     borderWidth: 1,
     borderColor: "rgba(255, 255, 255, 0.2)",
   },
-  sendButton: {
-    width: 46,
-    height: 46,
-    marginLeft: 10,
+  generateButton: {
+    height: 50,
+    marginTop: 12,
+    alignSelf: "stretch",
   },
-  sendButtonGradient: {
+  generateButtonGradient: {
     width: '100%',
     height: '100%',
-    borderRadius: 23,
+    borderRadius: 25,
     justifyContent: "center",
     alignItems: "center",
   },
-  disabledSendButton: {
+  generateButtonText: {
+    color: "white",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  disabledGenerateButton: {
     opacity: 0.7,
   },
 });
