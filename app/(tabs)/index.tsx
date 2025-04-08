@@ -5,12 +5,12 @@ import { Ionicons } from "@expo/vector-icons"
 import { router } from "expo-router"
 import useOnboarding from "@/hooks/useOnboarding"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
-import ResultScreen from "./mainComps/resultScreen"
+import ResultScreen from "../mainComps/resultScreen"
 import { useSuperwall } from "@/hooks/useSuperwall"
-import { SUPERWALL_TRIGGERS } from "./config/superwall"
-import { processSelectedImage, generateImage as generateStyledImage, handleDownload as saveImage, handleShare as shareImage, StyleItem } from "./utils/imageUtils"
-import { stylesList } from "./mainComps/stylesData"
-import SubscriptionBanner from "./FreePlanHeader"
+import { SUPERWALL_TRIGGERS } from "../config/superwall"
+import { processSelectedImage, generateImage as generateStyledImage, handleDownload as saveImage, handleShare as shareImage, StyleItem } from "../utils/imageUtils"
+import { stylesList } from "../mainComps/stylesData"
+import SubscriptionBanner from "../FreePlanHeader"
 
 const { width } = Dimensions.get("window")
 const ACCENT_COLOR = "#f5f5f5"
@@ -219,32 +219,7 @@ export default function AnimeConverter() {
               
       
 <View style={screenStyles.bottomNavContainer}>
-  <SafeAreaView >
-    <View style={screenStyles.bottomNavBar}>
-      <TouchableOpacity 
-        style={screenStyles.bottomNavButton}
-      >
-        <Ionicons name="grid-outline" size={24} color="white" />
-        <Text style={screenStyles.bottomNavText}>Styles</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={screenStyles.bottomNavButton}
-        onPress={() => router.push("/chat")}
-      >
-        <Ionicons name="chatbubble-outline" size={24} color="white" />
-        <Text style={screenStyles.bottomNavText}>Text to Image</Text>
-      </TouchableOpacity>
-      
-      <TouchableOpacity 
-        style={screenStyles.bottomNavButton}
-        onPress={() => router.push("/profile")}
-      >
-        <Ionicons name="settings-outline" size={24} color="white" />
-        <Text style={screenStyles.bottomNavText}>Settings</Text>
-      </TouchableOpacity>
-    </View>
-  </SafeAreaView>
+
 </View>
     </GestureHandlerRootView>
   )

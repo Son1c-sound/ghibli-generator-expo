@@ -18,7 +18,7 @@ import {
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import SubscriptionBanner from "./FreePlanHeader";
+import SubscriptionBanner from "../FreePlanHeader";
 
 const { width, height } = Dimensions.get("window");
 
@@ -89,7 +89,7 @@ export default function AIImageGenerator() {
     }, 3000);
   };
   
-  const handleImageSelect = (index) => {
+  const handleImageSelect = (index:any) => {
     if (generatedImages[index]) {
       router.push({
         pathname: "/result",
@@ -101,7 +101,7 @@ export default function AIImageGenerator() {
     }
   };
 
-  const selectArtStyle = (id) => {
+  const selectArtStyle = (id:any) => {
     setSelectedStyle(id);
   };
 
@@ -122,11 +122,6 @@ export default function AIImageGenerator() {
         
         <SafeAreaView style={styles.safeAreaContainer}>
         <SubscriptionBanner />
-          <TouchableOpacity style={styles.backButton} onPress={goBack}>
-            <Ionicons name="chevron-back" size={24} color="white" />
-            <Text style={styles.backButtonText}>Back</Text>
-          </TouchableOpacity>
-
           <ScrollView 
             ref={scrollViewRef}
             style={styles.scrollContainer}
@@ -178,7 +173,7 @@ export default function AIImageGenerator() {
               {isGenerating ? (
                 <View style={styles.loadingContainer}>
                   <Animated.View style={{transform: [{rotate: spin}]}}>
-                    <MaterialCommunityIcons name="image-filter" size={40} color="#f5f5f5" />
+                    <MaterialCommunityIcons name="image-filter-hdr" size={40} color="#f5f5f5" />
                   </Animated.View>
                   <Text style={styles.loadingText}>Creating your images...</Text>
                 </View>
@@ -238,7 +233,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContentContainer: {
-    paddingBottom: 90, // Space for the button at the bottom
+    paddingBottom: 90, 
   },
   backButton: {
     flexDirection: "row",

@@ -14,7 +14,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import SubscriptionBanner from './FreePlanHeader';
+import SubscriptionBanner from '../FreePlanHeader';
 
 const { width } = Dimensions.get('window');
 const ACCENT_COLOR = "#f5f5f5";
@@ -110,34 +110,6 @@ export default function Settings() {
           
           <Text style={styles.version}>Version 2.0.0</Text>
         </ScrollView>
-        <View style={styles.bottomNavContainer}>
-          <SafeAreaView>
-            <View style={styles.bottomNavBar}>
-              <TouchableOpacity 
-                style={styles.bottomNavButton}
-                onPress={() => router.push("/")}
-              >
-                <Ionicons name="grid-outline" size={24} color="white" />
-                <Text style={styles.bottomNavText}>Styles</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={styles.bottomNavButton}
-                onPress={() => router.push("/chat")}
-              >
-                <Ionicons name="chatbubble-outline" size={24} color="white" />
-                <Text style={styles.bottomNavText}>Text to Image</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={styles.bottomNavButton}
-              >
-                <Ionicons name="settings-outline" size={24} color={ACCENT_COLOR} />
-                <Text style={[styles.bottomNavText, styles.activeNavText]}>Settings</Text>
-              </TouchableOpacity>
-            </View>
-          </SafeAreaView>
-        </View>
       </SafeAreaView>
     </LinearGradient>
   );
