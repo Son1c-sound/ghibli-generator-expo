@@ -6,7 +6,6 @@ import { Svg, Path, Circle, G } from 'react-native-svg';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 
-// Custom SVG icons
 const HomeIcon = ({ color }) => (
   <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
     <Path
@@ -58,7 +57,6 @@ const ProfileIcon = ({ color }) => (
   </Svg>
 );
 
-// Custom TabBar Background component that renders a black background
 const CustomTabBarBackground = () => {
   return <View style={{ flex: 1, backgroundColor: '#000000' }} />;
 };
@@ -66,7 +64,6 @@ const CustomTabBarBackground = () => {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   
-  // Define active color - you can adjust this to match your design
   const activeTintColor = Colors[colorScheme ?? 'light'].tint || '#3498db';
 
   return (
@@ -79,16 +76,16 @@ export default function TabLayout() {
         tabBarStyle: Platform.select({
           ios: {
             position: 'absolute',
-            height: 60, // Make tab bar slightly bigger
+            height: 60,
             paddingBottom: 5,
-            backgroundColor: '#000000', // Black background
-            borderTopWidth: 0, // Remove the top border
+            backgroundColor: '#000000',
+            borderTopWidth: 0
           },
           default: {
-            height: 60, // Make tab bar slightly bigger
+            height: 60,
             paddingBottom: 5,
-            backgroundColor: '#000000', // Black background
-            borderTopWidth: 0, // Remove the top border
+            backgroundColor: '#000000',
+            borderTopWidth: 0
           },
         }),
         tabBarItemStyle: {
@@ -113,7 +110,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="chat"
         options={{
-          title: 'Chat',
+          title: 'Create',
           tabBarIcon: ({ color }) => <ChatIcon color={color} />,
           headerShown: false,
         }}
