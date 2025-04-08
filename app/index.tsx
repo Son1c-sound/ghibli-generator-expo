@@ -10,8 +10,6 @@ import { useSuperwall } from "@/hooks/useSuperwall"
 import { SUPERWALL_TRIGGERS } from "./config/superwall"
 import { processSelectedImage, generateImage as generateStyledImage, handleDownload as saveImage, handleShare as shareImage, StyleItem } from "./utils/imageUtils"
 import { stylesList } from "./mainComps/stylesData"
-import HeaderBanner from "./Headbanner"
-import { resetBannerDismissal } from "./Headbanner";
 import SubscriptionBanner from "./FreePlanHeader"
 
 const { width } = Dimensions.get("window")
@@ -106,19 +104,11 @@ export default function AnimeConverter() {
         locations={[0, 0.35, 0.7]}
         style={{ flex: 1 }}
       >
-  
         <SafeAreaView style={screenStyles.safeAreaContainer}>
           <StatusBar barStyle="light-content" />
-
-          <View style={screenStyles.header}>
-            <HeaderBanner/>
-          </View>
-   
           <ScrollView style={screenStyles.scrollContainer} showsVerticalScrollIndicator={false}>  
             <View style={screenStyles.featuredContainer}>
-
               <Text style={screenStyles.sectionTitle}>Featured Style</Text>
-              
               <TouchableOpacity
                 style={screenStyles.featuredCard}
                 onPress={() => handleStyleSelect(ghibliStyle.id)}
@@ -146,16 +136,11 @@ export default function AnimeConverter() {
                       </View>
                     )}
                   </View>
-
                 </LinearGradient>
               </TouchableOpacity>
             </View>
             <SubscriptionBanner />
-            {/* <Text onPress={() => {resetBannerDismissal()}} style={screenStyles.sectionTitle}>reset</Text> */}
             <View style={screenStyles.stylesGridContainer}>
-              <Text style={screenStyles.sectionTitle}>
-                {selectedCategory ? `${selectedCategory} Styles` : 'Explore More'}
-              </Text>
               <View style={screenStyles.categoryFiltersContainer}>
               <ScrollView 
                 horizontal 
@@ -232,34 +217,35 @@ export default function AnimeConverter() {
         </SafeAreaView>
       </LinearGradient>
               
-      <View style={screenStyles.bottomNavContainer}>
-          <SafeAreaView>
-            <View style={screenStyles.bottomNavBar}>
-              <TouchableOpacity 
-                style={screenStyles.bottomNavButton}
-              >
-                <Ionicons name="grid-outline" size={24} color="white" />
-                <Text style={screenStyles.bottomNavText}>Styles</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={screenStyles.bottomNavButton}
-                onPress={() => router.push("/chat")}
-              >
-                <Ionicons name="chatbubble-outline" size={24} color="white" />
-                <Text style={screenStyles.bottomNavText}>Text to Image</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity 
-                style={screenStyles.bottomNavButton}
-                onPress={() => router.push("/profile")}
-              >
-                <Ionicons name="settings-outline" size={24} color="white" />
-                <Text style={screenStyles.bottomNavText}>Settings</Text>
-              </TouchableOpacity>
-            </View>
-          </SafeAreaView>
-        </View>
+      
+<View style={screenStyles.bottomNavContainer}>
+  <SafeAreaView >
+    <View style={screenStyles.bottomNavBar}>
+      <TouchableOpacity 
+        style={screenStyles.bottomNavButton}
+      >
+        <Ionicons name="grid-outline" size={24} color="white" />
+        <Text style={screenStyles.bottomNavText}>Styles</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity 
+        style={screenStyles.bottomNavButton}
+        onPress={() => router.push("/chat")}
+      >
+        <Ionicons name="chatbubble-outline" size={24} color="white" />
+        <Text style={screenStyles.bottomNavText}>Text to Image</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity 
+        style={screenStyles.bottomNavButton}
+        onPress={() => router.push("/profile")}
+      >
+        <Ionicons name="settings-outline" size={24} color="white" />
+        <Text style={screenStyles.bottomNavText}>Settings</Text>
+      </TouchableOpacity>
+    </View>
+  </SafeAreaView>
+</View>
     </GestureHandlerRootView>
   )
 }
@@ -276,6 +262,8 @@ const screenStyles = StyleSheet.create({
   scrollContainer: {
     flex: 1,
     padding: 16,
+    marginTop: 30,
+
   },
   header: {
     flexDirection: "row",
@@ -283,7 +271,7 @@ const screenStyles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     paddingTop: Platform.OS === "android" ? 40 : 40,
-    marginBottom: 10,
+    marginBottom: 2,
   },
 
   categoryFiltersContainer: {
@@ -331,12 +319,12 @@ const screenStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     color: "white",
-    marginBottom: 4,
-    marginTop: 4,
+    marginBottom: 12,
+    marginTop: 2,
     marginLeft: 4,
   },
   featuredContainer: {
-    marginBottom: 24,
+    marginBottom: 6,
   },
   featuredCard: {
     borderRadius: 16,
@@ -467,4 +455,5 @@ const screenStyles = StyleSheet.create({
     marginTop: 4,
     fontSize: 12,
   },
+  
 });

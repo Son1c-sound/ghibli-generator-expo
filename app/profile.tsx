@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -8,14 +8,16 @@ import {
   StatusBar,
   Linking,
   ScrollView,
-  Dimensions
+  Dimensions,
+  Platform
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import SubscriptionBanner from './FreePlanHeader';
 
 const { width } = Dimensions.get('window');
-const ACCENT_COLOR = "#3B82F6";
+const ACCENT_COLOR = "#f5f5f5";
 
 export default function Settings() {
   
@@ -47,117 +49,115 @@ export default function Settings() {
     Linking.openURL('https://www.instagram.com/pixar.ai?utm_source=qr');
   };
 
-  const navigateToHome = () => {
-    router.replace("/");
-  };
-
-  const handleCameraCapture = () => {
-    router.replace("/");
-  };
-
   return (
-    <View style={styles.container}> 
-      <SafeAreaView style={{flex: 1}}>
+    <LinearGradient
+      colors={['#000000', '#000000', '#000000']}
+      locations={[0, 0.35, 0.7]}
+      style={{ flex: 1 }}
+    >
+      <SafeAreaView style={styles.safeAreaContainer}>
         <StatusBar barStyle="light-content" />
-        
         <View style={styles.header}>
           <TouchableOpacity onPress={navigateBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#3B82F6" />
+            <Ionicons name="arrow-back" size={24} color={ACCENT_COLOR} />
           </TouchableOpacity>
           <Text style={styles.title}>Settings</Text>
           <View style={styles.spacer} />
         </View>
         
         <ScrollView style={styles.scrollContainer}>
+        <SubscriptionBanner />
           <View style={styles.content}>
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Help & Support</Text>
-              <TouchableOpacity style={styles.optionCard} onPress={handleContactDeveloper}>
-                <Ionicons name="code-slash-outline" size={22} color="#3B82F6" />
+              <TouchableOpacity style={[styles.optionCard, styles.rowCard]} onPress={handleContactDeveloper}>
+                <Ionicons name="code-slash-outline" size={22} color={ACCENT_COLOR} />
                 <Text style={styles.optionText}>Contact Developer</Text>
               </TouchableOpacity>
+              
+              <TouchableOpacity style={[styles.optionCard, styles.rowCard]} onPress={handleSupport}>
+                <Ionicons name="help-circle-outline" size={22} color={ACCENT_COLOR} />
+                <Text style={styles.optionText}>Support</Text>
+              </TouchableOpacity>
             </View>
-
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Connect With Us</Text>
               
-              <View style={styles.socialContainer}>
-                <TouchableOpacity style={styles.socialButton} onPress={openTwitter}>
-                  <Ionicons name="logo-twitter" size={28} color="#1DA1F2" />
-                  <Text style={styles.socialText}>Twitter</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity style={styles.socialButton} onPress={openInstagram}>
-                  <Ionicons name="logo-instagram" size={28} color="#C13584" />
-                  <Text style={styles.socialText}>Instagram</Text>
-                </TouchableOpacity>
-              </View>
+              <TouchableOpacity style={[styles.optionCard, styles.rowCard]} onPress={openTwitter}>
+                <Ionicons name="logo-twitter" size={22} color={ACCENT_COLOR} />
+                <Text style={styles.optionText}>Twitter</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={[styles.optionCard, styles.rowCard]} onPress={openInstagram}>
+                <Ionicons name="logo-instagram" size={22} color={ACCENT_COLOR} />
+                <Text style={styles.optionText}>Instagram</Text>
+              </TouchableOpacity>
             </View>
-    
             <View style={styles.sectionContainer}>
               <Text style={styles.sectionTitle}>Legal</Text>
               
-              <TouchableOpacity style={styles.optionCard} onPress={handleTerms}>
-                <Ionicons name="document-text-outline" size={22} color="#3B82F6" />
+              <TouchableOpacity style={[styles.optionCard, styles.rowCard]} onPress={handleTerms}>
+                <Ionicons name="document-text-outline" size={22} color={ACCENT_COLOR} />
                 <Text style={styles.optionText}>Terms of Service</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.optionCard} onPress={handlePrivacyPolicy}>
-                <Ionicons name="shield-checkmark-outline" size={22} color="#3B82F6" />
+              <TouchableOpacity style={[styles.optionCard, styles.rowCard]} onPress={handlePrivacyPolicy}>
+                <Ionicons name="shield-checkmark-outline" size={22} color={ACCENT_COLOR} />
                 <Text style={styles.optionText}>Privacy Policy</Text>
               </TouchableOpacity>
             </View>
           </View>
           
-          <Text style={styles.version}>Version 1.0.0</Text>
+          <Text style={styles.version}>Version 2.0.0</Text>
         </ScrollView>
-        
-        {/* Bottom Navigation Bar */}
-        <View style={styles.bottomNavBar}>
-          <TouchableOpacity 
-            style={styles.bottomNavButton} 
-            onPress={navigateToHome}
-          >
-            <Ionicons name="images-outline" size={24} color="white" />
-            <Text style={styles.bottomNavText}>Gallery</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.cameraButton} 
-            onPress={handleCameraCapture}
-          >
-            <View style={styles.cameraIconContainer}>
-              <Ionicons name="camera-outline" size={28} color="white" />
+        <View style={styles.bottomNavContainer}>
+          <SafeAreaView>
+            <View style={styles.bottomNavBar}>
+              <TouchableOpacity 
+                style={styles.bottomNavButton}
+                onPress={() => router.push("/")}
+              >
+                <Ionicons name="grid-outline" size={24} color="white" />
+                <Text style={styles.bottomNavText}>Styles</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.bottomNavButton}
+                onPress={() => router.push("/chat")}
+              >
+                <Ionicons name="chatbubble-outline" size={24} color="white" />
+                <Text style={styles.bottomNavText}>Text to Image</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.bottomNavButton}
+              >
+                <Ionicons name="settings-outline" size={24} color={ACCENT_COLOR} />
+                <Text style={[styles.bottomNavText, styles.activeNavText]}>Settings</Text>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.bottomNavButton, styles.activeNavButton]} 
-            onPress={() => {}}
-          >
-            <Ionicons name="settings-outline" size={24} color={ACCENT_COLOR} />
-            <Text style={[styles.bottomNavText, styles.activeNavText]}>Settings</Text>
-          </TouchableOpacity>
+          </SafeAreaView>
         </View>
       </SafeAreaView>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeAreaContainer: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: "transparent",
   },
   scrollContainer: {
     flex: 1,
+    padding: 16,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingTop: 40,
+    paddingTop: Platform.OS === "android" ? 40 : 40,
     paddingBottom: 20,
   },
   backButton: {
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     width: 34,
   },
   content: {
-    padding: 16,
+    padding: 4,
   },
   sectionContainer: {
     marginBottom: 24,
@@ -186,59 +186,83 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   optionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#1F1F1F',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
+    borderColor: "rgba(255, 255, 255, 0.2)",
+    borderWidth: 0.3,
   },
   optionText: {
     color: 'white',
     fontSize: 16,
     marginLeft: 12,
   },
-  socialContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    marginVertical: 10,
-  },
-  socialButton: {
-    alignItems: 'center',
-    backgroundColor: '#1F1F1F',
-    padding: 16,
-    borderRadius: 12,
-    width: '45%',
-  },
-  socialText: {
-    color: 'white',
-    marginTop: 8,
-  },
   version: {
     color: '#666',
     fontSize: 12,
     textAlign: 'center',
-    marginBottom: 16,
+    marginBottom: 80,
+    marginTop: 20,
   },
   
-  // Bottom Navigation Bar Styles
+  contactInput: {
+    flex: 1,
+    color: 'white',
+    minHeight: 80,
+    textAlignVertical: 'top',
+    padding: 8,
+  },
+  sendButton: {
+    backgroundColor: ACCENT_COLOR,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    alignSelf: 'flex-end',
+    marginTop: 8,
+  },
+  sendButtonText: {
+    color: 'black',
+    fontWeight: '600',
+  },
+  patchNotesTitle: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  patchNotesText: {
+    color: 'white',
+    fontSize: 14,
+    marginBottom: 4,
+    marginLeft: 8,
+  },
+  rowCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  bottomNavContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#000000",
+    borderTopWidth: 0.3,
+    borderTopColor: "rgba(255, 255, 255, 0.2)",
+  },
   bottomNavBar: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: 10,
-    paddingBottom: 20,
-    borderTopWidth: 1,
-    borderTopColor: "#333",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    paddingBottom: Platform.OS === "ios" ? 10 : 10,
   },
   bottomNavButton: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 10,
-  },
-  activeNavButton: {
-    opacity: 1,
   },
   bottomNavText: {
     color: "white",
@@ -247,22 +271,5 @@ const styles = StyleSheet.create({
   },
   activeNavText: {
     color: ACCENT_COLOR,
-  },
-  cameraButton: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cameraIconContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: ACCENT_COLOR,
-    alignItems: "center",
-    justifyContent: "center",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
 });

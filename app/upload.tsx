@@ -22,7 +22,7 @@ import { useSuperwall } from "@/hooks/useSuperwall"
 import { SUPERWALL_TRIGGERS } from "./config/superwall"
 import { generateImage, StyleItem } from "./utils/imageUtils"
 import { stylesList } from "./mainComps/stylesData"
-
+import { BlurView } from 'expo-blur';
 const { width } = Dimensions.get("window")
 const ACCENT_COLOR = "#3B82F6"
 
@@ -312,6 +312,36 @@ export default function UploadScreen() {
           </ScrollView>
         </SafeAreaView>
       </LinearGradient>
+      <View style={styles.bottomNavContainer}>
+      <BlurView intensity={40} tint="dark">
+      <SafeAreaView style={styles.bottomNavSafeArea}>
+        <View style={styles.bottomNavBar}>
+          <TouchableOpacity 
+            style={styles.bottomNavButton}
+          >
+            <Ionicons name="grid-outline" size={24} color="white" />
+            <Text style={styles.bottomNavText}>Styles</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.bottomNavButton}
+            onPress={() => router.push("/chat")}
+          >
+            <Ionicons name="chatbubble-outline" size={24} color="white" />
+            <Text style={styles.bottomNavText}>Text to Image</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.bottomNavButton}
+            onPress={() => router.push("/profile")}
+          >
+            <Ionicons name="settings-outline" size={24} color="white" />
+            <Text style={styles.bottomNavText}>Settings</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+      </BlurView>
+    </View>
     </GestureHandlerRootView>
   )
 }
@@ -565,5 +595,45 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
-  }
+  },
+  bottomNavSafeArea: {
+    alignItems: 'center',
+  },
+  bottomNavContainer: {
+    position: "absolute",
+    bottom: 20,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  bottomNavButton: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 10,
+  },
+  bottomNavText: {
+    color: "white",
+    marginTop: 4,
+    fontSize: 12,
+  },
+  bottomNavBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: 'rgba(20, 20, 20, 0.9)',
+    borderRadius: 25,
+    width: width * 0.95,
+    paddingVertical: 3,
+    paddingHorizontal: 15,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 10,
+  },
 });
