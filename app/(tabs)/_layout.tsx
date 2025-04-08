@@ -64,7 +64,7 @@ const CustomTabBarBackground = () => {
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   
-  const activeTintColor = Colors[colorScheme ?? 'light'].tint || '#3498db';
+  const activeTintColor = Colors[colorScheme ?? 'light'].tint || '#9370DB';
 
   return (
     <Tabs
@@ -123,6 +123,14 @@ export default function TabLayout() {
           headerShown: false,
         }}
       />
+      <Tabs.Screen
+        name="upload"
+        options={{
+          href: null, 
+          headerShown: false,
+        }}
+      />
     </Tabs>
+    
   );
 }

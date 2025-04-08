@@ -11,6 +11,7 @@ import { SUPERWALL_TRIGGERS } from "../config/superwall"
 import { processSelectedImage, generateImage as generateStyledImage, handleDownload as saveImage, handleShare as shareImage, StyleItem } from "../utils/imageUtils"
 import { stylesList } from "../mainComps/stylesData"
 import SubscriptionBanner from "../FreePlanHeader"
+import Header from "../Navbar"
 
 const { width } = Dimensions.get("window")
 const ACCENT_COLOR = "#f5f5f5"
@@ -58,7 +59,6 @@ export default function AnimeConverter() {
 
   const styles: StyleItem[] = stylesList
   
-  const categories = [...new Set(styles.map(style => style.category))].filter(Boolean)
   
   const handleStyleSelect = (styleId:any) => {
     const style = styles.find(s => s.id === styleId)
@@ -99,20 +99,21 @@ export default function AnimeConverter() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <Header />
       <LinearGradient
         colors={['#000000', '#000000', '#000000']}
         locations={[0, 0.35, 0.7]}
         style={{ flex: 1 }}
       >
         <SafeAreaView style={screenStyles.safeAreaContainer}>
-          <StatusBar barStyle="light-content" />
           <ScrollView style={screenStyles.scrollContainer} showsVerticalScrollIndicator={false}>  
             <View style={screenStyles.featuredContainer}>
-              <Text style={screenStyles.sectionTitle}>Featured Style</Text>
+         
               <TouchableOpacity
                 style={screenStyles.featuredCard}
                 onPress={() => handleStyleSelect(ghibliStyle.id)}
               >
+
                 <Image 
                   source={{ uri: ghibliStyle.src }} 
                   style={screenStyles.featuredImage} 
@@ -139,46 +140,11 @@ export default function AnimeConverter() {
                 </LinearGradient>
               </TouchableOpacity>
             </View>
+            <View style={screenStyles.categoryFiltersContainer}>
+      
             <SubscriptionBanner />
-            <View style={screenStyles.stylesGridContainer}>
+            </View >
               <View style={screenStyles.categoryFiltersContainer}>
-              <ScrollView 
-                horizontal 
-                showsHorizontalScrollIndicator={false} 
-                contentContainerStyle={screenStyles.categoryFiltersScroll}
-              >
-       
-                <TouchableOpacity
-                  style={[
-                    screenStyles.categoryFilterButton,
-                    selectedCategory === null && screenStyles.categoryFilterButtonActive
-                  ]}
-                  onPress={() => setSelectedCategory(null)}
-                >
-                  <Text style={[
-                    screenStyles.categoryFilterText,
-                    selectedCategory === null && screenStyles.categoryFilterTextActive
-                  ]}>All</Text>
-                </TouchableOpacity>
-                
-                {categories.map((category) => (
-                  <TouchableOpacity
-                    key={category}
-                    style={[
-                      screenStyles.categoryFilterButton,
-                      selectedCategory === category && screenStyles.categoryFilterButtonActive
-                    ]}
-                    onPress={() => setSelectedCategory(category as any)}
-                  >
-                    <Text style={[
-                      screenStyles.categoryFilterText,
-                      selectedCategory === category && screenStyles.categoryFilterTextActive
-                    ]}>{category}</Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-
-            </View>
               <View style={screenStyles.stylesGrid}>
                 {otherStyles.map((style, index) => (
                   <TouchableOpacity
@@ -233,11 +199,12 @@ const screenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "transparent",
+    
   },
   scrollContainer: {
     flex: 1,
     padding: 16,
-    marginTop: 30,
+
 
   },
   header: {
@@ -247,10 +214,12 @@ const screenStyles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: Platform.OS === "android" ? 40 : 40,
     marginBottom: 2,
+    
   },
 
   categoryFiltersContainer: {
-    marginBottom: 16,
+    marginBottom: 7,
+    marginTop: 3,
   },
   categoryFiltersScroll: {
     paddingHorizontal: 4,

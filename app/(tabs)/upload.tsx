@@ -19,9 +19,9 @@ import * as ImagePicker from "expo-image-picker"
 import { router, useLocalSearchParams } from "expo-router"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { useSuperwall } from "@/hooks/useSuperwall"
-import { SUPERWALL_TRIGGERS } from "./config/superwall"
-import { generateImage, StyleItem } from "./utils/imageUtils"
-import { stylesList } from "./mainComps/stylesData"
+import { SUPERWALL_TRIGGERS } from "../config/superwall"
+import { generateImage, StyleItem } from "../utils/imageUtils"
+import { stylesList } from "../mainComps/stylesData"
 import { BlurView } from 'expo-blur';
 const { width } = Dimensions.get("window")
 const ACCENT_COLOR = "#3B82F6"
@@ -262,7 +262,7 @@ export default function UploadScreen() {
                   style={styles.generateButtonContent}
                   onPress={handleGenerateImage}
                 >
-                  <Ionicons name="sparkles" size={20} color="black" />
+                  <Ionicons name="sparkles" size={20} color="yellow" />
                   <Text style={styles.generateText}>Generate Image</Text>
                 </TouchableOpacity>
                 
@@ -312,36 +312,6 @@ export default function UploadScreen() {
           </ScrollView>
         </SafeAreaView>
       </LinearGradient>
-      <View style={styles.bottomNavContainer}>
-      <BlurView intensity={40} tint="dark">
-      <SafeAreaView style={styles.bottomNavSafeArea}>
-        <View style={styles.bottomNavBar}>
-          <TouchableOpacity 
-            style={styles.bottomNavButton}
-          >
-            <Ionicons name="grid-outline" size={24} color="white" />
-            <Text style={styles.bottomNavText}>Styles</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.bottomNavButton}
-            onPress={() => router.push("/chat")}
-          >
-            <Ionicons name="chatbubble-outline" size={24} color="white" />
-            <Text style={styles.bottomNavText}>Text to Image</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.bottomNavButton}
-            onPress={() => router.push("/profile")}
-          >
-            <Ionicons name="settings-outline" size={24} color="white" />
-            <Text style={styles.bottomNavText}>Settings</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-      </BlurView>
-    </View>
     </GestureHandlerRootView>
   )
 }
@@ -498,10 +468,11 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 30,
     alignItems: "center",
+
   },
   generateButton: {
     width: "90%",
-    backgroundColor: "#3B82F6",
+    backgroundColor: "#9370DB",
     borderRadius: 30,
     overflow: "hidden",
     marginBottom: 16,
@@ -511,12 +482,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 16,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#9370DB",
+    
     borderRadius: 30,
     width: "90%",
   },
   generateText: {
-    color: "black",
+    color: "white",
     fontWeight: "bold",
     fontSize: 16,
     marginLeft: 8,
@@ -540,7 +512,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "white",
     marginBottom: 16,
-    marginLeft: 4,
+    marginLeft: 14,
   },
   stylesGrid: {
     flexDirection: "row",

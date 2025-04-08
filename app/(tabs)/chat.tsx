@@ -1,13 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
+import {View,
   Text,
   TextInput,
   TouchableOpacity,
   StyleSheet,
   Image,
   SafeAreaView,
-  StatusBar,
   Dimensions,
   Platform,
   Animated,
@@ -19,6 +17,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import SubscriptionBanner from "../FreePlanHeader";
+import Header from "../Navbar";
 
 const { width, height } = Dimensions.get("window");
 
@@ -26,22 +25,22 @@ const ART_STYLES = [
   {
     id: '1',
     name: 'No Style',
-    image: { uri: 'https://via.placeholder.com/100x70/333333/FFFFFF?text=No+Style' }
+    image: { uri: 'https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg' }
   },
   {
     id: '2',
     name: 'Anime',
-    image: { uri: 'https://via.placeholder.com/100x70/6B46C1/FFFFFF?text=Anime' }
+    image: { uri: 'https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg' }
   },
   {
     id: '3',
     name: 'Fantasy',
-    image: { uri: 'https://via.placeholder.com/100x70/9F7AEA/FFFFFF?text=Fantasy' }
+    image: { uri: 'https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg' }
   },
   {
     id: '4',
     name: 'Realistic',
-    image: { uri: 'https://via.placeholder.com/100x70/D6BCFA/FFFFFF?text=Realistic' }
+    image: { uri: 'https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg' }
   }
 ];
 
@@ -105,10 +104,6 @@ export default function AIImageGenerator() {
     setSelectedStyle(id);
   };
 
-  const goBack = () => {
-    router.push("/");
-  };
-
   const spin = loadingAnim.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg']
@@ -117,18 +112,18 @@ export default function AIImageGenerator() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-
-        <StatusBar barStyle="light-content" />
-        
+      <Header title='Generate text to image' ></Header>
         <SafeAreaView style={styles.safeAreaContainer}>
-        <SubscriptionBanner />
           <ScrollView 
             ref={scrollViewRef}
             style={styles.scrollContainer}
             contentContainerStyle={styles.scrollContentContainer}
             showsVerticalScrollIndicator={false}
           >
+
             <View style={styles.inputPromptSection}>
+        <SubscriptionBanner />
+
               <View style={styles.promptHeader}>
                 <Text style={styles.promptTitle}>Input Prompt</Text>
               </View>
@@ -159,7 +154,6 @@ export default function AIImageGenerator() {
                     <Image source={style.image} style={styles.artStyleImage} />
                     {style.id === '1' && (
                       <View style={styles.noStyleOverlay}>
-                        <Ionicons name="close-circle" size={30} color="white" />
                       </View>
                     )}
                     <Text style={styles.artStyleName}>{style.name}</Text>
@@ -227,7 +221,7 @@ const styles = StyleSheet.create({
   },
   safeAreaContainer: {
     flex: 1,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 10,
+
   },
   scrollContainer: {
     flex: 1,
@@ -256,6 +250,7 @@ const styles = StyleSheet.create({
   },
   promptTitle: {
     fontSize: 16,
+    marginTop: 6,
     fontWeight: "600",
     color: "white",
   },
@@ -291,7 +286,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     overflow: "hidden",
     marginHorizontal: 2,
-    backgroundColor: "#1E1E1E",
     borderWidth: 2,
     borderColor: "transparent",
   },
@@ -301,8 +295,7 @@ const styles = StyleSheet.create({
   artStyleImage: {
     width: "100%",
     height: 70,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
+   borderRadius: 20,
   },
   artStyleName: {
     color: "white",
@@ -311,7 +304,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   noStyleOverlay: {
-    position: "absolute",
+    
     top: 0,
     left: 0,
     right: 0,
@@ -324,7 +317,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   loadingContainer: {
-    height: width - 40, // Match the height of the image grid
+    height: width - 40, 
     justifyContent: "center",
     alignItems: "center",
   },
@@ -359,7 +352,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#1E1E1E",
   },
   bottomPadding: {
-    height: 20, // Extra padding at the bottom
+    height: 20,
   },
   fixedButtonContainer: {
     position: "absolute",
@@ -370,7 +363,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 10,
     paddingBottom: Platform.OS === "ios" ? 30 : 20,
-    borderTopWidth: 1,
     borderTopColor: "rgba(147, 112, 219, 0.2)",
   },
   generateButton: {
