@@ -2,34 +2,28 @@ import React, { useEffect, useState } from "react"
 import { View, Text, TouchableOpacity, StyleSheet, Image, SafeAreaView, StatusBar, Alert, ActivityIndicator, Dimensions, ScrollView, Platform } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Ionicons } from "@expo/vector-icons"
-import * as ImagePicker from "expo-image-picker"
 import { router } from "expo-router"
 import useOnboarding from "@/hooks/useOnboarding"
 import { GestureHandlerRootView } from "react-native-gesture-handler"
 import ResultScreen from "./mainComps/resultScreen"
-import { Share } from "react-native"
 import { useSuperwall } from "@/hooks/useSuperwall"
 import { SUPERWALL_TRIGGERS } from "./config/superwall"
 import { processSelectedImage, generateImage as generateStyledImage, handleDownload as saveImage, handleShare as shareImage, StyleItem } from "./utils/imageUtils"
 import { stylesList } from "./mainComps/stylesData"
 import HeaderBanner from "./Headbanner"
 import { resetBannerDismissal } from "./Headbanner";
+import SubscriptionBanner from "./FreePlanHeader"
 
 const { width } = Dimensions.get("window")
 const ACCENT_COLOR = "#f5f5f5"
 
 export default function AnimeConverter() {
   const [selectedStyle, setSelectedStyle] = useState<number | null>(null)
-  const [image, setImage] = useState<string | null>(null)
-  const [resultImage, setResultImage] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [loadingProgress, setLoadingProgress] = useState(0)
-  const [imageSize, setImageSize] = useState(0)
   const [showResultScreen, setShowResultScreen] = useState(false)
-  const [verificationNote, setVerificationNote] = useState("")
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const { isSubscribed, showPaywall } = useSuperwall()
-
   const { isOnboarded, isLoading } = useOnboarding()
 
   useEffect(() => {
@@ -66,7 +60,6 @@ export default function AnimeConverter() {
 
   const styles: StyleItem[] = stylesList
   
-  // Get all unique categories
   const categories = [...new Set(styles.map(style => style.category))].filter(Boolean)
   
   const handleStyleSelect = (styleId:any) => {
@@ -89,14 +82,12 @@ export default function AnimeConverter() {
     })
   }
 
-  // Filter styles based on selected category
   const filteredStyles = selectedCategory 
     ? styles.filter(style => style.category === selectedCategory)
     : styles
   
   const ghibliStyle = styles.find(style => style.name === "Ghibli") || styles[0]
   
-  // Filter "other styles" based on selected category
   const otherStyles = selectedCategory
     ? filteredStyles.filter(style => style.id !== ghibliStyle.id)
     : styles.filter(style => style.id !== ghibliStyle.id)
@@ -115,18 +106,19 @@ export default function AnimeConverter() {
         locations={[0, 0.35, 0.7]}
         style={{ flex: 1 }}
       >
+  
         <SafeAreaView style={screenStyles.safeAreaContainer}>
           <StatusBar barStyle="light-content" />
+
           <View style={screenStyles.header}>
             <HeaderBanner/>
           </View>
-          
-          <ScrollView style={screenStyles.scrollContainer} showsVerticalScrollIndicator={false}>
-
-    
-            
+   
+          <ScrollView style={screenStyles.scrollContainer} showsVerticalScrollIndicator={false}>  
             <View style={screenStyles.featuredContainer}>
+
               <Text style={screenStyles.sectionTitle}>Featured Style</Text>
+              
               <TouchableOpacity
                 style={screenStyles.featuredCard}
                 onPress={() => handleStyleSelect(ghibliStyle.id)}
@@ -135,7 +127,6 @@ export default function AnimeConverter() {
                   source={{ uri: ghibliStyle.src }} 
                   style={screenStyles.featuredImage} 
                 />
-                
                 <LinearGradient
                   colors={['transparent', 'rgba(0,0,0,0.8)']}
                   style={screenStyles.featuredGradient}
@@ -155,10 +146,12 @@ export default function AnimeConverter() {
                       </View>
                     )}
                   </View>
+
                 </LinearGradient>
               </TouchableOpacity>
             </View>
-            <Text onPress={() => {resetBannerDismissal()}} style={screenStyles.sectionTitle}>reset</Text>
+            <SubscriptionBanner />
+            {/* <Text onPress={() => {resetBannerDismissal()}} style={screenStyles.sectionTitle}>reset</Text> */}
             <View style={screenStyles.stylesGridContainer}>
               <Text style={screenStyles.sectionTitle}>
                 {selectedCategory ? `${selectedCategory} Styles` : 'Explore More'}
@@ -169,6 +162,7 @@ export default function AnimeConverter() {
                 showsHorizontalScrollIndicator={false} 
                 contentContainerStyle={screenStyles.categoryFiltersScroll}
               >
+       
                 <TouchableOpacity
                   style={[
                     screenStyles.categoryFilterButton,
@@ -198,6 +192,7 @@ export default function AnimeConverter() {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
+
             </View>
               <View style={screenStyles.stylesGrid}>
                 {otherStyles.map((style, index) => (
@@ -252,7 +247,7 @@ export default function AnimeConverter() {
                 onPress={() => router.push("/chat")}
               >
                 <Ionicons name="chatbubble-outline" size={24} color="white" />
-                <Text style={screenStyles.bottomNavText}>AI Chat</Text>
+                <Text style={screenStyles.bottomNavText}>Text to Image</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
@@ -296,6 +291,7 @@ const screenStyles = StyleSheet.create({
   },
   categoryFiltersScroll: {
     paddingHorizontal: 4,
+    marginTop: 8,
   },
   categoryFilterButton: {
     paddingHorizontal: 16,
@@ -335,7 +331,8 @@ const screenStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "600",
     color: "white",
-    marginBottom: 12,
+    marginBottom: 4,
+    marginTop: 4,
     marginLeft: 4,
   },
   featuredContainer: {

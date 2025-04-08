@@ -95,7 +95,7 @@ export default function AIImageGenerator() {
     setIsGenerating(true);
     
     setTimeout(() => {
-      setGeneratedImage("https://via.placeholder.com/500");
+      setGeneratedImage("/");
       setIsGenerating(false);
     }, 3000);
   };
@@ -193,7 +193,6 @@ export default function AIImageGenerator() {
                   <MaterialCommunityIcons name="plus" size={25} color="#f5f5f5" style={styles.plusIcon} />
                   <MaterialCommunityIcons name="creation" size={30} color="#f5f5f5" style={styles.creationIcon} />
                 </View>
-                <Text style={styles.noImageTitle}>AI Image Generator</Text>
                 <Text style={styles.noImageText}>
                   Describe what you want to create, and I'll turn it into an image
                 </Text>
