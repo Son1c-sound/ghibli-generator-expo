@@ -26,7 +26,6 @@ import Header from "../Navbar";
 import { useSuperwall } from "@/hooks/useSuperwall";
 import { SUPERWALL_TRIGGERS } from "../config/superwall";
 
-
 const { width, height } = Dimensions.get("window");
 
 const STYLE_MAP = {
@@ -66,10 +65,12 @@ const STORAGE_KEY = 'ghibliAI_generation_count';
 
 export default function AIImageGenerator() {
   const [inputText, setInputText] = useState("");
+  const [inputFocused, setInputFocused] = useState(false);
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [generationStarted, setGenerationStarted] = useState(false);
   const [generatingImageIndex, setGeneratingImageIndex] = useState(null);
-  const [generatedImages, setGeneratedImages] = useState<(string | null)[]>([null, null, null, null]);
+  const [generatedImages, setGeneratedImages] = useState([null, null, null, null]);
   const [generatedImagesBase64, setGeneratedImagesBase64] = useState([null, null, null, null]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [mediaLibraryPermission, setMediaLibraryPermission] = useState(false);
@@ -78,15 +79,11 @@ export default function AIImageGenerator() {
   const { isSubscribed, showPaywall } = useSuperwall();
   
   const loadingAnim = useRef(new Animated.Value(0)).current;
-  const scrollViewRef = useRef(null);
+  const inputAnim = useRef(new Animated.Value(0)).current;
+  const scrollViewRef = useRef<ScrollView>(null);
 
   useEffect(() => {
-    (async () => {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      setMediaLibraryPermission(status === 'granted');
-      
-      loadGenerationCount();
-    })();
+    loadGenerationCount();
     
     if (isGenerating) {
       Animated.loop(
@@ -97,10 +94,29 @@ export default function AIImageGenerator() {
           useNativeDriver: true
         })
       ).start();
+      
+      // Auto-scroll to the image grid when generation starts
+      setTimeout(() => {
+        if (scrollViewRef.current) {
+          scrollViewRef.current.scrollTo({ 
+            y: 400, 
+            animated: true 
+          });
+        }
+      }, 300);
     } else {
       loadingAnim.setValue(0);
     }
   }, [isGenerating]);
+
+  // Animation for input focus
+  useEffect(() => {
+    Animated.timing(inputAnim, {
+      toValue: inputFocused ? 1 : 0,
+      duration: 200,
+      useNativeDriver: false,
+    }).start();
+  }, [inputFocused]);
 
   const loadGenerationCount = async () => {
     try {
@@ -112,7 +128,6 @@ export default function AIImageGenerator() {
       console.error('Error loading generation count:', error);
     }
   };
-
 
   const generateSingleImage = async (prompt:any, style:any, index:any) => {
     try {
@@ -159,8 +174,8 @@ export default function AIImageGenerator() {
       console.log(`Successfully received image ${index + 1}`);
       
       setGeneratedImages(prev => {
-        const updated = [...prev];
-        updated[index] = `data:image/jpeg;base64,${data.imageBase64}`;
+        const updated:any = [...prev];
+        updated[index ]  = `data:image/jpeg;base64,${data.imageBase64}`;
         return updated;
       });
       
@@ -208,6 +223,7 @@ export default function AIImageGenerator() {
     
     Keyboard.dismiss();
     setIsGenerating(true);
+    setGenerationStarted(true);
     setGeneratedImages([null, null, null, null]);
     setGeneratedImagesBase64([null, null, null, null]);
     setCurrentImageIndex(0);
@@ -238,20 +254,16 @@ export default function AIImageGenerator() {
 
       setDownloadingIndex(index);
 
+      // Only check permission when user tries to save
       if (!mediaLibraryPermission) {
         const { status } = await MediaLibrary.requestPermissionsAsync();
+        
         if (status !== 'granted') {
           Alert.alert(
             'Permission Required',
             'Please grant storage permission to save images',
             [
-              { text: 'Cancel', style: 'cancel' },
-              { 
-                text: 'Settings', 
-                onPress: () => {
-                  MediaLibrary.requestPermissionsAsync();
-                } 
-              }
+              { text: 'Cancel', style: 'cancel' }
             ]
           );
           setDownloadingIndex(null);
@@ -319,10 +331,12 @@ export default function AIImageGenerator() {
     outputRange: ['0deg', '360deg']
   });
 
+  // Removed interpolated animations for input field
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-        <Header title='Generate text to image' />
+        <Header title='Create with AI' onSettingsPress={undefined} />
         <SafeAreaView style={styles.safeAreaContainer}>
           <ScrollView 
             ref={scrollViewRef}
@@ -331,8 +345,6 @@ export default function AIImageGenerator() {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.inputPromptSection}>
-        
-
               <View style={styles.promptHeader}>
                 <Text style={styles.promptTitle}>Input Prompt</Text>
               </View>
@@ -346,101 +358,119 @@ export default function AIImageGenerator() {
                   placeholder="Describe the image you want to create..."
                 />
               </View>
+              <Text style={styles.promptHint}>
+                Try: "A majestic castle on a floating island in the clouds with flying ships"
+              </Text>
             </View>
             
             <View style={styles.artStyleSection}>
-              <Text style={styles.sectionTitle}>Art Style</Text>
+              <Text style={styles.sectionTitle}>Select Art Style</Text>
               <View style={styles.artStyleGrid}>
                 {ART_STYLES.map((style) => (
                   <TouchableOpacity
                     key={style.id}
                     style={[
                       styles.artStyleItem,
-                      selectedStyle === style.id && { borderColor: "#9370DB" }
+                      selectedStyle === style.id && styles.selectedArtStyleItem
                     ]}
                     onPress={() => selectArtStyle(style.id)}
                   >
-                    <Image 
-                      source={style.image} 
-                      style={[
-                        styles.artStyleImage,
-                        selectedStyle === style.id && styles.selectedArtStyleImage
-                      ]} 
-                    />
-                    {style.id === '1' && (
-                      <View style={styles.noStyleOverlay} />
-                    )}
-                    <Text style={styles.artStyleName}>{style.name}</Text>
+                    <View style={styles.artStyleImageContainer}>
+                      <Image 
+                        source={style.image} 
+                        style={styles.artStyleImage} 
+                      />
+                      {style.id === '1' && (
+                        <View style={styles.noStyleOverlay} />
+                      )}
+                    </View>
+                    <Text style={[
+                      styles.artStyleName,
+                      selectedStyle === style.id && styles.selectedArtStyleName
+                    ]}>
+                      {style.name}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
             </View>
             
-            <View style={styles.generatedImagesSection}>
-              <Text style={styles.sectionTitle}>Generated Images</Text>
-              
-              {!isSubscribed && (
-                <View style={styles.freeUsageContainer}>
-                  <Text style={styles.freeUsageText}>
-                    Free generations: {generationCount}/{FREE_GENERATION_LIMIT}
-                  </Text>
+            {/* Only show the generated images section if generation has started */}
+            {generationStarted && (
+              <View style={styles.generatedImagesSection}>
+                <View style={styles.sectionHeaderRow}>
+                  <Text style={styles.sectionTitle}>Generated Images</Text>
+                  
+                  {!isSubscribed && (
+                    <View style={styles.freeUsageContainer}>
+                      <Text style={styles.freeUsageText}>
+                        {generationCount}/{FREE_GENERATION_LIMIT} free
+                      </Text>
+                    </View>
+                  )}
                 </View>
-              )}
-              
-              <View style={styles.imageGrid}>
-                {generatedImages.map((image, index) => (
-                  <View key={index} style={styles.imageGridItemContainer}>
-                    <TouchableOpacity
-                      style={styles.imageGridItem}
-                      onPress={() => handleImageSelect(index)}
-                      disabled={!image}
-                    >
-                      {image ? (
-                        <>
-                          <Image 
-                            source={{ uri: image }} 
-                            style={styles.generatedImage} 
-                          />
-                          <TouchableOpacity
-                            style={styles.downloadButton}
-                            onPress={() => downloadImage(generatedImagesBase64[index], index)}
-                            disabled={downloadingIndex === index}
-                          >
-                            {downloadingIndex === index ? (
-                              <Animated.View style={{transform: [{rotate: spin}]}}>
-                                <MaterialCommunityIcons name="loading" size={20} color="white" />
-                              </Animated.View>
-                            ) : (
-                              <Feather name="download" size={20} color="white" />
-                            )}
-                          </TouchableOpacity>
-                        </>
-                      ) : isGenerating && generatingImageIndex === index ? (
-                        <View style={styles.loadingImageContainer}>
-                          <Text style={styles.loadingImageText}>Cooking...🧑‍🍳</Text>
-                        </View>
-                      ) : (
-                        <View style={styles.emptyImagePlaceholder}>
-                          <Ionicons name="image-outline" size={30} color="rgba(255, 255, 255, 0.3)" />
-                        </View>
-                      )}
-                    </TouchableOpacity>
+                
+                <View style={styles.imageGrid}>
+                  {generatedImages.map((image, index) => (
+                    <View key={index} style={styles.imageGridItemContainer}>
+                      <TouchableOpacity
+                        style={styles.imageGridItem}
+                        onPress={() => handleImageSelect(index)}
+                        disabled={!image}
+                      >
+                        {image ? (
+                          <>
+                            <Image 
+                              source={{ uri: image }} 
+                              style={styles.generatedImage} 
+                            />
+                            <TouchableOpacity
+                              style={styles.downloadButton}
+                              onPress={() => downloadImage(generatedImagesBase64[index], index)}
+                              disabled={downloadingIndex === index}
+                            >
+                              {downloadingIndex === index ? (
+                                <Animated.View style={{transform: [{rotate: spin}]}}>
+                                  <MaterialCommunityIcons name="loading" size={20} color="white" />
+                                </Animated.View>
+                              ) : (
+                                <Feather name="download" size={20} color="white" />
+                              )}
+                            </TouchableOpacity>
+                          </>
+                        ) : isGenerating && generatingImageIndex === index ? (
+                          <View style={styles.loadingImageContainer}>
+                            <Text style={styles.loadingImageText}>Cooking...🧑‍🍳</Text>
+                          </View>
+                        ) : (
+                          <View style={styles.pendingImageContainer}>
+                            <MaterialCommunityIcons name="image-plus" size={24} color="rgba(255, 255, 255, 0.3)" />
+                            <Text style={styles.pendingImageText}>Processing...</Text>
+                          </View>
+                        )}
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+                </View>
+                
+                {isGenerating && (
+                  <View style={styles.progressContainer}>
+                    <Text style={styles.progressText}>
+                      {currentImageIndex > 0 
+                        ? `Creating your images... ${currentImageIndex}/4 ready` 
+                        : "Creating your images..."}
+                    </Text>
+                    <View style={styles.progressBar}>
+                      <View style={[styles.progressFill, { width: `${(currentImageIndex / 4) * 100}%` }]} />
+                    </View>
                   </View>
-                ))}
+                )}
               </View>
-              
-              {isGenerating && (
-                <View style={styles.progressContainer}>
-                  <Text style={styles.progressText}>
-                    {currentImageIndex > 0 
-                      ? `Creating your images... ${currentImageIndex}/4 ready` 
-                      : "Creating your images..."}
-                  </Text>
-                </View>
-              )}
-            </View>
+            )}
+            
             <View style={styles.bottomPadding} />
           </ScrollView>
+          
           <View style={styles.fixedButtonContainer}>
             <TouchableOpacity
               style={[
@@ -450,7 +480,9 @@ export default function AIImageGenerator() {
               onPress={generateImages}
               disabled={!inputText.trim() || isGenerating}
             >
-              <Text style={styles.generateButtonText}>Generate</Text>
+              <Text style={styles.generateButtonText}>
+                {isGenerating ? "Generating..." : "Generate Images"}
+              </Text>
             </TouchableOpacity>
           </View>
         </SafeAreaView>
@@ -472,17 +504,6 @@ const styles = StyleSheet.create({
   },
   scrollContentContainer: {
     paddingBottom: 90, 
-  },
-  backButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-  },
-  backButtonText: {
-    color: "white",
-    fontSize: 16,
-    marginLeft: 4,
   },
   inputPromptSection: {
     paddingHorizontal: 16,
@@ -511,9 +532,16 @@ const styles = StyleSheet.create({
     minHeight: 80,
     textAlignVertical: "top",
   },
+  promptHint: {
+    fontSize: 12,
+    color: "rgba(255, 255, 255, 0.5)",
+    marginTop: 8,
+    fontStyle: "italic",
+    paddingLeft: 4,
+  },
   artStyleSection: {
     paddingHorizontal: 16,
-    marginBottom: 20,
+    marginBottom: 24,
   },
   sectionTitle: {
     fontSize: 16,
@@ -527,52 +555,84 @@ const styles = StyleSheet.create({
   },
   artStyleItem: {
     width: (width - 32 - 30) / 4,
+    alignItems: 'center',
     marginHorizontal: 2,
-    borderColor: "transparent",
+  },
+  selectedArtStyleItem: {
+    transform: [{ scale: 1.05 }],
+  },
+  artStyleImageContainer: {
+    borderRadius: 12,
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: 'rgba(147, 112, 219, 0.3)',
   },
   artStyleImage: {
-    width: "100%",
+    width: (width - 32 - 30) / 4 - 4,
     height: 70,
-    borderRadius: 10,
-  },
-  selectedArtStyleImage: {
-    borderWidth: 2,
-    borderColor: "#9370DB",
-    borderRadius: 10,
-  },
-  artStyleName: {
-    color: "white",
-    fontSize: 10,
-    textAlign: "center",
-    paddingVertical: 5,
   },
   noStyleOverlay: {
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
-    bottom: 20,
+    bottom: 0,
     backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: "center",
     alignItems: "center",
   },
-  generatedImagesSection: {
-    paddingHorizontal: 16,
-  },
-  freeUsageContainer: {
-    marginBottom: 10,
-    alignItems: "flex-end",
-  },
-  freeUsageText: {
+  artStyleName: {
     color: "rgba(255, 255, 255, 0.7)",
     fontSize: 12,
+    textAlign: "center",
+    paddingVertical: 8,
+  },
+  selectedArtStyleName: {
+    color: "#9370DB",
+    fontWeight: "600",
+  },
+  generatedImagesSection: {
+    paddingHorizontal: 16,
+    marginBottom: 20,
+  },
+  sectionHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  freeUsageContainer: {
+    backgroundColor: 'rgba(147, 112, 219, 0.2)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  freeUsageText: {
+    color: "#9370DB",
+    fontSize: 12,
+    fontWeight: '500',
   },
   progressContainer: {
-    marginTop: 15,
+    marginTop: 20,
+    marginBottom: 10,
     alignItems: "center",
   },
   progressText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 14,
+    marginBottom: 8,
+  },
+  progressBar: {
+    width: '100%',
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    backgroundColor: '#9370DB',
+    borderRadius: 2,
   },
   imageGrid: {
     flexDirection: "row",
@@ -609,30 +669,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 10,
   },
-  emptyImagePlaceholder: {
-    width: "100%",
-    height: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#1E1E1E",
-  },
   loadingImageContainer: {
     width: "100%",
     height: "100%",
-    position: "relative",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "rgba(30, 30, 30, 0.8)",
   },
   loadingImageText: {
-    color: "white",
+    color: "rgba(255, 255, 255, 0.8)",
     fontSize: 14,
-    fontWeight: "600",
-    textAlign: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-    overflow: "hidden",
-    zIndex: 2,
+    fontWeight: "500",
+    marginTop: 10,
+  },
+  pendingImageContainer: {
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(30, 30, 30, 0.5)",
+  },
+  pendingImageText: {
+    color: "rgba(255, 255, 255, 0.5)",
+    fontSize: 12,
+    marginTop: 8,
   },
   bottomPadding: {
     height: 20,
@@ -644,22 +704,31 @@ const styles = StyleSheet.create({
     right: 0,
     backgroundColor: "#000000",
     paddingHorizontal: 16,
-    paddingTop: 10,
+    paddingTop: 16,
     paddingBottom: Platform.OS === "ios" ? 30 : 20,
-    borderTopColor: "rgba(147, 112, 219, 0.2)",
+    borderTopWidth: 1,
+    borderTopColor: "rgba(30, 30, 30, 0.8)",
   },
   generateButton: {
     backgroundColor: "#9370DB",
-    borderRadius: 25,
-    paddingVertical: 15,
+    borderRadius: 16,
+    paddingVertical: 16,
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#9370DB",
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 4,
+  },
+  generateButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  generateButtonIcon: {
+    marginRight: 8,
   },
   generateButtonText: {
     color: "white",
