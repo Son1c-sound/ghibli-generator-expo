@@ -86,4 +86,142 @@ export const stylesList: StyleItem[] = [
     name: 'threeD', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295994/Screenshot_2025-03-29_190345_gk19da.png' 
   },
+  { 
+    id: 10, 
+    DisplayName: "Historical Portrait",
+    name: 'HistoricalPortrait', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/historical-portrait.jpg' 
+  },
+  { 
+    id: 11, 
+    DisplayName: "Movie Poster",
+    name: 'MoviePoster', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/movie-poster.jpg' 
+  },
+  { 
+    id: 12, 
+    DisplayName: "Rap Album Cover",
+    name: 'RapAlbumCover', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/rap-album.jpg' 
+  },
+  { 
+    id: 13, 
+    DisplayName: "Professional Headshot",
+    name: 'ProfessionalHeadshot', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/professional-headshot.jpg' 
+  },
+  { 
+    id: 14, 
+    DisplayName: "Victorian Engraving",
+    name: 'VictorianEngraving', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/victorian-engraving.jpg' 
+  },
+  { 
+    id: 15, 
+    DisplayName: "Ancient Mosaic",
+    name: 'AncientMosaic', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/ancient-mosaic.jpg' 
+  },
+  { 
+    id: 16, 
+    DisplayName: "Botanical Illustration",
+    name: 'BotanicalIllustration', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/botanical-illustration.jpg' 
+  },
+  { 
+    id: 17, 
+    DisplayName: "Silkscreen Print",
+    name: 'SilkscreenPrint', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/silkscreen-print.jpg' 
+  },
+  { 
+    id: 18, 
+    DisplayName: "Stained Glass",
+    name: 'StainedGlass', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/stained-glass.jpg' 
+  },
+  { 
+    id: 19, 
+    DisplayName: "Comic Book",
+    name: 'ComicBook', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/comic-book.jpg' 
+  },
+  { 
+    id: 20, 
+    DisplayName: "Watercolor",
+    name: 'Watercolor', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/watercolor.jpg' 
+  },
+  { 
+    id: 21, 
+    DisplayName: "Oil Painting",
+    name: 'OilPainting', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/oil-painting.jpg' 
+  },
+  { 
+    id: 22, 
+    DisplayName: "Pastel Drawing",
+    name: 'PastelDrawing', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/pastel-drawing.jpg' 
+  },
+  { 
+    id: 23, 
+    DisplayName: "Pencil Sketch",
+    name: 'PencilSketch', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/pencil-sketch.jpg' 
+  },
+  { 
+    id: 24, 
+    DisplayName: "Pop Art",
+    name: 'PopArt', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/pop-art.jpg' 
+  },
+  { 
+    id: 25, 
+    DisplayName: "Steampunk",
+    name: 'Steampunk', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/steampunk.jpg' 
+  },
+  { 
+    id: 26, 
+    DisplayName: "Impressionist",
+    name: 'Impressionist', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/impressionist.jpg' 
+  },
+  { 
+    id: 27, 
+    DisplayName: "Vintage Postcard",
+    name: 'VintagePostcard', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/vintage-postcard.jpg' 
+  },
+  { 
+    id: 28, 
+    DisplayName: "Vaporwave",
+    name: 'Vaporwave', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/vaporwave.jpg' 
+  },
+  { 
+    id: 29, 
+    DisplayName: "Low Poly",
+    name: 'LowPoly', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/low-poly.jpg' 
+  },
+  { 
+    id: 30, 
+    DisplayName: "Cut Paper",
+    name: 'CutPaper', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/cut-paper.jpg' 
+  },
+  { 
+    id: 31, 
+    DisplayName: "Woodcut",
+    name: 'Woodcut', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/woodcut.jpg' 
+  },
+  { 
+    id: 32, 
+    DisplayName: "Art Deco",
+    name: 'ArtDeco', 
+    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/placeholder/art-deco.jpg' 
+  }
 ];

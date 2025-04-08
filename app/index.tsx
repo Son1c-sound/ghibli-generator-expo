@@ -12,6 +12,8 @@ import { useSuperwall } from "@/hooks/useSuperwall"
 import { SUPERWALL_TRIGGERS } from "./config/superwall"
 import { processSelectedImage, generateImage as generateStyledImage, handleDownload as saveImage, handleShare as shareImage, StyleItem } from "./utils/imageUtils"
 import { stylesList } from "./mainComps/stylesData"
+import HeaderBanner from "./Headbanner"
+import { resetBannerDismissal } from "./Headbanner";
 
 const { width } = Dimensions.get("window")
 const ACCENT_COLOR = "#f5f5f5"
@@ -95,14 +97,17 @@ export default function AnimeConverter() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+
       <LinearGradient
         colors={['#000000', '#000000', '#000000']}
         locations={[0, 0.35, 0.7]}
         style={{ flex: 1 }}
       >
+        
         <SafeAreaView style={screenStyles.safeAreaContainer}>
           <StatusBar barStyle="light-content" />
           <View style={screenStyles.header}>
+          <HeaderBanner/>
           </View>
           <ScrollView style={screenStyles.scrollContainer} showsVerticalScrollIndicator={false}>
             <View style={screenStyles.featuredContainer}>
@@ -138,7 +143,7 @@ export default function AnimeConverter() {
                 </LinearGradient>
               </TouchableOpacity>
             </View>
-            
+            <Text onPress={() => {resetBannerDismissal()}} style={screenStyles.sectionTitle}>reset</Text>
             <View style={screenStyles.stylesGridContainer}>
               <Text style={screenStyles.sectionTitle}>Explore More</Text>
               <View style={screenStyles.stylesGrid}>
@@ -231,6 +236,7 @@ const screenStyles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: Platform.OS === "android" ? 40 : 40,
     marginBottom: 10,
+  
   },
   titleContainer: {
     flexDirection: "row",
@@ -362,7 +368,7 @@ const screenStyles = StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: "#000000",
-    borderTopWidth: 1,
+    borderTopWidth: 0.3,
     borderTopColor: "rgba(255, 255, 255, 0.2)",
   },
   bottomNavBar: {
