@@ -27,8 +27,7 @@ import Svg, { Path } from 'react-native-svg'
 const { width } = Dimensions.get("window")
 const ACCENT_COLOR = "#3B82F6"
 
-// Custom SVG components
-const CameraIcon = (props) => (
+const CameraIcon = (props:any) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" {...props}>
     <Path 
       d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z" 
@@ -47,7 +46,7 @@ const CameraIcon = (props) => (
   </Svg>
 )
 
-const GalleryIcon = (props) => (
+const GalleryIcon = (props:any) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" {...props}>
     <Path 
       d="M2 12.5001L3.75159 10.9675C4.66286 10.1702 6.03628 10.2159 6.89249 11.0721L11.1822 15.3618C11.8694 16.0491 12.9512 16.1428 13.7464 15.5839L14.0446 15.3744C15.1888 14.5702 16.7369 14.6634 17.7765 15.599L21 18.5001" 
@@ -159,11 +158,11 @@ export default function UploadScreen() {
     }
   }
 
-  const handleSelectedImage = async (selectedImage) => {
+  const handleSelectedImage = async (selectedImage:any) => {
     setImage(selectedImage)
   }
 
-  const handleStyleChange = (style) => {
+  const handleStyleChange = (style:any) => {
     if (!isSubscribed && 
         style.name !== "Anime" && 
         style.name !== "OldSchool" && 
@@ -236,7 +235,7 @@ export default function UploadScreen() {
             <View style={styles.stylePreviewContainer}>
               <View style={styles.styleImageWrapper}>
                 <Image 
-                  source={{ uri: selectedStyle ? selectedStyle.src : null }} 
+                  source={{ uri: selectedStyle ? selectedStyle.src : null as any }} 
                   style={styles.stylePreviewImage} 
                 />
               </View>
@@ -280,7 +279,6 @@ export default function UploadScreen() {
                       onPress={handleImagePicker}
                     >
                       <View style={[styles.uploadButtonGradient, styles.enhancedButton]}>
-                        {/* Using the custom Gallery icon instead of Ionicons */}
                         <GalleryIcon color="black" width={24} height={24} />
                         <Text style={styles.uploadButtonText}>Gallery</Text>
                       </View>
@@ -291,7 +289,6 @@ export default function UploadScreen() {
                       onPress={handleCameraCapture}
                     >
                       <View style={[styles.uploadButtonGradient, styles.enhancedButton]}>
-                        {/* Using the custom Camera icon instead of Ionicons */}
                         <CameraIcon color="black" width={24} height={24} />
                         <Text style={styles.uploadButtonText}>Camera</Text>
                       </View>

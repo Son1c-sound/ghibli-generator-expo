@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import {View,
+import {
+  View,
   Text,
   TextInput,
   TouchableOpacity,
@@ -11,48 +12,82 @@ import {View,
   Animated,
   Easing,
   ScrollView,
-  Keyboard
+  Keyboard,
+  Alert
 } from "react-native";
-import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons, Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import * as FileSystem from "expo-file-system";
+import * as MediaLibrary from "expo-media-library";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import SubscriptionBanner from "../FreePlanHeader";
 import Header from "../Navbar";
+import { useSuperwall } from "@/hooks/useSuperwall";
+import { SUPERWALL_TRIGGERS } from "../config/superwall";
+
 
 const { width, height } = Dimensions.get("window");
+
+const STYLE_MAP = {
+  '1': 'none',
+  '2': 'anime',
+  '3': 'fantasy',
+  '4': 'realistic'
+};
 
 const ART_STYLES = [
   {
     id: '1',
     name: 'No Style',
-    image: { uri: 'https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg' }
+    image: { uri: 'https://media.tenor.com/0LtvGK3-jb0AAAAe/anime-no.png' }
   },
   {
     id: '2',
     name: 'Anime',
-    image: { uri: 'https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg' }
+    image: { uri: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1744133016/lgmoq2oekudo6yqqul5q.png' }
   },
   {
     id: '3',
     name: 'Fantasy',
-    image: { uri: 'https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg' }
+    image: { uri: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1744132958/hcslyrnxknu7d9wvlpmp.png' }
   },
   {
     id: '4',
     name: 'Realistic',
-    image: { uri: 'https://gratisography.com/wp-content/uploads/2024/11/gratisography-augmented-reality-800x525.jpg' }
+    image: { uri: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743295994/Screenshot_2025-03-29_190345_gk19da.png' }
   }
 ];
 
+const API_URL = 'https://ghibil-studio-server-production.up.railway.app/api/text-to-image';
+
+const FREE_GENERATION_LIMIT = 3;
+const STORAGE_KEY = 'ghibliAI_generation_count';
+
 export default function AIImageGenerator() {
-  const [inputText, setInputText] = useState("An anime boy strikes a pose in front of a moody cityscape, his hair a deep shade of blue and his eyes sharp and confident.");
+  const [inputText, setInputText] = useState("");
   const [selectedStyle, setSelectedStyle] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedImages, setGeneratedImages] = useState([null, null, null, null]);
+  const [generatingImageIndex, setGeneratingImageIndex] = useState(null);
+  const [generatedImages, setGeneratedImages] = useState<(string | null)[]>([null, null, null, null]);
+  const [generatedImagesBase64, setGeneratedImagesBase64] = useState([null, null, null, null]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [mediaLibraryPermission, setMediaLibraryPermission] = useState(false);
+  const [downloadingIndex, setDownloadingIndex] = useState(null);
+  const [generationCount, setGenerationCount] = useState(0);
+  const { isSubscribed, showPaywall } = useSuperwall();
+  
   const loadingAnim = useRef(new Animated.Value(0)).current;
   const scrollViewRef = useRef(null);
 
   useEffect(() => {
+    (async () => {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      setMediaLibraryPermission(status === 'granted');
+      
+      loadGenerationCount();
+    })();
+    
     if (isGenerating) {
       Animated.loop(
         Animated.timing(loadingAnim, {
@@ -67,25 +102,199 @@ export default function AIImageGenerator() {
     }
   }, [isGenerating]);
 
-  const generateImages = () => {
+  const loadGenerationCount = async () => {
+    try {
+      const count = await AsyncStorage.getItem(STORAGE_KEY);
+      if (count !== null) {
+        setGenerationCount(parseInt(count, 10));
+      }
+    } catch (error) {
+      console.error('Error loading generation count:', error);
+    }
+  };
+
+
+  const generateSingleImage = async (prompt:any, style:any, index:any) => {
+    try {
+      console.log(`Generating image ${index + 1}/4...`);
+      setGeneratingImageIndex(index);
+      
+      const variationPrompt = index > 0 
+        ? `Another unique variation of: ${prompt}` 
+        : prompt;
+      
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userPrompt: variationPrompt,
+          style: style,
+          imageIndex: index + 1
+        })
+      });
+      
+      if (!response.ok) {
+        let errorMessage = `Server returned status ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (e) {
+          console.error('Error parsing error response:', e);
+        }
+        throw new Error(errorMessage);
+      }
+      
+      const data = await response.json();
+      
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      
+      if (!data.imageBase64) {
+        throw new Error('No image data received');
+      }
+      
+      console.log(`Successfully received image ${index + 1}`);
+      
+      setGeneratedImages(prev => {
+        const updated = [...prev];
+        updated[index] = `data:image/jpeg;base64,${data.imageBase64}`;
+        return updated;
+      });
+      
+      setGeneratedImagesBase64(prev => {
+        const updated = [...prev];
+        updated[index] = data.imageBase64;
+        return updated;
+      });
+      
+      setCurrentImageIndex(prev => Math.max(prev, index + 1));
+      setGeneratingImageIndex(null);
+      
+      return true;
+    } catch (error) {
+      console.error(`Error generating image ${index + 1}:`, error);
+      setGeneratingImageIndex(null);
+      throw error;
+    }
+  };
+
+  const generateImages = async () => {
     if (inputText.trim() === "") return;
+      
+    if (!isSubscribed) {
+      const currentCount = await AsyncStorage.getItem(STORAGE_KEY);
+      const parsedCount = currentCount ? parseInt(currentCount, 10) : 0;
+      
+      if (parsedCount >= FREE_GENERATION_LIMIT) {
+        showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK);
+        return;
+      }
+      
+      const newCount = parsedCount + 1;
+      await AsyncStorage.setItem(STORAGE_KEY, newCount.toString());
+      setGenerationCount(newCount);
+      
+      if (newCount >= FREE_GENERATION_LIMIT) {
+        Alert.alert(
+          'Free Limit Reached',
+          'This is your last free generation. Upgrade to Premium for unlimited generations!',
+          [{ text: 'OK', style: 'default' }]
+        );
+      }
+    }
     
     Keyboard.dismiss();
     setIsGenerating(true);
+    setGeneratedImages([null, null, null, null]);
+    setGeneratedImagesBase64([null, null, null, null]);
+    setCurrentImageIndex(0);
     
-    setTimeout(() => {
-      const styleColor = selectedStyle === '2' ? '6B46C1' : 
-                         selectedStyle === '3' ? '9F7AEA' : 
-                         selectedStyle === '4' ? 'D6BCFA' : '805AD5';
-                          
-      setGeneratedImages([
-        `https://via.placeholder.com/300x300/${styleColor}/FFFFFF?text=Generated+Image+1`,
-        `https://via.placeholder.com/300x300/${styleColor}/FFFFFF?text=Generated+Image+2`,
-        `https://via.placeholder.com/300x300/${styleColor}/FFFFFF?text=Generated+Image+3`,
-        `https://via.placeholder.com/300x300/${styleColor}/FFFFFF?text=Generated+Image+4`
-      ]);
-      setIsGenerating(false);
-    }, 3000);
+    const apiStyle = selectedStyle ? STYLE_MAP[selectedStyle] : 'none';
+    
+    for (let i = 0; i < 4; i++) {
+      try {
+        await generateSingleImage(inputText, apiStyle, i);
+      } catch (error:any) {
+        console.error(`Failed to generate image ${i + 1}:`, error);
+        Alert.alert(
+          'Warning',
+          `Failed to generate image ${i + 1}: ${error.message}`
+        );
+      }
+    }
+    
+    setIsGenerating(false);
+  };
+
+  const downloadImage = async (base64Data:any, index:any) => {
+    try {
+      if (!base64Data) {
+        Alert.alert('Error', 'No image data to download');
+        return;
+      }
+
+      setDownloadingIndex(index);
+
+      if (!mediaLibraryPermission) {
+        const { status } = await MediaLibrary.requestPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert(
+            'Permission Required',
+            'Please grant storage permission to save images',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { 
+                text: 'Settings', 
+                onPress: () => {
+                  MediaLibrary.requestPermissionsAsync();
+                } 
+              }
+            ]
+          );
+          setDownloadingIndex(null);
+          return;
+        }
+        setMediaLibraryPermission(true);
+      }
+
+      const timestamp = new Date().getTime();
+      const styleText = selectedStyle ? STYLE_MAP[selectedStyle] : 'none';
+      const fileName = `ghibli-ai-${styleText}-${timestamp}-${index + 1}.jpg`;
+      
+      const fileUri = `${FileSystem.cacheDirectory}${fileName}`;
+      
+      await FileSystem.writeAsStringAsync(fileUri, base64Data, {
+        encoding: FileSystem.EncodingType.Base64
+      });
+      
+      const asset = await MediaLibrary.createAssetAsync(fileUri);
+      
+      try {
+        const album = await MediaLibrary.getAlbumAsync('GhibliAI');
+        
+        if (album) {
+          await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+        } else {
+          await MediaLibrary.createAlbumAsync('GhibliAI', asset, false);
+        }
+      } catch (albumError) {
+        console.error('Error with album:', albumError);
+      }
+      
+      Alert.alert(
+        'Success',
+        'Image saved to your gallery in GhibliAI album'
+      );
+      
+      setDownloadingIndex(null);
+    } catch (error:any) {
+      console.error('Error downloading image:', error);
+      Alert.alert('Error', `Failed to download image: ${error.message}`);
+      setDownloadingIndex(null);
+    }
   };
   
   const handleImageSelect = (index:any) => {
@@ -94,6 +303,7 @@ export default function AIImageGenerator() {
         pathname: "/result",
         params: { 
           resultImage: generatedImages[index], 
+          resultImageBase64: generatedImagesBase64[index],
           styleId: selectedStyle ? selectedStyle : '1'
         }
       });
@@ -112,7 +322,7 @@ export default function AIImageGenerator() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
-      <Header title='Generate text to image' ></Header>
+        <Header title='Generate text to image' />
         <SafeAreaView style={styles.safeAreaContainer}>
           <ScrollView 
             ref={scrollViewRef}
@@ -120,9 +330,8 @@ export default function AIImageGenerator() {
             contentContainerStyle={styles.scrollContentContainer}
             showsVerticalScrollIndicator={false}
           >
-
             <View style={styles.inputPromptSection}>
-        <SubscriptionBanner />
+              <SubscriptionBanner />
 
               <View style={styles.promptHeader}>
                 <Text style={styles.promptTitle}>Input Prompt</Text>
@@ -147,14 +356,19 @@ export default function AIImageGenerator() {
                     key={style.id}
                     style={[
                       styles.artStyleItem,
-                      selectedStyle === style.id && styles.selectedArtStyle
+                      selectedStyle === style.id && { borderColor: "#9370DB" }
                     ]}
                     onPress={() => selectArtStyle(style.id)}
                   >
-                    <Image source={style.image} style={styles.artStyleImage} />
+                    <Image 
+                      source={style.image} 
+                      style={[
+                        styles.artStyleImage,
+                        selectedStyle === style.id && styles.selectedArtStyleImage
+                      ]} 
+                    />
                     {style.id === '1' && (
-                      <View style={styles.noStyleOverlay}>
-                      </View>
+                      <View style={styles.noStyleOverlay} />
                     )}
                     <Text style={styles.artStyleName}>{style.name}</Text>
                   </TouchableOpacity>
@@ -164,33 +378,64 @@ export default function AIImageGenerator() {
             
             <View style={styles.generatedImagesSection}>
               <Text style={styles.sectionTitle}>Generated Images</Text>
-              {isGenerating ? (
-                <View style={styles.loadingContainer}>
-                  <Animated.View style={{transform: [{rotate: spin}]}}>
-                    <MaterialCommunityIcons name="image-filter-hdr" size={40} color="#f5f5f5" />
-                  </Animated.View>
-                  <Text style={styles.loadingText}>Creating your images...</Text>
+              
+              {!isSubscribed && (
+                <View style={styles.freeUsageContainer}>
+                  <Text style={styles.freeUsageText}>
+                    Free generations: {generationCount}/{FREE_GENERATION_LIMIT}
+                  </Text>
                 </View>
-              ) : (
-                <View style={styles.imageGrid}>
-                  {generatedImages.map((image, index) => (
+              )}
+              
+              <View style={styles.imageGrid}>
+                {generatedImages.map((image, index) => (
+                  <View key={index} style={styles.imageGridItemContainer}>
                     <TouchableOpacity
-                      key={index}
                       style={styles.imageGridItem}
                       onPress={() => handleImageSelect(index)}
+                      disabled={!image}
                     >
                       {image ? (
-                        <Image 
-                          source={{ uri: image }} 
-                          style={styles.generatedImage} 
-                        />
+                        <>
+                          <Image 
+                            source={{ uri: image }} 
+                            style={styles.generatedImage} 
+                          />
+                          <TouchableOpacity
+                            style={styles.downloadButton}
+                            onPress={() => downloadImage(generatedImagesBase64[index], index)}
+                            disabled={downloadingIndex === index}
+                          >
+                            {downloadingIndex === index ? (
+                              <Animated.View style={{transform: [{rotate: spin}]}}>
+                                <MaterialCommunityIcons name="loading" size={20} color="white" />
+                              </Animated.View>
+                            ) : (
+                              <Feather name="download" size={20} color="white" />
+                            )}
+                          </TouchableOpacity>
+                        </>
+                      ) : isGenerating && generatingImageIndex === index ? (
+                        <View style={styles.loadingImageContainer}>
+                          <Text style={styles.loadingImageText}>Cooking...🧑‍🍳</Text>
+                        </View>
                       ) : (
                         <View style={styles.emptyImagePlaceholder}>
                           <Ionicons name="image-outline" size={30} color="rgba(255, 255, 255, 0.3)" />
                         </View>
                       )}
                     </TouchableOpacity>
-                  ))}
+                  </View>
+                ))}
+              </View>
+              
+              {isGenerating && (
+                <View style={styles.progressContainer}>
+                  <Text style={styles.progressText}>
+                    {currentImageIndex > 0 
+                      ? `Creating your images... ${currentImageIndex}/4 ready` 
+                      : "Creating your images..."}
+                  </Text>
                 </View>
               )}
             </View>
@@ -221,7 +466,6 @@ const styles = StyleSheet.create({
   },
   safeAreaContainer: {
     flex: 1,
-
   },
   scrollContainer: {
     flex: 1,
@@ -283,19 +527,18 @@ const styles = StyleSheet.create({
   },
   artStyleItem: {
     width: (width - 32 - 30) / 4,
-    borderRadius: 14,
-    overflow: "hidden",
     marginHorizontal: 2,
-    borderWidth: 2,
     borderColor: "transparent",
-  },
-  selectedArtStyle: {
-    borderColor: "#9370DB",
   },
   artStyleImage: {
     width: "100%",
     height: 70,
-   borderRadius: 20,
+    borderRadius: 10,
+  },
+  selectedArtStyleImage: {
+    borderWidth: 2,
+    borderColor: "#9370DB",
+    borderRadius: 10,
   },
   artStyleName: {
     color: "white",
@@ -304,7 +547,6 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
   },
   noStyleOverlay: {
-    
     top: 0,
     left: 0,
     right: 0,
@@ -316,14 +558,20 @@ const styles = StyleSheet.create({
   generatedImagesSection: {
     paddingHorizontal: 16,
   },
-  loadingContainer: {
-    height: width - 40, 
-    justifyContent: "center",
+  freeUsageContainer: {
+    marginBottom: 10,
+    alignItems: "flex-end",
+  },
+  freeUsageText: {
+    color: "rgba(255, 255, 255, 0.7)",
+    fontSize: 12,
+  },
+  progressContainer: {
+    marginTop: 15,
     alignItems: "center",
   },
-  loadingText: {
+  progressText: {
     color: "white",
-    marginTop: 16,
     fontSize: 16,
   },
   imageGrid: {
@@ -331,11 +579,16 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-between",
   },
-  imageGridItem: {
+  imageGridItemContainer: {
     width: (width - 40) / 2,
     height: (width - 40) / 2,
     marginBottom: 8,
-    borderRadius: 16,
+    position: 'relative',
+  },
+  imageGridItem: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 12,
     overflow: "hidden",
     backgroundColor: "#1E1E1E",
   },
@@ -344,12 +597,42 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "cover",
   },
+  downloadButton: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    backgroundColor: 'rgba(147, 112, 219, 0.8)',
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
   emptyImagePlaceholder: {
     width: "100%",
     height: "100%",
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#1E1E1E",
+  },
+  loadingImageContainer: {
+    width: "100%",
+    height: "100%",
+    position: "relative",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingImageText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "600",
+    textAlign: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+    overflow: "hidden",
+    zIndex: 2,
   },
   bottomPadding: {
     height: 20,
