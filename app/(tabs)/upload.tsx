@@ -22,9 +22,53 @@ import { useSuperwall } from "@/hooks/useSuperwall"
 import { SUPERWALL_TRIGGERS } from "../config/superwall"
 import { generateImage, StyleItem } from "../utils/imageUtils"
 import { stylesList } from "../mainComps/stylesData"
-import { BlurView } from 'expo-blur';
+import { BlurView } from 'expo-blur'
+import Svg, { Path } from 'react-native-svg'
 const { width } = Dimensions.get("window")
 const ACCENT_COLOR = "#3B82F6"
+
+// Custom SVG components
+const CameraIcon = (props) => (
+  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" {...props}>
+    <Path 
+      d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z" 
+      stroke={props.color || "#000000"} 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+    <Path 
+      d="M3 16.8V9.2C3 8.0799 3 7.51984 3.21799 7.09202C3.40973 6.71569 3.71569 6.40973 4.09202 6.21799C4.51984 6 5.0799 6 6.2 6H7.25464C7.37758 6 7.43905 6 7.49576 5.9935C7.79166 5.95961 8.05705 5.79559 8.21969 5.54609C8.25086 5.49827 8.27836 5.44328 8.33333 5.33333C8.44329 5.11342 8.49827 5.00346 8.56062 4.90782C8.8859 4.40882 9.41668 4.08078 10.0085 4.01299C10.1219 4 10.2448 4 10.4907 4H13.5093C13.7552 4 13.8781 4 13.9915 4.01299C14.5833 4.08078 15.1141 4.40882 15.4394 4.90782C15.5017 5.00345 15.5567 5.11345 15.6667 5.33333C15.7216 5.44329 15.7491 5.49827 15.7803 5.54609C15.943 5.79559 16.2083 5.95961 16.5042 5.9935C16.561 6 16.6224 6 16.7454 6H17.8C18.9201 6 19.4802 6 19.908 6.21799C20.2843 6.40973 20.5903 6.71569 20.782 7.09202C21 7.51984 21 8.0799 21 9.2V16.8C21 17.9201 21 18.4802 20.782 18.908C20.5903 19.2843 20.2843 19.5903 19.908 19.782C19.4802 20 18.9201 20 17.8 20H6.2C5.0799 20 4.51984 20 4.09202 19.782C3.71569 19.5903 3.40973 19.2843 3.21799 18.908C3 18.4802 3 17.9201 3 16.8Z" 
+      stroke={props.color || "#000000"} 
+      strokeWidth="2" 
+      strokeLinecap="round" 
+      strokeLinejoin="round"
+    />
+  </Svg>
+)
+
+const GalleryIcon = (props) => (
+  <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" {...props}>
+    <Path 
+      d="M2 12.5001L3.75159 10.9675C4.66286 10.1702 6.03628 10.2159 6.89249 11.0721L11.1822 15.3618C11.8694 16.0491 12.9512 16.1428 13.7464 15.5839L14.0446 15.3744C15.1888 14.5702 16.7369 14.6634 17.7765 15.599L21 18.5001" 
+      stroke={props.color || "#1C274C"} 
+      strokeWidth="1.5" 
+      strokeLinecap="round"
+    />
+    <Path 
+      d="M15 5.5H18.5M18.5 5.5H22M18.5 5.5V9M18.5 5.5V2" 
+      stroke={props.color || "#1C274C"} 
+      strokeWidth="1.5" 
+      strokeLinecap="round"
+    />
+    <Path 
+      d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 10.8717 2 9.87835 2.02008 9M12 2C7.28595 2 4.92893 2 3.46447 3.46447C3.03965 3.88929 2.73806 4.38921 2.52396 5" 
+      stroke={props.color || "#1C274C"} 
+      strokeWidth="1.5" 
+      strokeLinecap="round"
+    />
+  </Svg>
+)
 
 export default function UploadScreen() {
   const { styleId } = useLocalSearchParams()
@@ -115,11 +159,11 @@ export default function UploadScreen() {
     }
   }
 
-  const handleSelectedImage = async (selectedImage:any) => {
+  const handleSelectedImage = async (selectedImage) => {
     setImage(selectedImage)
   }
 
-  const handleStyleChange = (style:any) => {
+  const handleStyleChange = (style) => {
     if (!isSubscribed && 
         style.name !== "Anime" && 
         style.name !== "OldSchool" && 
@@ -192,7 +236,7 @@ export default function UploadScreen() {
             <View style={styles.stylePreviewContainer}>
               <View style={styles.styleImageWrapper}>
                 <Image 
-                  source={{ uri: selectedStyle ? selectedStyle.src : null as any }} 
+                  source={{ uri: selectedStyle ? selectedStyle.src : null }} 
                   style={styles.stylePreviewImage} 
                 />
               </View>
@@ -226,7 +270,6 @@ export default function UploadScreen() {
                 <View
                   style={styles.emptyImageContainer}
                 >
-                  <Ionicons name="image-outline" size={60} color="#f5f5f5" />
                   <Text style={styles.emptyImageText}>
                     Select or capture an image
                   </Text>
@@ -236,8 +279,9 @@ export default function UploadScreen() {
                       style={styles.uploadButton}
                       onPress={handleImagePicker}
                     >
-                      <View style={styles.uploadButtonGradient}>
-                        <Ionicons name="images-outline" size={24} color="black" />
+                      <View style={[styles.uploadButtonGradient, styles.enhancedButton]}>
+                        {/* Using the custom Gallery icon instead of Ionicons */}
+                        <GalleryIcon color="black" width={24} height={24} />
                         <Text style={styles.uploadButtonText}>Gallery</Text>
                       </View>
                     </TouchableOpacity>
@@ -246,8 +290,9 @@ export default function UploadScreen() {
                       style={styles.uploadButton}
                       onPress={handleCameraCapture}
                     >
-                      <View style={styles.uploadButtonGradient}>
-                        <Ionicons name="camera-outline" size={24} color="black" />
+                      <View style={[styles.uploadButtonGradient, styles.enhancedButton]}>
+                        {/* Using the custom Camera icon instead of Ionicons */}
+                        <CameraIcon color="black" width={24} height={24} />
                         <Text style={styles.uploadButtonText}>Camera</Text>
                       </View>
                     </TouchableOpacity>
@@ -262,7 +307,6 @@ export default function UploadScreen() {
                   style={styles.generateButtonContent}
                   onPress={handleGenerateImage}
                 >
-                  <Ionicons name="sparkles" size={20} color="yellow" />
                   <Text style={styles.generateText}>Generate Image</Text>
                 </TouchableOpacity>
                 
@@ -388,26 +432,28 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     overflow: "hidden",
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
     borderColor: "rgba(255, 255, 255, 0.2)",
+    borderWidth: 1,
   },
   emptyImageText: {
     color: "rgba(255, 255, 255, 0.9)",
-    fontSize: 16,
-    marginTop: 16,
-    marginBottom: 30,
+    fontSize: 18,
+    marginBottom: 10,
     fontWeight: "500",
+    textAlign: "center",
   },
   uploadButtonsContainer: {
-    flexDirection: "row",
+    flexDirection: "column",
     justifyContent: "center",
+    alignItems: "center",
     width: "100%",
+    marginTop: 20,
   },
   uploadButton: {
     borderRadius: 12,
     overflow: "hidden",
-    marginHorizontal: 8,
-    width: 120,
+    marginVertical: 10,
+    width: "90%",
   },
   uploadButtonGradient: {
     padding: 16,
@@ -415,10 +461,21 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#f5f5f5",
   },
+  enhancedButton: {
+    padding: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    flexDirection: "row",
+    justifyContent: "center",
+  },
   uploadButtonText: {
     color: "black",
-    marginTop: 8,
-    fontWeight: "600",
+    marginLeft: 12,
+    fontWeight: "700",
+    fontSize: 16,
   },
   imagePreviewContainer: {
     position: "relative",
