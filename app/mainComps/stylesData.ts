@@ -46,7 +46,7 @@ export const stylesList: StyleItem[] = [
   { 
     id: 5, 
     DisplayName: "Chibli",
-    name: 'ghibliStyle', 
+    name: 'trending', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390195/pnlywxojs1bn4m9ad6b5.png',
     category: 'Animation',
   },

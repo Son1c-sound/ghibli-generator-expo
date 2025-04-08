@@ -66,7 +66,7 @@ export default function AnimeConverter() {
     if (!isSubscribed && 
         style && 
         style.name !== "Anime" && 
-        style.name !== "OldSchool" && 
+        style.name !== "OldSchool" && style.name !== "trending" &&
         style.name && 
         style.name !== "Lego") {
       showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK)
@@ -130,7 +130,7 @@ export default function AnimeConverter() {
                     
                     {!isSubscribed && 
                       ghibliStyle.name !== "Anime" && 
-                      ghibliStyle.name !== "OldSchool" && 
+                      ghibliStyle.name !== "OldSchool" && ghibliStyle.name !== "trending" &&
                       ghibliStyle.name !== "Lego" && (
                       <View style={screenStyles.lockIconContainer}>
                         <Ionicons name="lock-closed" size={16} color="white" />
@@ -166,7 +166,7 @@ export default function AnimeConverter() {
                       
                       {!isSubscribed && 
                         style.name !== "Anime" && 
-                        style.name !== "OldSchool" && 
+                        style.name !== "OldSchool" && style.name !== "trending" &&
                         style.name !== "Lego" && (
                         <View style={screenStyles.styleLockOverlay}>
                           <Ionicons name="lock-closed" size={20} color="white" />

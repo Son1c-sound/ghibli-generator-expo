@@ -331,7 +331,7 @@ export default function AIImageGenerator() {
             showsVerticalScrollIndicator={false}
           >
             <View style={styles.inputPromptSection}>
-              <SubscriptionBanner />
+        
 
               <View style={styles.promptHeader}>
                 <Text style={styles.promptTitle}>Input Prompt</Text>

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react"
-import { 
-  View, 
-  Text, 
-  TouchableOpacity, 
-  StyleSheet, 
-  Image, 
-  SafeAreaView, 
-  StatusBar, 
-  Alert, 
-  ActivityIndicator, 
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  SafeAreaView,
+  StatusBar,
+  Alert,
+  ActivityIndicator,
   Dimensions,
   ScrollView,
   Platform
@@ -29,18 +29,18 @@ const ACCENT_COLOR = "#3B82F6"
 
 const CameraIcon = (props:any) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" {...props}>
-    <Path 
-      d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z" 
-      stroke={props.color || "#000000"} 
-      strokeWidth="2" 
-      strokeLinecap="round" 
+    <Path
+      d="M12 16C13.6569 16 15 14.6569 15 13C15 11.3431 13.6569 10 12 10C10.3431 10 9 11.3431 9 13C9 14.6569 10.3431 16 12 16Z"
+      stroke={props.color || "#000000"}
+      strokeWidth="2"
+      strokeLinecap="round"
       strokeLinejoin="round"
     />
-    <Path 
-      d="M3 16.8V9.2C3 8.0799 3 7.51984 3.21799 7.09202C3.40973 6.71569 3.71569 6.40973 4.09202 6.21799C4.51984 6 5.0799 6 6.2 6H7.25464C7.37758 6 7.43905 6 7.49576 5.9935C7.79166 5.95961 8.05705 5.79559 8.21969 5.54609C8.25086 5.49827 8.27836 5.44328 8.33333 5.33333C8.44329 5.11342 8.49827 5.00346 8.56062 4.90782C8.8859 4.40882 9.41668 4.08078 10.0085 4.01299C10.1219 4 10.2448 4 10.4907 4H13.5093C13.7552 4 13.8781 4 13.9915 4.01299C14.5833 4.08078 15.1141 4.40882 15.4394 4.90782C15.5017 5.00345 15.5567 5.11345 15.6667 5.33333C15.7216 5.44329 15.7491 5.49827 15.7803 5.54609C15.943 5.79559 16.2083 5.95961 16.5042 5.9935C16.561 6 16.6224 6 16.7454 6H17.8C18.9201 6 19.4802 6 19.908 6.21799C20.2843 6.40973 20.5903 6.71569 20.782 7.09202C21 7.51984 21 8.0799 21 9.2V16.8C21 17.9201 21 18.4802 20.782 18.908C20.5903 19.2843 20.2843 19.5903 19.908 19.782C19.4802 20 18.9201 20 17.8 20H6.2C5.0799 20 4.51984 20 4.09202 19.782C3.71569 19.5903 3.40973 19.2843 3.21799 18.908C3 18.4802 3 17.9201 3 16.8Z" 
-      stroke={props.color || "#000000"} 
-      strokeWidth="2" 
-      strokeLinecap="round" 
+    <Path
+      d="M3 16.8V9.2C3 8.0799 3 7.51984 3.21799 7.09202C3.40973 6.71569 3.71569 6.40973 4.09202 6.21799C4.51984 6 5.0799 6 6.2 6H7.25464C7.37758 6 7.43905 6 7.49576 5.9935C7.79166 5.95961 8.05705 5.79559 8.21969 5.54609C8.25086 5.49827 8.27836 5.44328 8.33333 5.33333C8.44329 5.11342 8.49827 5.00346 8.56062 4.90782C8.8859 4.40882 9.41668 4.08078 10.0085 4.01299C10.1219 4 10.2448 4 10.4907 4H13.5093C13.7552 4 13.8781 4 13.9915 4.01299C14.5833 4.08078 15.1141 4.40882 15.4394 4.90782C15.5017 5.00345 15.5567 5.11345 15.6667 5.33333C15.7216 5.44329 15.7491 5.49827 15.7803 5.54609C15.943 5.79559 16.2083 5.95961 16.5042 5.9935C16.561 6 16.6224 6 16.7454 6H17.8C18.9201 6 19.4802 6 19.908 6.21799C20.2843 6.40973 20.5903 6.71569 20.782 7.09202C21 7.51984 21 8.0799 21 9.2V16.8C21 17.9201 21 18.4802 20.782 18.908C20.5903 19.2843 20.2843 19.5903 19.908 19.782C19.4802 20 18.9201 20 17.8 20H6.2C5.0799 20 4.51984 20 4.09202 19.782C3.71569 19.5903 3.40973 19.2843 3.21799 18.908C3 18.4802 3 17.9201 3 16.8Z"
+      stroke={props.color || "#000000"}
+      strokeWidth="2"
+      strokeLinecap="round"
       strokeLinejoin="round"
     />
   </Svg>
@@ -48,22 +48,22 @@ const CameraIcon = (props:any) => (
 
 const GalleryIcon = (props:any) => (
   <Svg width={24} height={24} viewBox="0 0 24 24" fill="none" {...props}>
-    <Path 
-      d="M2 12.5001L3.75159 10.9675C4.66286 10.1702 6.03628 10.2159 6.89249 11.0721L11.1822 15.3618C11.8694 16.0491 12.9512 16.1428 13.7464 15.5839L14.0446 15.3744C15.1888 14.5702 16.7369 14.6634 17.7765 15.599L21 18.5001" 
-      stroke={props.color || "#1C274C"} 
-      strokeWidth="1.5" 
+    <Path
+      d="M2 12.5001L3.75159 10.9675C4.66286 10.1702 6.03628 10.2159 6.89249 11.0721L11.1822 15.3618C11.8694 16.0491 12.9512 16.1428 13.7464 15.5839L14.0446 15.3744C15.1888 14.5702 16.7369 14.6634 17.7765 15.599L21 18.5001"
+      stroke={props.color || "#1C274C"}
+      strokeWidth="1.5"
       strokeLinecap="round"
     />
-    <Path 
-      d="M15 5.5H18.5M18.5 5.5H22M18.5 5.5V9M18.5 5.5V2" 
-      stroke={props.color || "#1C274C"} 
-      strokeWidth="1.5" 
+    <Path
+      d="M15 5.5H18.5M18.5 5.5H22M18.5 5.5V9M18.5 5.5V2"
+      stroke={props.color || "#1C274C"}
+      strokeWidth="1.5"
       strokeLinecap="round"
     />
-    <Path 
-      d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 10.8717 2 9.87835 2.02008 9M12 2C7.28595 2 4.92893 2 3.46447 3.46447C3.03965 3.88929 2.73806 4.38921 2.52396 5" 
-      stroke={props.color || "#1C274C"} 
-      strokeWidth="1.5" 
+    <Path
+      d="M22 12C22 16.714 22 19.0711 20.5355 20.5355C19.0711 22 16.714 22 12 22C7.28595 22 4.92893 22 3.46447 20.5355C2 19.0711 2 16.714 2 12C2 10.8717 2 9.87835 2.02008 9M12 2C7.28595 2 4.92893 2 3.46447 3.46447C3.03965 3.88929 2.73806 4.38921 2.52396 5"
+      stroke={props.color || "#1C274C"}
+      strokeWidth="1.5"
       strokeLinecap="round"
     />
   </Svg>
@@ -75,21 +75,11 @@ export default function UploadScreen() {
   const [loading, setLoading] = useState(false)
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [imageSize, setImageSize] = useState(0)
-  const { isSubscribed, showPaywall } = useSuperwall()
-  
+
+
   const selectedStyle = stylesList.find(style => style.id === Number(styleId)) || stylesList[0]
 
-  useEffect(() => {
-    if (!isSubscribed && 
-        selectedStyle && 
-        selectedStyle.name !== "Anime" && 
-        selectedStyle.name !== "OldSchool" && 
-        selectedStyle.name !== "Lego") {
-      showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK)
-      router.replace("/")
-      return
-    }
-  }, [selectedStyle, isSubscribed])
+
 
   useEffect(() => {
     if (loading) {
@@ -163,14 +153,6 @@ export default function UploadScreen() {
   }
 
   const handleStyleChange = (style:any) => {
-    if (!isSubscribed && 
-        style.name !== "Anime" && 
-        style.name !== "OldSchool" && 
-        style.name !== "Lego") {
-      showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK)
-      return
-    }
-    
     router.replace({
       pathname: "/upload",
       params: { styleId: style.id }
@@ -184,7 +166,7 @@ export default function UploadScreen() {
     }
 
     setLoading(true)
-    
+
     try {
       const resultImageUri = await generateImage(
         image,
@@ -192,7 +174,7 @@ export default function UploadScreen() {
         stylesList,
         setLoading
       )
-      
+
       if (resultImageUri) {
         router.push({
           pathname: "/result",
@@ -219,7 +201,7 @@ export default function UploadScreen() {
       >
         <SafeAreaView style={styles.container}>
           <StatusBar barStyle="light-content" />
-          
+
           <View style={styles.header}>
             <TouchableOpacity
               onPress={() => router.back()}
@@ -230,20 +212,17 @@ export default function UploadScreen() {
             <Text style={styles.headerTitle}>{selectedStyle ? selectedStyle.DisplayName : "Upload"}</Text>
             <View style={styles.headerSpacing} />
           </View>
-          
+
           <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
             <View style={styles.stylePreviewContainer}>
               <View style={styles.styleImageWrapper}>
-                <Image 
-                  source={{ uri: selectedStyle ? selectedStyle.src : null as any }} 
-                  style={styles.stylePreviewImage} 
+                <Image
+                  source={{ uri: selectedStyle ? selectedStyle.src : null as any }}
+                  style={styles.stylePreviewImage}
                 />
               </View>
-              <Text style={styles.styleDescription}>
-                {`Transform your photos into ${selectedStyle ? selectedStyle.DisplayName : ""} style`}
-              </Text>
             </View>
-            
+
             <View style={styles.uploadContainer}>
               {image ? (
                 <View style={styles.imagePreviewContainer}>
@@ -272,7 +251,7 @@ export default function UploadScreen() {
                   <Text style={styles.emptyImageText}>
                     Select or capture an image
                   </Text>
-                  
+
                   <View style={styles.uploadButtonsContainer}>
                     <TouchableOpacity
                       style={styles.uploadButton}
@@ -283,7 +262,7 @@ export default function UploadScreen() {
                         <Text style={styles.uploadButtonText}>Gallery</Text>
                       </View>
                     </TouchableOpacity>
-                    
+
                     <TouchableOpacity
                       style={styles.uploadButton}
                       onPress={handleCameraCapture}
@@ -297,7 +276,7 @@ export default function UploadScreen() {
                 </View>
               )}
             </View>
-            
+
             {image && !loading && (
               <View style={styles.generateButtonContainer}>
                 <TouchableOpacity
@@ -306,7 +285,7 @@ export default function UploadScreen() {
                 >
                   <Text style={styles.generateText}>Generate Image</Text>
                 </TouchableOpacity>
-                
+
                 <TouchableOpacity
                   style={styles.changeImageButton}
                   onPress={() => setImage(null)}
@@ -315,41 +294,6 @@ export default function UploadScreen() {
                 </TouchableOpacity>
               </View>
             )}
-            
-            <View style={styles.switchStyleContainer}>
-              <Text style={styles.switchStyleTitle}>Switch Style</Text>
-              <View style={styles.stylesGrid}>
-                {stylesList.map((style) => (
-                  <TouchableOpacity
-                    key={style.id}
-                    style={[
-                      styles.styleCardGrid,
-                      selectedStyle && selectedStyle.id === style.id ? styles.selectedStyleCard : null
-                    ]}
-                    onPress={() => handleStyleChange(style)}
-                  >
-                    <View style={styles.styleCardImageContainer}>
-                      <Image source={{ uri: style.src }} style={styles.styleCardImage} />
-                      <LinearGradient
-                        colors={['transparent', 'rgba(0,0,0,0.7)']}
-                        style={styles.styleCardGradient}
-                      >
-                        <Text style={styles.styleCardName}>{style.DisplayName}</Text>
-                      </LinearGradient>
-                      
-                      {!isSubscribed && 
-                        style.name !== "Anime" && 
-                        style.name !== "OldSchool" && 
-                        style.name !== "Lego" && (
-                        <View style={styles.styleLockOverlay}>
-                          <Ionicons name="lock-closed" size={16} color="white" />
-                        </View>
-                      )}
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </View>
           </ScrollView>
         </SafeAreaView>
       </LinearGradient>
@@ -364,7 +308,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 20,
   },
   header: {
     flexDirection: "row",
@@ -392,7 +336,7 @@ const styles = StyleSheet.create({
   },
   stylePreviewContainer: {
     alignItems: "center",
-    marginBottom: 30,
+    marginBottom: 2,
   },
   styleImageWrapper: {
     width: 120,
@@ -537,7 +481,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingVertical: 16,
     backgroundColor: "#9370DB",
-    
+
     borderRadius: 30,
     width: "90%",
   },
