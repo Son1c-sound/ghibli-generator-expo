@@ -1,10 +1,12 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, View, Dimensions } from 'react-native';
 import { HapticTab } from '@/components/HapticTab';
-import { Svg, Path, Circle, G } from 'react-native-svg';
+import { Svg, Path, Circle } from 'react-native-svg';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+
+const { height } = Dimensions.get('window');
 
 const HomeIcon = ({ color }: {color:any}) => (
   <Svg width={28} height={28} viewBox="0 0 24 24" fill="none">
@@ -63,9 +65,10 @@ const CustomTabBarBackground = () => {
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  
   const activeTintColor = Colors[colorScheme ?? 'light'].tint || '#9370DB';
-
+  
+  const isIphoneX = Platform.OS === 'ios' && (height > 800);
+  
   return (
     <Tabs
       screenOptions={{
@@ -73,36 +76,37 @@ export default function TabLayout() {
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: () => <CustomTabBarBackground />,
-        tabBarStyle: Platform.select({
-          ios: {
-            position: 'absolute',
-            height: 85, // Increased height for iOS
-            paddingBottom: 25, // Increased padding to accommodate iPhone home indicator
-            backgroundColor: '#000000',
-            borderTopWidth: 0,
-            // Add shadow for better visibility
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: -2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 3,
-          },
-          default: {
-            height: 70, // Slightly increased for Android too
-            paddingBottom: 10,
-            backgroundColor: '#000000',
-            borderTopWidth: 0,
-            // Add elevation for Android
-            elevation: 8,
-          },
-        }),
+        tabBarStyle: {
+          height: Platform.OS === 'ios' ? (isIphoneX ? 90 : 80) : 85,
+          paddingTop: 0, // Remove padding top
+          paddingBottom: Platform.OS === 'ios' ? (isIphoneX ? 30 : 25) : 25,
+          backgroundColor: '#000000',
+          borderTopWidth: 0,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -3 },
+          shadowOpacity: 0.2,
+          shadowRadius: 5,
+          elevation: Platform.OS === 'ios' ? 0 : 15,
+          flexDirection: 'row',
+          alignItems: 'flex-start', // Align items to the top
+          justifyContent: 'space-around',
+        },
         tabBarItemStyle: {
-          height: 60, // Increased tab item height
-          paddingTop: 10, // Increased padding top
+          marginTop: 10, // Add margin at the top
+          height: 55,
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          paddingTop: 0,
+        },
+        tabBarIconStyle: {
+          marginTop: 0,
+          marginBottom: 4, // Space between icon and label
         },
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: '600', // Made text slightly bolder
-          marginBottom: Platform.OS === 'ios' ? 10 : 5, // Increased bottom margin for iOS
+          fontWeight: '700',
+          marginTop: 0,
         },
       }}
     >
@@ -138,6 +142,5 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-    
   );
 }

@@ -22,16 +22,16 @@ export default function AnimeConverter() {
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [showResultScreen, setShowResultScreen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const { isSubscribed, showPaywall } = useSuperwall()
-  const { isOnboarded, isLoading } = useOnboarding()
+  const { isSubscribed, showPaywall } = useSuperwall() 
+  const { isOnboarded, isLoading: onboardingLoading } = useOnboarding()
 
   useEffect(() => {
-    if (isLoading) return
+    if (onboardingLoading) return
 
     if (!isOnboarded) {
       router.replace("/onboarding")
     }
-  }, [isOnboarded, isLoading])
+  }, [isOnboarded, onboardingLoading])
 
   useEffect(() => {
     if (loading) {
@@ -49,7 +49,7 @@ export default function AnimeConverter() {
     }
   }, [loading])
 
-  if (isLoading) {
+  if (onboardingLoading) {
     return (
       <SafeAreaView style={[screenStyles.container, {justifyContent: "center", alignItems: "center" }]}>
         <ActivityIndicator size="large" color={ACCENT_COLOR} />
@@ -58,21 +58,21 @@ export default function AnimeConverter() {
   }
 
   const styles: StyleItem[] = stylesList
-  
-  
+
+
   const handleStyleSelect = (styleId:any) => {
     const style = styles.find(s => s.id === styleId)
-    
-    if (!isSubscribed && 
-        style && 
-        style.name !== "Anime" && 
-        style.name !== "OldSchool" && 
-        style.name && 
+
+    if (!isSubscribed &&
+        style &&
+        style.name !== "Anime" &&
+        style.name !== "OldSchool" &&
+        style.name &&
         style.name !== "Lego") {
       showPaywall(SUPERWALL_TRIGGERS.FEATURE_UNLOCK)
       return
     }
-    
+
     setSelectedStyle(styleId)
     router.push({
       pathname: "/upload",
@@ -80,12 +80,12 @@ export default function AnimeConverter() {
     })
   }
 
-  const filteredStyles = selectedCategory 
+  const filteredStyles = selectedCategory
     ? styles.filter(style => style.category === selectedCategory)
     : styles
-  
+
   const ghibliStyle = styles.find(style => style.name === "Ghibli") || styles[0]
-  
+
   const otherStyles = selectedCategory
     ? filteredStyles.filter(style => style.id !== ghibliStyle.id)
     : styles.filter(style => style.id !== ghibliStyle.id)
@@ -106,19 +106,19 @@ export default function AnimeConverter() {
         style={{ flex: 1 }}
       >
         <SafeAreaView style={screenStyles.safeAreaContainer}>
-          <ScrollView 
-            style={screenStyles.scrollContainer} 
+          <ScrollView
+            style={screenStyles.scrollContainer}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={screenStyles.scrollContentContainer}
-          >  
+          >
             <View style={screenStyles.featuredContainer}>
               <TouchableOpacity
                 style={screenStyles.featuredCard}
                 onPress={() => handleStyleSelect(ghibliStyle.id)}
               >
-                <Image 
-                  source={{ uri: ghibliStyle.src }} 
-                  style={screenStyles.featuredImage} 
+                <Image
+                  source={{ uri: ghibliStyle.src }}
+                  style={screenStyles.featuredImage}
                 />
                 <LinearGradient
                   colors={['transparent', 'rgba(0,0,0,0.8)']}
@@ -129,10 +129,10 @@ export default function AnimeConverter() {
                     <Text style={screenStyles.featuredDescription}>
                       Transform your photos into magical Anime-inspired art
                     </Text>
-                    
-                    {!isSubscribed && 
-                      ghibliStyle.name !== "Anime" && 
-                      ghibliStyle.name !== "OldSchool" && 
+
+                    {!isSubscribed &&
+                      ghibliStyle.name !== "Anime" &&
+                      ghibliStyle.name !== "OldSchool" &&
                       ghibliStyle.name !== "Lego" && (
                       <View style={screenStyles.lockIconContainer}>
                         <Ionicons name="lock-closed" size={16} color="white" />
@@ -142,9 +142,9 @@ export default function AnimeConverter() {
                 </LinearGradient>
               </TouchableOpacity>
             </View>
-            
+
             <SubscriptionBanner />
-            
+
             <View style={screenStyles.stylesGrid}>
               {otherStyles.map((style) => (
                 <TouchableOpacity
@@ -154,7 +154,7 @@ export default function AnimeConverter() {
                 >
                   <View style={screenStyles.styleImageContainer}>
                     <Image source={{ uri: style.src }} style={screenStyles.styleImage} />
-                    
+
                     <LinearGradient
                       colors={['transparent', 'rgba(0,0,0,0.7)']}
                       style={screenStyles.styleGradient}
@@ -163,9 +163,9 @@ export default function AnimeConverter() {
                         <Text style={screenStyles.styleName}>{style.DisplayName}</Text>
                       </View>
                     </LinearGradient>
-                    
-                    {!isSubscribed && 
-                      style.name !== "Anime" && 
+
+                    {!isSubscribed &&
+                      style.name !== "Anime" &&
                       style.name !== "OldSchool" &&
                       style.name !== "Lego" && (
                       <View style={screenStyles.styleLockOverlay}>

@@ -2,7 +2,7 @@
   "expo": {
     "name": "GoToon",
     "slug": "quick-mobile-app-expo",
-    "version": "1.3.0",
+    "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -15,7 +15,13 @@
         "NSCameraUsageDescription": "This app uses the camera to let you take photos for your profile and uploads.",
         "NSPhotoLibraryUsageDescription": "This app accesses your photo library to let you choose images for uploads and sharing.",
         "ITSAppUsesNonExemptEncryption": false,
-        "UIDeviceFamily": ["1"]
+        "UIDeviceFamily": [
+          "1",
+          "1"
+        ]
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
       }
     },
     "android": {
@@ -27,8 +33,12 @@
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE"
-      ]
+      ],
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "bundler": "metro",
@@ -62,6 +72,12 @@
           "listUnknownPackages": false
         }
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/9e59dcc6-2d8a-4f89-ab75-8d5487e97b17",
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
     }
   }
 }

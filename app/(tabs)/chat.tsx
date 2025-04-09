@@ -305,19 +305,6 @@ export default function AIImageGenerator() {
       setDownloadingIndex(null);
     }
   };
-  
-  const handleImageSelect = (index:any) => {
-    if (generatedImages[index]) {
-      router.push({
-        pathname: "/result",
-        params: { 
-          resultImage: generatedImages[index], 
-          resultImageBase64: generatedImagesBase64[index],
-          styleId: selectedStyle ? selectedStyle : '1'
-        }
-      });
-    }
-  };
 
   const selectArtStyle = (id:any) => {
     setSelectedStyle(id);
@@ -389,7 +376,21 @@ export default function AIImageGenerator() {
                 ))}
               </View>
             </View>
-            
+                
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.generateButton,
+                  (!inputText.trim() || isGenerating) && styles.disabledGenerateButton
+                ]}
+                onPress={generateImages}
+                disabled={!inputText.trim() || isGenerating}
+              >
+                <Text style={styles.generateButtonText}>
+                  {isGenerating ? "Generating..." : "Generate Images"}
+                </Text>
+              </TouchableOpacity>
+            </View>
             {generationStarted && (
               <View style={styles.generatedImagesSection}>
                 <View style={styles.sectionHeaderRow}>
@@ -409,7 +410,6 @@ export default function AIImageGenerator() {
                     <View key={index} style={styles.imageGridItemContainer}>
                       <TouchableOpacity
                         style={styles.imageGridItem}
-                        onPress={() => handleImageSelect(index)}
                         disabled={!image}
                       >
                         {image ? (
@@ -448,21 +448,7 @@ export default function AIImageGenerator() {
                 </View>
               </View>
             )}
-            
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.generateButton,
-                  (!inputText.trim() || isGenerating) && styles.disabledGenerateButton
-                ]}
-                onPress={generateImages}
-                disabled={!inputText.trim() || isGenerating}
-              >
-                <Text style={styles.generateButtonText}>
-                  {isGenerating ? "Generating..." : "Generate Images"}
-                </Text>
-              </TouchableOpacity>
-            </View>
+        
             
             <View style={styles.bottomPadding} />
           </ScrollView>

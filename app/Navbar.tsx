@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, SafeAreaView, StatusBar, TouchableOpacity, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 
 const Header = ({ title = 'Featured Styles', onSettingsPress }: {onSettingsPress:any, title:any} ) => {
   const name = 'GoToon';
@@ -19,7 +20,7 @@ const Header = ({ title = 'Featured Styles', onSettingsPress }: {onSettingsPress
           </View>
           
           <View style={styles.rightContainer}>
-            <TouchableOpacity style={styles.iconButton} onPress={onSettingsPress}>
+            <TouchableOpacity style={styles.iconButton} onPress={() => {router.push('/profile')}}>
               <Ionicons name="settings-outline" size={22} color="#f5f5f5" />
             </TouchableOpacity>
           </View>
