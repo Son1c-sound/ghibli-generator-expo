@@ -95,7 +95,6 @@ export default function AIImageGenerator() {
         })
       ).start();
       
-      // Auto-scroll to the image grid when generation starts
       setTimeout(() => {
         if (scrollViewRef.current) {
           scrollViewRef.current.scrollTo({ 
@@ -109,7 +108,6 @@ export default function AIImageGenerator() {
     }
   }, [isGenerating]);
 
-  // Animation for input focus
   useEffect(() => {
     Animated.timing(inputAnim, {
       toValue: inputFocused ? 1 : 0,
@@ -254,7 +252,6 @@ export default function AIImageGenerator() {
 
       setDownloadingIndex(index);
 
-      // Only check permission when user tries to save
       if (!mediaLibraryPermission) {
         const { status } = await MediaLibrary.requestPermissionsAsync();
         
@@ -331,8 +328,6 @@ export default function AIImageGenerator() {
     outputRange: ['0deg', '360deg']
   });
 
-  // Removed interpolated animations for input field
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View style={styles.container}>
@@ -395,7 +390,6 @@ export default function AIImageGenerator() {
               </View>
             </View>
             
-            {/* Only show the generated images section if generation has started */}
             {generationStarted && (
               <View style={styles.generatedImagesSection}>
                 <View style={styles.sectionHeaderRow}>
@@ -452,39 +446,26 @@ export default function AIImageGenerator() {
                     </View>
                   ))}
                 </View>
-                
-                {isGenerating && (
-                  <View style={styles.progressContainer}>
-                    <Text style={styles.progressText}>
-                      {currentImageIndex > 0 
-                        ? `Creating your images... ${currentImageIndex}/4 ready` 
-                        : "Creating your images..."}
-                    </Text>
-                    <View style={styles.progressBar}>
-                      <View style={[styles.progressFill, { width: `${(currentImageIndex / 4) * 100}%` }]} />
-                    </View>
-                  </View>
-                )}
               </View>
             )}
             
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.generateButton,
+                  (!inputText.trim() || isGenerating) && styles.disabledGenerateButton
+                ]}
+                onPress={generateImages}
+                disabled={!inputText.trim() || isGenerating}
+              >
+                <Text style={styles.generateButtonText}>
+                  {isGenerating ? "Generating..." : "Generate Images"}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            
             <View style={styles.bottomPadding} />
           </ScrollView>
-          
-          <View style={styles.fixedButtonContainer}>
-            <TouchableOpacity
-              style={[
-                styles.generateButton,
-                (!inputText.trim() || isGenerating) && styles.disabledGenerateButton
-              ]}
-              onPress={generateImages}
-              disabled={!inputText.trim() || isGenerating}
-            >
-              <Text style={styles.generateButtonText}>
-                {isGenerating ? "Generating..." : "Generate Images"}
-              </Text>
-            </TouchableOpacity>
-          </View>
         </SafeAreaView>
       </View>
     </GestureHandlerRootView>
@@ -503,7 +484,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContentContainer: {
-    paddingBottom: 90, 
+    paddingBottom: Platform.OS === 'ios' ? 30 : 20,
   },
   inputPromptSection: {
     paddingHorizontal: 16,
@@ -694,20 +675,10 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 8,
   },
-  bottomPadding: {
-    height: 20,
-  },
-  fixedButtonContainer: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "#000000",
+  buttonContainer: {
     paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: Platform.OS === "ios" ? 30 : 20,
-    borderTopWidth: 1,
-    borderTopColor: "rgba(30, 30, 30, 0.8)",
+    marginTop: 10,
+    marginBottom: 10,
   },
   generateButton: {
     backgroundColor: "#9370DB",
@@ -722,14 +693,6 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 4,
   },
-  generateButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  generateButtonIcon: {
-    marginRight: 8,
-  },
   generateButtonText: {
     color: "white",
     fontSize: 16,
@@ -739,5 +702,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     backgroundColor: "#666",
     shadowColor: "#333",
+  },
+  bottomPadding: {
+    height: Platform.OS === 'ios' ? 20 : 10,
   },
 });

@@ -76,26 +76,33 @@ export default function TabLayout() {
         tabBarStyle: Platform.select({
           ios: {
             position: 'absolute',
-            height: 60,
-            paddingBottom: 5,
+            height: 85, // Increased height for iOS
+            paddingBottom: 25, // Increased padding to accommodate iPhone home indicator
             backgroundColor: '#000000',
-            borderTopWidth: 0
+            borderTopWidth: 0,
+            // Add shadow for better visibility
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -2 },
+            shadowOpacity: 0.1,
+            shadowRadius: 3,
           },
           default: {
-            height: 60,
-            paddingBottom: 5,
+            height: 70, // Slightly increased for Android too
+            paddingBottom: 10,
             backgroundColor: '#000000',
-            borderTopWidth: 0
+            borderTopWidth: 0,
+            // Add elevation for Android
+            elevation: 8,
           },
         }),
         tabBarItemStyle: {
-          height: 50,
-          paddingTop: 8,
+          height: 60, // Increased tab item height
+          paddingTop: 10, // Increased padding top
         },
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: '500',
-          marginBottom: 5,
+          fontWeight: '600', // Made text slightly bolder
+          marginBottom: Platform.OS === 'ios' ? 10 : 5, // Increased bottom margin for iOS
         },
       }}
     >
