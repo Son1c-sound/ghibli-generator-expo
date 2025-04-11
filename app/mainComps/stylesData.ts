@@ -3,14 +3,14 @@ import { StyleItem } from '../utils/imageUtils';
 export const stylesList: StyleItem[] = [
   { 
     id: 1, 
-    DisplayName: "Anime",
+    DisplayName: "",
     name: 'Anime', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390806/cooylozjk3ssauku8jer.png',
     category: 'Animation',
   },
   { 
     id: 8, 
-    DisplayName: "Lego",
+    DisplayName: "",
     name: 'Lego', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743896925/r0qvqqucbuyqocqxugvr.png',
     category: 'Animation',
@@ -45,32 +45,26 @@ export const stylesList: StyleItem[] = [
   },
   { 
     id: 5, 
-    DisplayName: "Chibli",
+    DisplayName: "Anime",
     name: 'trending', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743390195/pnlywxojs1bn4m9ad6b5.png',
+    src: 'https://i.ibb.co/twpdDyWQ/download.png',
     category: 'Animation',
   },
 
   { 
     id: 7, 
-    DisplayName: "Simpsons",
+    DisplayName: "",
     name: 'Simpsons', 
     src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1743896840/yxyhnq1wsrabf2prkqct.png',
     category: 'Animation',
   },
  
-  { 
-    id: 9, 
-    DisplayName: "Rick And Morty",
-    name: 'RickAndMorty', 
-    src: 'https://res.cloudinary.com/dzvttwdye/image/upload/v1744134300/atnsugn7eyixjydumqqq.png',
-    category: 'Animation',
-  },
+
   { 
     id: 10, 
-    DisplayName: "SouthPark",
+    DisplayName: "",
     name: 'SouthPark', 
-    src: 'https://variety.com/wp-content/uploads/2021/04/South-Park-Key-Art.jpg?w=1000&h=562&crop=1',
+    src: 'https://i.ibb.co/5gN2HPs3/Screenshot-2025-04-11-123647.png',
     category: 'Animation',
   },
   { 
